@@ -27,6 +27,7 @@ type file_kind = ML | MLI | CMI | CMT | CMTI
 
 type plugin = {
     plugin_name : string;
+    plugin_version : string ;
     mutable plugin_warnings : warning IntMap.t ;
     mutable plugin_linters : linter StringMap.t ;
   }
@@ -39,6 +40,7 @@ and tag = {
 and warning = {
     w_plugin : plugin ;
     w_num : int ;
+    w_idstr : string ;
     w_name : string ;
     mutable w_tags : tag list ;
     w_msg : string ;
@@ -61,9 +63,10 @@ and file = {
     file_uid : int ;
     file_crc : Digest.t ;
     file_kind : file_kind ;
+    mutable file_warnings_done : StringSet.t ;
     mutable file_done : bool ;
     mutable file_projects : project StringMap.t ;
-    mutable file_messages : message list ;
+    mutable file_messages : message StringMap.t ;
   }
 
 and position = Lexing.position = {
@@ -83,6 +86,7 @@ and location = Location.t = {
 and message = {
     msg_warning : warning ;
     msg_file : file ;
+    msg_idstr : string ;
     msg_loc : location ;
     msg_string : string ;
   }

@@ -12,7 +12,7 @@
 
 open Yalo.V1
 
-let ns = YALO.new_plugin "YALO"
+let ns = YALO.new_plugin "YALO" ~version:"0.1.0"
 
 let tag_line = YALO.new_tag "line"
 

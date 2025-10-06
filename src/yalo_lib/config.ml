@@ -69,7 +69,7 @@ open EzConfig.V1
 module OP = EZCONFIG.OP
 
 let config_file =
-  EZCONFIG.create_config_file ".yalocaml"
+  EZCONFIG.create_config_file Constant.config_basename
 let load filename =
   EZCONFIG.load config_file ~filename
 

@@ -21,9 +21,10 @@ let all_nstags = Hashtbl.create 13
 let all_warnings = ref []
 let all_linters = ref []
 
-let all_files = (Hashtbl.create 113 : (Digest.t, file) Hashtbl.t)
+let all_files = (Hashtbl.create 113 : (string, file) Hashtbl.t)
 let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
 
+let active_warnings = ref StringMap.empty
 let active_linters = ref []
 let active_src_line_linters =
   ref
@@ -62,7 +63,7 @@ let get_messages () =
   messages := [];
   ms
 
-let new_plugin plugin_name =
+let new_plugin ?(version="0.1.0") plugin_name =
   for i = 0 to String.length plugin_name - 1 do
     match plugin_name.[i] with
     | 'A'..'Z' -> ()
@@ -77,6 +78,7 @@ let new_plugin plugin_name =
       exit 2
     end;
   let ns = { plugin_name ;
+             plugin_version = version ;
              plugin_warnings = IntMap.empty ;
              plugin_linters = StringMap.empty } in
   Hashtbl.add all_plugins plugin_name ns;
@@ -121,9 +123,13 @@ let new_warning
       ~msg:w_msg
       w_num
   =
+  let w_idstr = Printf.sprintf "%s+%d"
+                  w_plugin.plugin_name  w_num
+  in
   let w = {
       w_plugin ;
       w_num ;
+      w_idstr ;
       w_name ;
       w_tags = [] ;
       w_msg ;
@@ -237,6 +243,10 @@ let new_sig_linter =
 
 (* We suppose that all warnings are now correctly set. *)
 let activate_linters () =
+  List.iter (fun w ->
+      if w.w_level_warning || w.w_level_error then
+        active_warnings := StringMap.add w.w_idstr w !active_warnings
+    ) !all_warnings ;
   List.iter (fun l ->
       if List.exists (fun w ->
              w.w_level_warning || w.w_level_error)
@@ -248,15 +258,25 @@ let activate_linters () =
 
 let warn msg_loc ~file ?msg w =
   if w.w_level_error || w.w_level_warning then
+    let msg_string =
+      match msg with
+      | None -> w.w_msg
+      | Some msg -> msg
+    in
+    let msg_idstr =
+      Printf.sprintf "%06d%06d%s"
+        msg_loc.loc_start.pos_lnum
+        msg_loc.loc_start.pos_cnum
+        (Marshal.to_string (msg_loc,w.w_idstr,msg) [])
+    in
     let m = {
         msg_loc ;
-        msg_string = (match msg with
-                     | Some msg -> msg
-                     | None -> w.w_msg);
+        msg_string ;
         msg_warning = w;
         msg_file = file ;
+        msg_idstr ;
       } in
-    file.file_messages <- m :: file.file_messages ;
+    file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
     messages := m :: !messages
 
 let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
@@ -299,24 +319,43 @@ let iter_linters_close ~file linters =
       l.linter_close ~file ;
     ) linters
 
+let rec filter_linters ~file linters = 
+  match linters with
+  | []  -> []
+  | (l,f) :: linters ->
+     if List.exists (fun w ->
+            (w.w_level_warning || w.w_level_error) &&
+              not (StringSet.mem w.w_idstr file.file_warnings_done)
+          ) l.linter_warnings then
+       (l,f) :: filter_linters ~file linters
+     else
+       filter_linters ~file linters
+
 let lint_src_file ~file =
   let file_name = file.file_name in
   let file_loc = mkloc ~bol:0 ~lnum:0 ~end_cnum:0 ~file () in
 
-  iter_linters_open ~file !active_src_file_linters ;
-  iter_linters_open ~file !active_src_line_linters ;
-  iter_linters_open ~file !active_src_content_linters ;
+  let active_src_file_linters =
+    filter_linters ~file !active_src_file_linters in
+  let active_src_line_linters =
+    filter_linters ~file !active_src_line_linters in
+  let active_src_content_linters =
+    filter_linters ~file !active_src_content_linters in
+
+  iter_linters_open ~file active_src_file_linters ;
+  iter_linters_open ~file active_src_line_linters ;
+  iter_linters_open ~file active_src_content_linters ;
 
   begin
-    match !active_src_file_linters with
+    match active_src_file_linters with
     | [] -> ()
     | linters ->
        iter_linters ~file linters  { file_loc }
   end;
 
   begin
-    match !active_src_line_linters,
-          !active_src_content_linters with
+    match active_src_line_linters,
+          active_src_content_linters with
     | [], [] -> ()
     | src_line_linters, src_content_linters ->
        match Ez_file.V1.EzFile.read_file file_name with
@@ -356,14 +395,14 @@ let lint_src_file ~file =
           iter 1 0;
   end;
 
-  iter_linters_close ~file !active_src_content_linters ;
-  iter_linters_close ~file !active_src_line_linters ;
-  iter_linters_close ~file !active_src_file_linters ;
+  iter_linters_close ~file active_src_content_linters ;
+  iter_linters_close ~file active_src_line_linters ;
+  iter_linters_close ~file active_src_file_linters ;
   ()
 
 let lint_with_active_linters active_linters_ref =
   fun ~file x ->
-  match !active_linters_ref with
+  match filter_linters ~file !active_linters_ref with
   | [] -> ()
   | linters ->
      iter_linters_open ~file linters ;

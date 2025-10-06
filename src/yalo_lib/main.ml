@@ -89,9 +89,8 @@ let load_plugins () =
           let crc = Digest.string source in
           let crc = Digest.to_hex crc in
           (* TODO: create _yalo where .yalocaml is *)
-          let yalo_dir = "_yalo" in
           let prefix = Printf.sprintf "%s/Yalo_%s"
-                         yalo_dir crc in
+                         Constant.temp_dir crc in
           (* TODO: bytecode version *)
           let file_obj = prefix ^ ".cmxs" in
           let file_ml = prefix ^ ".ml" in
@@ -105,8 +104,8 @@ let load_plugins () =
                 raise exn
             else raise Not_found
           with _ ->
-                if not ( Sys.file_exists yalo_dir ) then
-                  Unix.mkdir yalo_dir 0o755;
+                if not ( Sys.file_exists Constant.temp_dir ) then
+                  Unix.mkdir Constant.temp_dir 0o755;
                 EzFile.write_file file_ml source;
                 (* TODO: bytecode version *)
                 let cmd = Printf.sprintf
@@ -146,7 +145,7 @@ let real_common_init () =
             the file what we are supposed to parse. But we only
             see it at the end ? We could add a
             -T <target-file> early arg for that. *)
-         let file = Utils.find_file ".yalocaml" in
+         let file = Utils.find_file Constant.config_basename in
          let dir = Filename.dirname file in
          Args.arg_load_dirs := dir :: !Args.arg_load_dirs ;
          Some file
@@ -156,7 +155,7 @@ let real_common_init () =
   begin
     match config_file with
     | None ->
-       Printf.eprintf "Warning: no file .yalocaml found. Using default config.\n%!";
+       Printf.eprintf "Warning: no file %s found. Using default config.\n%!" Constant.config_basename;
        ()
     | Some file ->
        Config.load file
@@ -254,13 +253,12 @@ let display_messages () =
          Location.print_loc Format.str_formatter m.msg_loc;
          let loc = Format.flush_str_formatter () in
          Printf.eprintf "%s\n%!" loc;
-         Printf.eprintf "%s (%s+%d): %s\n%!"
+         Printf.eprintf "%s (%s): %s\n%!"
            (if m.msg_warning.w_level_error then
              "Error"
            else
              "Warning")
-           m.msg_warning.w_plugin.plugin_name
-           m.msg_warning.w_num
+           m.msg_warning.w_idstr
            m.msg_string;
        (* TODO: display context ? *)
        ) messages ;
@@ -392,7 +390,7 @@ let main () =
       | Some p -> Printf.sprintf " (%s)" p.project_name);
     let file_crc = Digest.file file_name in
     let file =
-      match Hashtbl.find Engine.all_files file_crc with
+      match Hashtbl.find Engine.all_files file_name with
       | file -> file
       | exception Not_found ->
          let file_uid = !Engine.file_uids in
@@ -403,10 +401,11 @@ let main () =
              file_crc ;
              file_kind ;
              file_projects = StringMap.empty ;
-             file_messages = [] ;
+             file_messages = StringMap.empty ;
              file_done = false ;
+             file_warnings_done = StringSet.empty ;
            } in
-         Hashtbl.add Engine.all_files file_crc file;
+         Hashtbl.add Engine.all_files file_name file;
          file
     in
     match p with
@@ -444,8 +443,8 @@ let main () =
   (* TODO: this is wrong, this file should be loaded only
      on source-directories *)
   let default_project_name =
-    if Sys.file_exists Yalo_project.basename then
-      match Yalo_project.read Yalo_project.basename with
+    if Sys.file_exists Constant.project_basename then
+      match Yalo_project.read Constant.project_basename with
       | { pr_project = Some name ; _ } -> name
       | _ -> "."
     else
@@ -480,7 +479,7 @@ let main () =
             | _ ->
                let p =
                  let yalo_project_file =
-                   file // Yalo_project.basename
+                   file // Constant.project_basename
                  in
                  if Sys.file_exists yalo_project_file then
                    let ypr = Yalo_project.read yalo_project_file in
@@ -488,7 +487,7 @@ let main () =
                    match ypr.pr_project with
                    | None -> p
                    | Some name ->
-                      
+
                       if is_source && !Args.arg_map_src_projects then
                         map_src := StringMap.add subfile name !map_src;
                       match p with
@@ -612,6 +611,7 @@ let main () =
       l.linter_end ()
     ) !Engine.active_linters;
 
+  (* TODO: also display cached messages *)
   display_messages ();
   ()
 

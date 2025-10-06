@@ -49,7 +49,7 @@ module YALO : sig
 
   (* A plugin must be all in the character set [A-Z0-9_],
      starting with a letter. *)
-  val new_plugin : string -> plugin
+  val new_plugin : ?version:string -> string -> plugin
   (* A tag must be all in the character set [a-z0-9_],
      starting with a letter. *)
   val new_tag : string -> tag
@@ -166,8 +166,8 @@ end = struct
       content_string : string ;
     }
 
-  let new_plugin ns_name = Engine.new_plugin ns_name
-  let new_tag tag_name = Engine.new_tag tag_name
+  let new_plugin = Engine.new_plugin
+  let new_tag = Engine.new_tag
   let new_warning = Engine.new_warning
 
   let tag_danger = new_tag "danger"

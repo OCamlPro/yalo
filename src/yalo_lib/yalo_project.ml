@@ -13,8 +13,6 @@
 open EzCompat
 open Types
 
-let basename = ".yalo-project"
-
 let rec read_line ic =
   match input_line ic with
   | exception _exn ->

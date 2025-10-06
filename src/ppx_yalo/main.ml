@@ -958,7 +958,8 @@ let new_dummy_file file_kind =
     file_kind ;
     file_done = false ;
     file_projects = StringMap.empty ;
-    file_messages = [] ;
+    file_messages = StringMap.empty ;
+    file_warnings_done = StringSet.empty ;
   }
 
 let () =
