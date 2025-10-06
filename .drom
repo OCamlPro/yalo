@@ -1,0 +1,324 @@
+# Keep this file in your GIT repo to help drom track generated files
+# begin version
+version:0.9.0
+# end version
+
+# hash of toml configuration files
+# used for generation of all files
+9c2fc055c6b46663311b704e945b3548:.
+# end context for .
+
+# begin context for .github/workflows/workflow.yml
+# file .github/workflows/workflow.yml
+6e5c5291ce5219f3286524b128a0ce1f:.github/workflows/workflow.yml
+# end context for .github/workflows/workflow.yml
+
+# begin context for .gitignore
+# file .gitignore
+fa676d1ab34639cfbb50d498a640e7c6:.gitignore
+# end context for .gitignore
+
+# begin context for .ocamlformat
+# file .ocamlformat
+a021399591b7aeb6f2e2854b4b8395c9:.ocamlformat
+# end context for .ocamlformat
+
+# begin context for .ocamlformat-ignore
+# file .ocamlformat-ignore
+c8f70450e7d78c0387644864ffe8cbd5:.ocamlformat-ignore
+# end context for .ocamlformat-ignore
+
+# begin context for .ocp-indent
+# file .ocp-indent
+6048407431b8d9baf725ae5365d4c2f2:.ocp-indent
+# end context for .ocp-indent
+
+# begin context for CHANGES.md
+# file CHANGES.md
+19db1ec49a8fa118fe6492632e5e7978:CHANGES.md
+# end context for CHANGES.md
+
+# begin context for LICENSE.md
+# file LICENSE.md
+cf4da9c43c0026cec0ba46b9cfe8407e:LICENSE.md
+# end context for LICENSE.md
+
+# begin context for Makefile
+# file Makefile
+876f888a7f87b60628cadbe6f1b8dd2c:Makefile
+# end context for Makefile
+
+# begin context for README.md
+# file README.md
+6a5a76e24b9c2a4f6f4cbf9603ccad51:README.md
+# end context for README.md
+
+# begin context for docs/README.txt
+# file docs/README.txt
+bfbacf00053bb9ab2a6e2ce94ed4a642:docs/README.txt
+# end context for docs/README.txt
+
+# begin context for docs/doc/index.html
+# file docs/doc/index.html
+762946c0bce8d7484a8f6916c3bf59eb:docs/doc/index.html
+# end context for docs/doc/index.html
+
+# begin context for docs/favicon.png
+# file docs/favicon.png
+e739f3026aa997af4026bc428f4c9ef6:docs/favicon.png
+# end context for docs/favicon.png
+
+# begin context for docs/index.html
+# file docs/index.html
+5a97a89a06ecccd841b7231fbc01376b:docs/index.html
+# end context for docs/index.html
+
+# begin context for docs/sphinx/index.html
+# file docs/sphinx/index.html
+7aea650e42ea66cdfc2245d3ed227b20:docs/sphinx/index.html
+# end context for docs/sphinx/index.html
+
+# begin context for docs/style.css
+# file docs/style.css
+c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
+# end context for docs/style.css
+
+# begin context for drom.toml
+# file drom.toml
+95e4b4f7bf561a9f6987a0e33d3f4fc0:drom.toml
+# end context for drom.toml
+
+# begin context for dune
+# file dune
+0d57afa9756f983af2551804954af609:dune
+# end context for dune
+
+# begin context for dune-project
+# file dune-project
+65c5f1fc0260bfd717059b6664e7ae0e:dune-project
+# end context for dune-project
+
+# begin context for opam/ppx_yalo.opam
+# file opam/ppx_yalo.opam
+ac69e0a189d8fd152ae1aeecf29fc394:opam/ppx_yalo.opam
+# end context for opam/ppx_yalo.opam
+
+# begin context for opam/yalo.opam
+# file opam/yalo.opam
+246f6a26c91b2405631f52490c8ba623:opam/yalo.opam
+# end context for opam/yalo.opam
+
+# begin context for opam/yalo_lib.opam
+# file opam/yalo_lib.opam
+2045c77d5046ebf084de016cfc917caa:opam/yalo_lib.opam
+# end context for opam/yalo_lib.opam
+
+# begin context for opam/yalo_plugin_FIND.opam
+# file opam/yalo_plugin_FIND.opam
+edf8d99a329fd5ba7dfadfa2b81d8ea3:opam/yalo_plugin_FIND.opam
+# end context for opam/yalo_plugin_FIND.opam
+
+# begin context for opam/yalo_plugin_YALO.opam
+# file opam/yalo_plugin_YALO.opam
+10072099f5a8c46f321de62a9e81e7d9:opam/yalo_plugin_YALO.opam
+# end context for opam/yalo_plugin_YALO.opam
+
+# begin context for opam/yalo_plugin_ocamlpro.opam
+# file opam/yalo_plugin_ocamlpro.opam
+3261e44970f09a8b7d00a0df4c7e74cf:opam/yalo_plugin_ocamlpro.opam
+# end context for opam/yalo_plugin_ocamlpro.opam
+
+# begin context for scripts/after.sh
+# file scripts/after.sh
+62c6489217feef26dac343e709b89c1a:scripts/after.sh
+# end context for scripts/after.sh
+
+# begin context for scripts/before.sh
+# file scripts/before.sh
+371e627833d9ac7ae2f906b5ec97aae2:scripts/before.sh
+# end context for scripts/before.sh
+
+# begin context for scripts/copy-bin.sh
+# file scripts/copy-bin.sh
+bb3a9d286f0dc64021db4194427263ee:scripts/copy-bin.sh
+# end context for scripts/copy-bin.sh
+
+# begin context for scripts/static-build.sh
+# file scripts/static-build.sh
+b243cb6f630e2b0483b76eef1572ff95:scripts/static-build.sh
+# end context for scripts/static-build.sh
+
+# begin context for sphinx/_static/css/fixes.css
+# file sphinx/_static/css/fixes.css
+20bbe7a5dbb3c3278a1511d960616fe5:sphinx/_static/css/fixes.css
+# end context for sphinx/_static/css/fixes.css
+
+# begin context for sphinx/about.rst
+# file sphinx/about.rst
+d7b5db1758b4c8b4b65abdbf35c081a8:sphinx/about.rst
+# end context for sphinx/about.rst
+
+# begin context for sphinx/conf.py
+# file sphinx/conf.py
+e226ebea217ed2e0396d66f57c714fd2:sphinx/conf.py
+# end context for sphinx/conf.py
+
+# begin context for sphinx/index.rst
+# file sphinx/index.rst
+978cf3789e4eaddaf577385a35e12866:sphinx/index.rst
+# end context for sphinx/index.rst
+
+# begin context for sphinx/install.rst
+# file sphinx/install.rst
+3dd582828bbc1b20d3fde7f35347bd03:sphinx/install.rst
+# end context for sphinx/install.rst
+
+# begin context for sphinx/license.rst
+# file sphinx/license.rst
+a02d5245d1626431fbfc4bdb99a413cf:sphinx/license.rst
+# end context for sphinx/license.rst
+
+# begin context for src/ppx_yalo/dune
+# file src/ppx_yalo/dune
+570f5ef34a20590ee5ff786b061ccdc2:src/ppx_yalo/dune
+# end context for src/ppx_yalo/dune
+
+# begin context for src/ppx_yalo/index.mld
+# file src/ppx_yalo/index.mld
+b0ab6521d9fd000800f8231010ef6278:src/ppx_yalo/index.mld
+# end context for src/ppx_yalo/index.mld
+
+# begin context for src/ppx_yalo/linking_flags.sh
+# file src/ppx_yalo/linking_flags.sh
+9fdfca3cc53df639758ff04fe09d3243:src/ppx_yalo/linking_flags.sh
+# end context for src/ppx_yalo/linking_flags.sh
+
+# begin context for src/ppx_yalo/version.mlt
+# file src/ppx_yalo/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/ppx_yalo/version.mlt
+# end context for src/ppx_yalo/version.mlt
+
+# begin context for src/yalo/dune
+# file src/yalo/dune
+6af5a06d83badac81428e5ba6f029ac6:src/yalo/dune
+# end context for src/yalo/dune
+
+# begin context for src/yalo/index.mld
+# file src/yalo/index.mld
+4c3e4bee79b6731301a1e3e9a8049e8a:src/yalo/index.mld
+# end context for src/yalo/index.mld
+
+# begin context for src/yalo/linking_flags.sh
+# file src/yalo/linking_flags.sh
+9fdfca3cc53df639758ff04fe09d3243:src/yalo/linking_flags.sh
+# end context for src/yalo/linking_flags.sh
+
+# begin context for src/yalo/main.ml
+# file src/yalo/main.ml
+35357bf13075c923bc8de746d2877621:src/yalo/main.ml
+# end context for src/yalo/main.ml
+
+# begin context for src/yalo/package.toml
+# file src/yalo/package.toml
+356f1dab6c53628e8fb58f1e6f6256a6:src/yalo/package.toml
+# end context for src/yalo/package.toml
+
+# begin context for src/yalo/version.mlt
+# file src/yalo/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo/version.mlt
+# end context for src/yalo/version.mlt
+
+# begin context for src/yalo_lib/dune
+# file src/yalo_lib/dune
+b53e3748361c173634d31718b904b9e1:src/yalo_lib/dune
+# end context for src/yalo_lib/dune
+
+# begin context for src/yalo_lib/index.mld
+# file src/yalo_lib/index.mld
+526d1cbe7fba4d6b4a862f62d869e4cd:src/yalo_lib/index.mld
+# end context for src/yalo_lib/index.mld
+
+# begin context for src/yalo_lib/main.ml
+# file src/yalo_lib/main.ml
+71e0e648430f526ac0cf88750c632ac2:src/yalo_lib/main.ml
+# end context for src/yalo_lib/main.ml
+
+# begin context for src/yalo_lib/package.toml
+# file src/yalo_lib/package.toml
+c47b927bafd4824e22ec5fa5af2522cc:src/yalo_lib/package.toml
+# end context for src/yalo_lib/package.toml
+
+# begin context for src/yalo_lib/version.mlt
+# file src/yalo_lib/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_lib/version.mlt
+# end context for src/yalo_lib/version.mlt
+
+# begin context for src/yalo_plugin_FIND/dune
+# file src/yalo_plugin_FIND/dune
+b27cf855fe945c76304ac0f4f2b5d1bc:src/yalo_plugin_FIND/dune
+# end context for src/yalo_plugin_FIND/dune
+
+# begin context for src/yalo_plugin_FIND/index.mld
+# file src/yalo_plugin_FIND/index.mld
+cd8d96c1f8e8b3288431a62d9a6df5d9:src/yalo_plugin_FIND/index.mld
+# end context for src/yalo_plugin_FIND/index.mld
+
+# begin context for src/yalo_plugin_FIND/version.mlt
+# file src/yalo_plugin_FIND/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_FIND/version.mlt
+# end context for src/yalo_plugin_FIND/version.mlt
+
+# begin context for src/yalo_plugin_YALO/dune
+# file src/yalo_plugin_YALO/dune
+d0312ac978540075eda311ff60316672:src/yalo_plugin_YALO/dune
+# end context for src/yalo_plugin_YALO/dune
+
+# begin context for src/yalo_plugin_YALO/index.mld
+# file src/yalo_plugin_YALO/index.mld
+587ecb33ee9b06f561139f9b181d7d9a:src/yalo_plugin_YALO/index.mld
+# end context for src/yalo_plugin_YALO/index.mld
+
+# begin context for src/yalo_plugin_YALO/version.mlt
+# file src/yalo_plugin_YALO/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_YALO/version.mlt
+# end context for src/yalo_plugin_YALO/version.mlt
+
+# begin context for test/expect-tests/dune
+# file test/expect-tests/dune
+c214aacd20589427a85f188b273619b2:test/expect-tests/dune
+# end context for test/expect-tests/dune
+
+# begin context for test/expect-tests/test.ml
+# file test/expect-tests/test.ml
+24150bafd4bec9b34e6c2987843f0d50:test/expect-tests/test.ml
+# end context for test/expect-tests/test.ml
+
+# begin context for test/inline-tests/dune
+# file test/inline-tests/dune
+86928061402e8512f19473c4141c8c18:test/inline-tests/dune
+# end context for test/inline-tests/dune
+
+# begin context for test/inline-tests/test.ml
+# file test/inline-tests/test.ml
+37b8bc6035cda6302a80178c61f9626e:test/inline-tests/test.ml
+# end context for test/inline-tests/test.ml
+
+# begin context for test/output-tests/dune
+# file test/output-tests/dune
+b66075a9841e13b6d47271d4e98b4fb1:test/output-tests/dune
+# end context for test/output-tests/dune
+
+# begin context for test/output-tests/test1.expected
+# file test/output-tests/test1.expected
+dc8d6157230e9ef8e965865f990fbc49:test/output-tests/test1.expected
+# end context for test/output-tests/test1.expected
+
+# begin context for test/output-tests/test2.expected
+# file test/output-tests/test2.expected
+ee63957b3b77455a12e6c269a5032c3f:test/output-tests/test2.expected
+# end context for test/output-tests/test2.expected
+
+# begin context for test/output-tests/test2.ml
+# file test/output-tests/test2.ml
+e8eaab7626ef0aace5e570fffe81f869:test/output-tests/test2.ml
+# end context for test/output-tests/test2.ml
