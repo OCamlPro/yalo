@@ -28,11 +28,8 @@ type file_kind = ML | MLI | CMI | CMT | CMTI
 type plugin = {
     plugin_name : string;
     mutable plugin_warnings : warning IntMap.t ;
-    mutable plugin_linters : unit any_linter StringMap.t ;
+    mutable plugin_linters : linter StringMap.t ;
   }
-
-and _ any_linter =
-  | LINTER : 'a linter -> unit any_linter
 
 and tag = {
     tag_name : string;
@@ -90,16 +87,16 @@ and message = {
     msg_string : string ;
   }
 
-and 'ctx linter = {
+and linter = {
     linter_name : string ;
     linter_plugin : plugin ;
     linter_warnings : warning list ;
     mutable linter_active : bool ;
     linter_level : linter_level ;
     linter_begin : (unit -> unit);
-    linter_open : (file:file -> 'ctx) ;
-    linter_install : ('ctx linter -> unit) ;
-    linter_close : (file:file -> 'ctx -> unit) ;
+    linter_open : (file:file -> unit) ;
+    linter_install : (linter -> unit) ;
+    linter_close : (file:file -> unit) ;
     linter_end : (unit -> unit);
   }
 

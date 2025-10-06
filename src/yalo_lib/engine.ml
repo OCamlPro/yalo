@@ -25,21 +25,15 @@ let all_files = (Hashtbl.create 113 : (Digest.t, file) Hashtbl.t)
 let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
 
 let active_linters = ref []
-
-type (_,'input) linter_function =
-  | PAIR : 'ctx linter * (file:file -> 'ctx -> 'input -> unit)
-     -> (unit, 'input) linter_function
-
 let active_src_line_linters =
   ref
-    ([] : (unit, src_line_input) linter_function list )
+    ([] : (linter * (file:file -> src_line_input -> unit)) list )
 let active_src_file_linters =
   ref
-    ([] : (unit, src_file_input) linter_function list )
-
+    ([] : (linter * (file:file -> src_file_input -> unit)) list )
 let active_src_content_linters =
   ref
-    ([] : (unit, src_content_input) linter_function list )
+    ([] : (linter * (file:file -> src_content_input -> unit)) list )
 
 let active_ast_intf_linters =
   ref

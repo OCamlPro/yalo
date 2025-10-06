@@ -952,8 +952,9 @@ let lint_error msg =
 
 (* TODO: find the name of the file ! *)
 let new_dummy_file file_kind =
-  { file_name = "<ppxlib>" ;
+  { file_name = "<ppxlib>" ; (* TODO *)
     file_uid = 0;
+    file_crc = Digest.string ""; (* TODO *)
     file_kind ;
     file_done = false ;
     file_projects = StringMap.empty ;

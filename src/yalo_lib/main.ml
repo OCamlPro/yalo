@@ -390,9 +390,9 @@ let main () =
       file_name (match p with
       | None -> ""
       | Some p -> Printf.sprintf " (%s)" p.project_name);
-    let crc = Digest.file file_name in
+    let file_crc = Digest.file file_name in
     let file =
-      match Hashtbl.find Engine.all_files crc with
+      match Hashtbl.find Engine.all_files file_crc with
       | file -> file
       | exception Not_found ->
          let file_uid = !Engine.file_uids in
@@ -406,7 +406,7 @@ let main () =
              file_messages = [] ;
              file_done = false ;
            } in
-         Hashtbl.add Engine.all_files crc file;
+         Hashtbl.add Engine.all_files file_crc file;
          file
     in
     match p with
