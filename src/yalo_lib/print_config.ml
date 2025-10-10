@@ -61,13 +61,17 @@ let eprint () =
     ) !Args.arg_projects ;
   Printf.eprintf "   --verbose: %d\n%!" !Args.arg_verbose ;
 
+  (*
   Printf.eprintf "   --lint-ast-from-cmt: %b\n%!" !Args.arg_lint_ast_from_cmt ;
   Printf.eprintf "   --no-lint-ast-from-src: %b\n%!" (not !Args.arg_lint_ast_from_src) ;
+   *)
+  
   Printf.eprintf "   --skip-config-warnings: %b\n%!" !Args.arg_skip_config_warnings ;
 
-  Printf.eprintf "Plugins:\n%!";
+  (* TODO: show plugins and language too *)
+  Printf.eprintf "Namespaces:\n%!";
   Hashtbl.iter (fun _ ns ->
-      Printf.eprintf "  Plugin %S\n%!" ns.plugin_name ;
+      Printf.eprintf "  Namespace %S\n%!" ns.ns_name ;
       Printf.eprintf "  Warnings:\n%!";
       IntMap.iter (fun _ w ->
           Printf.eprintf "     %d%s %s [%s]\n%!"
@@ -79,8 +83,8 @@ let eprint () =
             w.w_name
             (String.concat " "
                (List.map (fun t -> t.tag_name) w.w_tags))
-        ) ns.plugin_warnings ;
-    ) Engine.all_plugins ;
+        ) ns.ns_warnings ;
+    ) Engine.all_namespaces ;
 
   Printf.eprintf "Projects:\n%!";
   Hashtbl.iter (fun _ p ->
@@ -89,11 +93,7 @@ let eprint () =
           Printf.eprintf "    %S\n%!" file.file_name
         )
         (
-          p.project_mli_files
-          @ p.project_ml_files
-          @ p.project_cmi_files
-          @ p.project_cmti_files
-          @ p.project_cmt_files
+          p.project_files
         ) 
     ) Engine.all_projects ;
 

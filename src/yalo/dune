@@ -5,7 +5,7 @@
   (package yalo)
   ; use field 'dune-libraries' to add libraries without opam deps
   (libraries yalo_lib )
-  (flags (:standard (:include linking.sexp)))
+  (flags (:standard (:include linking.sexp) -linkall))
   ; use field 'dune-stanzas' to add more stanzas here
   
   

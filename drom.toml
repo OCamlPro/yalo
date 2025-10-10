@@ -73,7 +73,13 @@ share-dirs = ["share"]
 #  readme-trailer = "..."
 #  dot-gitignore-trailer = "..."
 [fields]
-# ...
+dot-gitignore-trailer = """
+_*
+*.old
+log*
+TODO.txt
+yalo-deps.opam.locked
+"""
 
 [[package]]
 dir = "src/yalo"
@@ -83,6 +89,9 @@ dir = "src/yalo_lib"
 
 [[package]]
 dir = "src/ppx_yalo"
+
+[[package]]
+dir = "src/yalo_plugin_ocaml"
 
 [[package]]
 dir = "src/yalo_plugin_YALO"

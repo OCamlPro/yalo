@@ -10,11 +10,14 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Yalo.V1
+open Yalo.V1 (* for YALO *)
+open Yalo_plugin_ocaml.V1 (* for OCAMLLANG *)
 
-let ns = YALO.new_plugin "FIND"
+let plugin = YALO.new_plugin "yalo_plugin_FIND"
 
-let store = YALO.STORE.create ns
+let ns = YALO.new_namespace plugin "FIND"
+
+let store = YALO.STORE.create plugin
 
 let tag_find = YALO.new_tag "find"
 
@@ -69,13 +72,13 @@ let w_tast_impl =
 let () =
   Printf.eprintf "yalo_plugin_FIND installed.\n%!";
 
-  YALO.new_src_file_linter ns "src-file-linter"
+  OCAMLLANG.new_src_file_linter ns "src-file-linter"
     ~warnings:[w_src_file]
     (fun ~file { file_loc } ->
       YALO.warn file_loc ~file w_src_file
     );
 
-  YALO.new_src_line_linter ns "src-line-linter"
+  OCAMLLANG.new_src_line_linter ns "src-line-linter"
     ~warnings:[w_src_line]
     ~on_open:(fun ~file ->
       YALO.STORE.put store file true
@@ -87,41 +90,41 @@ let () =
         end
     ) ;
 
-  YALO.new_src_content_linter ns "src-content-linter"
+  OCAMLLANG.new_src_content_linter ns "src-content-linter"
     ~warnings:[w_src_content]
     (fun ~file { content_loc ; content_string = _ } ->
       YALO.warn content_loc ~file w_src_content
     ) ;
 
-  YALO.new_sig_linter ns "src-sig"
+  OCAMLLANG.new_sig_linter ns "src-sig"
     ~warnings:[w_sig]
     (fun ~file _cmi ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
       YALO.warn loc ~file w_sig
     ) ;
 
-  YALO.new_ast_intf_linter ns "src-ast-intf"
+  OCAMLLANG.new_ast_intf_linter ns "src-ast-intf"
     ~warnings:[w_ast_intf]
     (fun ~file _ast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
       YALO.warn loc ~file w_ast_intf
     ) ;
 
-  YALO.new_ast_impl_linter ns "src-ast-impl"
+  OCAMLLANG.new_ast_impl_linter ns "src-ast-impl"
     ~warnings:[w_ast_impl]
     (fun ~file _ast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
       YALO.warn loc ~file w_ast_impl
     ) ;
 
-  YALO.new_tast_intf_linter ns "src-tast-intf"
+  OCAMLLANG.new_tast_intf_linter ns "src-tast-intf"
     ~warnings:[w_tast_intf]
     (fun ~file _tast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
       YALO.warn loc ~file w_tast_intf
     ) ;
 
-  YALO.new_tast_impl_linter ns "src-tast-impl"
+  OCAMLLANG.new_tast_impl_linter ns "src-tast-impl"
     ~warnings:[w_tast_impl]
     (fun ~file _tast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in

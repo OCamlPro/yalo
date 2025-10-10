@@ -162,6 +162,7 @@ let real_common_init () =
   end;
 
   Args.arg_load_dirs := !Args.arg_load_dirs @ !!Config.config_load_dirs ;
+  
   Args.arg_load_plugins :=
     !!Config.config_load_plugins @ !Args.arg_load_plugins ;
 
@@ -212,22 +213,6 @@ let final_init () =
 
 
 
-module TO_PPXLIB : sig
-  val structure :  Parsetree.structure ->
-                   Ppxlib.Parsetree.structure
-  val signature :
-    Parsetree.signature ->
-    Ppxlib.Parsetree.signature
-end = struct
-  open Ppxlib_ast
-  module From_ocaml = Convert (Compiler_version) (Js)
-  module To_ocaml = Convert (Js) (Compiler_version)
-
-  let structure = From_ocaml.copy_structure
-  let signature = From_ocaml.copy_signature
-
-end
-
 let display_messages () =
   match Engine.get_messages () with
   | [] -> ()
@@ -264,93 +249,6 @@ let display_messages () =
        ) messages ;
      if !nerrors > 0 then exit 2
 
-let check_impl_source file =
-  let file_ml = file.file_name in
-  Printf.eprintf "check_impl_source %S\n%!" file_ml;
-  Engine.lint_src_file ~file ;
-
-  begin
-    if !Args.arg_lint_ast_from_src then
-      let st =
-        try
-          Compile_common.with_info
-            ~native:false
-            ~tool_name:"yalo"
-            ~source_file:file_ml
-            ~output_prefix:"yalo"
-            ~dump_ext:"yalo"
-            Compile_common.parse_impl
-        with exn ->
-          Location.report_exception Format.err_formatter exn;
-          exit 2
-      in
-      let st = TO_PPXLIB.structure st in
-      Engine.lint_ast_impl ~file st ;
-  end;
-  ()
-
-let check_intf_source file =
-  let file_mli = file.file_name in
-  Printf.eprintf "check_impl_source %S\n%!" file_mli;
-  Engine.lint_src_file ~file ;
-
-  begin
-    if !Args.arg_lint_ast_from_src then
-      let sg =
-        try
-          Compile_common.with_info
-            ~native:false
-            ~tool_name:"yalo"
-            ~source_file:file_mli
-            ~output_prefix:"yalo"
-            ~dump_ext:"yalo"
-            Compile_common.parse_intf
-        with exn ->
-          Location.report_exception Format.err_formatter exn;
-          exit 2
-      in
-      let sg = TO_PPXLIB.signature sg in
-      Engine.lint_ast_intf ~file sg ;
-  end;
-  ()
-
-let check_cmi file =
-  let file_cmi = file.file_name in
-  Printf.eprintf "check_cmi %S\n%!" file_cmi;
-  let cmi = Cmi_format.read_cmi file_cmi in
-  Engine.lint_sig ~file cmi
-
-let check_cmt file =
-  let file_cmt = file.file_name in
-  Printf.eprintf "check_cmt %S\n%!" file_cmt;
-  let cmt = Cmt_format.read_cmt file_cmt in
-  match cmt.cmt_annots with
-  | Implementation tst ->
-     Engine.lint_tast_impl ~file tst ;
-
-     begin
-       if !Args.arg_lint_ast_from_cmt then
-         let mapper = Untypeast.default_mapper in
-         let st = Untypeast.untype_structure ~mapper tst in
-         let st = TO_PPXLIB.structure st in
-         Engine.lint_ast_impl ~file st ;
-     end;
-
-  | Interface tsg ->
-     Engine.lint_tast_intf ~file tsg ;
-
-     begin
-       if !Args.arg_lint_ast_from_cmt then
-
-         let mapper = Untypeast.default_mapper in
-         let sg = Untypeast.untype_signature ~mapper tsg in
-         let sg = TO_PPXLIB.signature sg in
-         Engine.lint_ast_intf ~file sg ;
-     end
-
-  | _ ->
-     Printf.eprintf "Warning: file %s does not match a single module.\n%!" file_cmt
-
 let main () =
   let args = Array.to_list Sys.argv in
   let _cmd, args = match args with
@@ -374,59 +272,24 @@ let main () =
     | exception Not_found ->
        let p = {
            project_name = name ;
-           project_mli_files = [] ;
-           project_ml_files = [] ;
-           project_cmi_files = [] ;
-           project_cmti_files = [] ;
-           project_cmt_files = [] ;
+           project_files = [] ;
          } in
        Hashtbl.add Engine.all_projects name p ;
        p
   in
-  let add_file file_name ?p file_kind =
-    Printf.eprintf "add_file %s %s\n%!"
-      file_name (match p with
-      | None -> ""
-      | Some p -> Printf.sprintf " (%s)" p.project_name);
-    let file_crc = Digest.file file_name in
-    let file =
-      match Hashtbl.find Engine.all_files file_name with
-      | file -> file
-      | exception Not_found ->
-         let file_uid = !Engine.file_uids in
-         incr Engine.file_uids ;
-         let file = {
-             file_name ;
-             file_uid ;
-             file_crc ;
-             file_kind ;
-             file_projects = StringMap.empty ;
-             file_messages = StringMap.empty ;
-             file_done = false ;
-             file_warnings_done = StringSet.empty ;
-           } in
-         Hashtbl.add Engine.all_files file_name file;
-         file
-    in
-    match p with
-    | None -> ()
-    | Some p ->
-       file.file_projects <-
-         StringMap.add p.project_name p file.file_projects
-  in
 
   let add_file_to_lint ?(error=false) ~build ~source ?p file =
     if source && Filename.check_suffix file ".ml" then
-      add_file file ?p ML
+      Engine.add_file file ?p
     else
       if source && Filename.check_suffix file ".mli" then
-        add_file file ?p MLI
+        Engine.add_file file ?p
       else
         if build && Filename.check_suffix file ".cmt" then
-          add_file file ?p CMT
+          Engine.add_file file ?p
         else
           if build && Filename.check_suffix file ".cmti" then
-            add_file file ?p CMTI
+            Engine.add_file file ?p
           else
             (* TODO : cmi files ? *)
             if error then
@@ -523,12 +386,7 @@ let main () =
   let project_all = new_project "_" in (* TODO Document *)
 
   let add_file_project file p =
-    match file.file_kind with
-    | MLI -> p.project_mli_files <- file :: p.project_mli_files
-    | ML -> p.project_ml_files <- file :: p.project_ml_files
-    | CMI -> p.project_cmi_files <- file :: p.project_cmi_files
-    | CMTI -> p.project_cmti_files <- file :: p.project_cmti_files
-    | CMT -> p.project_cmt_files <- file :: p.project_cmt_files
+    p.project_files <- file :: p.project_files
   in
 
   Hashtbl.iter (fun _ file ->
@@ -543,11 +401,9 @@ let main () =
     ) Engine.all_files ;
 
   Hashtbl.iter (fun _ p ->
-      p.project_mli_files <- List.rev p.project_mli_files ;
-      p.project_ml_files <- List.rev p.project_ml_files ;
-      p.project_cmi_files <- List.rev p.project_cmi_files ;
-      p.project_cmti_files <- List.rev p.project_cmti_files ;
-      p.project_cmt_files <- List.rev p.project_cmt_files ;
+      let files = Array.of_list p.project_files in
+      Array.sort compare files;
+      p.project_files <- Array.to_list files
     ) Engine.all_projects ;
 
   begin match !Args.arg_save_config with
@@ -587,23 +443,10 @@ let main () =
       List.iter (fun file ->
           if not file.file_done then begin
               file.file_done <- true;
-
-              begin
-                match file.file_kind with
-                | ML -> check_impl_source file
-                | MLI -> check_intf_source file
-                | CMI -> check_cmi file
-                | CMT
-                  | CMTI -> check_cmt file
-              end;
-
+              file.file_kind.kind_checker ~file
             end
         ) (
-          p.project_mli_files
-          @ p.project_ml_files
-          @ p.project_cmi_files
-          @ p.project_cmti_files
-          @ p.project_cmt_files
+          p.project_files
         ) ;
     ) projects_to_lint ;
 

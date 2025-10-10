@@ -49,6 +49,21 @@
  (description "This is the description\nof the yalo OCaml project\n")
  (depends
    (ocaml (>= 4.07.0))
+   (yalo_plugin_ocaml ( >= :version ))
+   (yalo_lib ( >= :version ))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_plugin_ocaml)
+ (synopsis "The yalo project")
+ (description "This is the description\nof the yalo OCaml project\n")
+ (depends
+   (ocaml (>= 4.07.0))
    (yalo_lib ( >= :version ))
    ppx_inline_test
    ppx_expect
@@ -63,6 +78,7 @@
  (description "This is the description\nof the yalo OCaml project\n")
  (depends
    (ocaml (>= 4.07.0))
+   (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
    ppx_inline_test
    ppx_expect
@@ -77,6 +93,7 @@
  (description "This is the description\nof the yalo OCaml project\n")
  (depends
    (ocaml (>= 4.07.0))
+   (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
    ppx_inline_test
    ppx_expect

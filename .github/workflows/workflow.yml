@@ -62,7 +62,7 @@ jobs:
 
       - run: opam pin add . -y --no-action
 
-      - run: opam depext -y yalo yalo_lib ppx_yalo yalo_plugin_YALO yalo_plugin_FIND
+      - run: opam depext -y yalo yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND
 #        if: steps.cache-opam.outputs.cache-hit != 'true'
 
       - run: opam install -y opam/*.opam --deps-only --with-test

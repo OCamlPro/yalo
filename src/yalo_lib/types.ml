@@ -12,6 +12,7 @@
 
 open EzCompat
 
+(*
 type linter_level =
   | Linter_src_file
   | Linter_src_content
@@ -22,14 +23,34 @@ type linter_level =
   | Linter_ast_impl
   | Linter_tast_intf
   | Linter_tast_impl
-
-type file_kind = ML | MLI | CMI | CMT | CMTI
+ *)
 
 type plugin = {
     plugin_name : string;
     plugin_version : string ;
-    mutable plugin_warnings : warning IntMap.t ;
-    mutable plugin_linters : linter StringMap.t ;
+    mutable plugin_languages : language StringMap.t ;
+  }
+
+and language = {
+    lang_plugin : plugin ;
+    lang_name : string ;
+    mutable lang_kinds : file_kind StringMap.t ;
+  }
+
+and file_kind = {
+    kind_uid : int ; (* first field for polymorphic compare *)
+
+    kind_language : language ;
+    kind_name : string ;
+    kind_exts : string list ;
+    kind_checker : (file:file -> unit) ;
+  }
+
+and namespace = {
+    ns_plugin : plugin ;
+    ns_name : string;
+    mutable ns_warnings : warning IntMap.t ;
+    mutable ns_linters : linter StringMap.t ;
   }
 
 and tag = {
@@ -38,7 +59,7 @@ and tag = {
   }
 
 and warning = {
-    w_plugin : plugin ;
+    w_namespace : namespace ;
     w_num : int ;
     w_idstr : string ;
     w_name : string ;
@@ -51,18 +72,15 @@ and warning = {
 
 and project = {
     project_name : string ;
-    mutable project_mli_files : file list ;
-    mutable project_ml_files : file list ;
-    mutable project_cmi_files : file list ;
-    mutable project_cmti_files : file list ;
-    mutable project_cmt_files : file list ;
+    mutable project_files : file list ;
   }
 
 and file = {
-    file_name : string ;
+    file_kind : file_kind ; (* first field for polymorphic compare *)
     file_uid : int ;
+
+    file_name : string ;
     file_crc : Digest.t ;
-    file_kind : file_kind ;
     mutable file_warnings_done : StringSet.t ;
     mutable file_done : bool ;
     mutable file_projects : project StringMap.t ;
@@ -93,10 +111,12 @@ and message = {
 
 and linter = {
     linter_name : string ;
-    linter_plugin : plugin ;
+    linter_lang : language ;
+    linter_namespace : namespace ;
+    (* TODO: check that all these warnings are defined in the same
+       namespace *)
     linter_warnings : warning list ;
     mutable linter_active : bool ;
-    linter_level : linter_level ;
     linter_begin : (unit -> unit);
     linter_open : (file:file -> unit) ;
     linter_install : (linter -> unit) ;

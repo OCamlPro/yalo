@@ -1,6 +1,6 @@
 
 # name of package
-name = "yalo_plugin_YALO"
+name = "yalo_plugin_ocaml"
 skeleton = "library"
 
 # version if different from project version
@@ -54,7 +54,6 @@ preprocess = "pps ppxlib.metaquot"
 #   base-unix = { libname = "unix", version = ">=base" } 
 [dependencies]
 yalo_lib = ":version"
-yalo_plugin_ocaml = ":version"
 
 # package tools dependencies
 [tools]

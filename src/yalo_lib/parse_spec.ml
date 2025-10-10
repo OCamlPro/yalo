@@ -50,11 +50,11 @@ let get_tag tag_name =
         Printf.eprintf "Configuration error: unknown tag %S\n%!" tag_name;
         exit 2
 
-let get_ns plugin_name =
+let get_ns ns_name =
   try
-    Hashtbl.find Engine.all_plugins plugin_name
+    Hashtbl.find Engine.all_namespaces ns_name
   with Not_found ->
-        Printf.eprintf "Configuration error: unknown plugin %S\n%!" plugin_name;
+        Printf.eprintf "Configuration error: unknown namespace %S\n%!" ns_name;
         exit 2
 
 let parse_spec spec set_function =
@@ -203,10 +203,10 @@ let parse_spec spec set_function =
 
   and set_plugin_tag ns ~set pos i =
     let tag_name = String.sub spec pos (i-pos) in
-    let nstag = Printf.sprintf "%s:%s" ns.plugin_name tag_name in
+    let nstag = Printf.sprintf "%s:%s" ns.ns_name tag_name in
     match Hashtbl.find Engine.all_nstags nstag with
     | exception Not_found ->
-       Printf.eprintf "Configuration error: tag %S does not appear in plugin %s\n%!" tag_name ns.plugin_name;
+       Printf.eprintf "Configuration error: tag %S does not appear in plugin %s\n%!" tag_name ns.ns_name;
        exit 2
     | r ->
        List.iter (set_function set) !r
@@ -222,9 +222,9 @@ let parse_spec spec set_function =
         exit 2
 
     in
-    match IntMap.find num ns.plugin_warnings with
+    match IntMap.find num ns.ns_warnings with
     | exception Not_found ->
-       Printf.eprintf "Configuration error: warning %d does not appear in plugin %s\n%!" num ns.plugin_name;
+       Printf.eprintf "Configuration error: warning %d does not appear in plugin %s\n%!" num ns.ns_name;
        exit 2
     | w -> set_function set w
 
@@ -248,7 +248,7 @@ let parse_spec spec set_function =
       match set with
       | None -> ()
       | Some set ->
-         IntMap.iter (fun _ w -> set_function set w) ns.plugin_warnings
+         IntMap.iter (fun _ w -> set_function set w) ns.ns_warnings
     end;
     ns
   in

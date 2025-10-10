@@ -54,6 +54,7 @@ gen-version = "version.ml"
 #   base-unix = { libname = "unix", version = ">=base" } 
 [dependencies]
 yalo_lib = ":version"
+yalo_plugin_ocaml = ":version"
 
 # package tools dependencies
 [tools]

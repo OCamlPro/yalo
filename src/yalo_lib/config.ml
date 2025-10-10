@@ -64,12 +64,13 @@ module EzConfig = struct
   end
 end
 
-(* open Types *)
 open EzConfig.V1
 module OP = EZCONFIG.OP
+open Types
 
 let config_file =
   EZCONFIG.create_config_file Constant.config_basename
+
 let load filename =
   EZCONFIG.load config_file ~filename
 
@@ -79,19 +80,23 @@ let save filename =
 let append filename =
   EZCONFIG.append config_file filename
 
-let create_config_section name ~short_help =
-  EZCONFIG.create_config_section config_file [ name ] short_help
+let create_config_section plugin ~short_help =
+  EZCONFIG.create_config_section config_file
+    [ plugin.plugin_name ] short_help
 
-let create_config_option section ~path = EZCONFIG.create_section_option section path
+let create_config_option name ~path =
+  EZCONFIG.create_section_option name path
 
-let main_section = create_config_section "main" ~short_help:"Options for Yalo itself"
+let main_section = EZCONFIG.create_config_section
+                     config_file ["main"]
+                     "Options for Yalo itself"
 
 let config_load_plugins =
   create_config_option main_section
     ~path: [ "load_plugins" ]
-    ~short_help:"List of plugins to load"
+    ~short_help:"List of plugins to load (in this specific order)"
     EZCONFIG.string_list_option
-    [ "yalo_plugin_YALO" ]
+    [ "yalo_plugin_ocaml"; "yalo_plugin_YALO" ]
 
 let config_load_dirs =
   create_config_option main_section

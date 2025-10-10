@@ -11,8 +11,11 @@
 (**************************************************************************)
 
 open Yalo.V1
+open Yalo_plugin_ocaml.V1
 
-let ns = YALO.new_plugin "YALO" ~version:"0.1.0"
+let plugin = YALO.new_plugin "YALO" ~version:"0.1.0"
+
+let ns = YALO.new_namespace plugin "YALO"
 
 let tag_line = YALO.new_tag "line"
 
@@ -54,7 +57,7 @@ let w_windows_newline =
 
 let () =
   Printf.eprintf "yalo_plugin_YALO installed.\n%!";
-  YALO.new_src_line_linter ns "ocp_check_line"
+  OCAMLLANG.new_src_line_linter ns "ocp_check_line"
     ~warnings:[w_line_too_long; w_spaces_at_end]
     (fun ~file { line_loc = loc ;
                 line_line = line ;

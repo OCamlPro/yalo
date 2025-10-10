@@ -71,4 +71,4 @@ yalo_lib = ":version"
 #  dune-stanzas = "(flags (:standard (:include linking.sexp)))" 
 #  static-clibs = "unix" 
 [fields]
-dune-flags = ":standard (:include linking.sexp)"
+dune-flags = ":standard (:include linking.sexp) -linkall"

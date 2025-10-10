@@ -26,8 +26,6 @@ let arg_explicit_files = ref ([] : string list )
 let arg_source_directories = ref ([] : string list )
 let arg_build_directories = ref ([] : string list )
 
-let arg_lint_ast_from_cmt = ref false
-let arg_lint_ast_from_src = ref true
 let arg_verbose = ref 0
 let arg_first_arg = ref ""
 let arg_projects = ref ([] : string list)
@@ -83,101 +81,99 @@ let initial_arg_too_late name =
   Printf.eprintf "  It should come before secondary arguments such as %s\n%!" !arg_first_arg;
   exit 2
 
+let arg_specs = ref [
+                    [], EZCMD.Anons (fun list ->
+                            arg_explicit_files := list),
+                    EZCMD.info ~docv:"FILES" "List of files that should be explicitely linted. You can also use --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for .cmi/.cmt/.cmti fles) to automatically find files to lint in a project. Specifying . here is a shortcut for --source-dir . --build-dir _build";
 
-let args = [
-    [], EZCMD.Anons (fun list ->
-            arg_explicit_files := list),
-    EZCMD.info ~docv:"FILES" "List of files that should be explicitely linted. You can also use --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for .cmi/.cmt/.cmti fles) to automatically find files to lint in a project. Specifying . here is a shortcut for --source-dir . --build-dir _build";
+                    ["build-dir"], EZCMD.String (fun s ->
+                                       arg_build_directories := !arg_build_directories @ [s]
+                                     ),
+                    EZCMD.info ~docv:"DIR" "Recurse in build directory DIR, looking for .cmt/.cmti files";
 
-    ["build-dir"], EZCMD.String (fun s ->
-                       arg_build_directories := !arg_build_directories @ [s]
-                     ),
-    EZCMD.info ~docv:"DIR" "Recurse in build directory DIR, looking for .cmt/.cmti files";
+                    ["source-dir"], EZCMD.String (fun s ->
+                                        arg_source_directories := !arg_source_directories @ [s]
+                                      ),
+                    EZCMD.info ~docv:"DIR" "Recurse in source directory DIR, looking for .ml/.mli files";
 
-    ["source-dir"], EZCMD.String (fun s ->
-                        arg_source_directories := !arg_source_directories @ [s]
-                      ),
-    EZCMD.info ~docv:"DIR" "Recurse in source directory DIR, looking for .ml/.mli files";
+                    [ "print-config" ], EZCMD.Set arg_print_config,
+                    EZCMD.info "Print configuration";
 
-    ["lint-ast-from-cmt"], EZCMD.Set arg_lint_ast_from_cmt,
-    EZCMD.info "Call parsetree linters on cmt files";
+                    [ "save-config" ], EZCMD.String (fun file ->
+                                           arg_save_config := Some file),
+                    EZCMD.info ~docv:"FILE" "Save configuration to FILE";
 
-    ["no-lint-ast-from-src"], EZCMD.Clear arg_lint_ast_from_src,
-    EZCMD.info "Don't parse and call parsetree linters on source files";
+                    [ "skip-config-warnings" ], EZCMD.Set arg_skip_config_warnings,
+                    EZCMD.info "Skip warnings and errors settings by config file";
 
-    [ "print-config" ], EZCMD.Set arg_print_config,
-    EZCMD.info "Print configuration";
+                    [ "profile" ], EZCMD.String (fun s -> arg_profile := Some s),
+                    EZCMD.info ~docv:"FILE" "Read warnings+errors profile from FILE";
 
-    [ "save-config" ], EZCMD.String (fun file ->
-                           arg_save_config := Some file),
-    EZCMD.info ~docv:"FILE" "Save configuration to FILE";
+                    [ "w" ; "warnings" ], EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
+                    EZCMD.info ~docv:"SPEC"
+                      "Set warnings according to SPEC-ification";
 
-    [ "skip-config-warnings" ], EZCMD.Set arg_skip_config_warnings,
-    EZCMD.info "Skip warnings and errors settings by config file";
+                    [ "e" ; "errors" ], EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
+                    EZCMD.info ~docv:"SPEC"
+                      "Set errors according to SPEC-ification";
 
-    [ "profile" ], EZCMD.String (fun s -> arg_profile := Some s),
-    EZCMD.info ~docv:"FILE" "Read warnings+errors profile from FILE";
+                    [ "p" ], EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
+                    EZCMD.info ~docv:"PROJECT" "Lint only files from PROJECT";
 
-    [ "w" ; "warnings" ], EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
-    EZCMD.info ~docv:"SPEC"
-      "Set warnings according to SPEC-ification";
+                    (* Initial arguments *)
 
-    [ "e" ; "errors" ], EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
-    EZCMD.info ~docv:"SPEC"
-      "Set errors according to SPEC-ification";
-
-    [ "p" ], EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
-    EZCMD.info ~docv:"PROJECT" "Lint only files from PROJECT";
-
-    (* Initial arguments *)
-
-    [ "L" ; "load-plugin" ], EZCMD.String (fun _s ->
-                 initial_arg_too_late "-L"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"PLUGIN"
-      "Load plugin PLUGIN (a .cmxs or a .ml file)";
+                    [ "L" ; "load-plugin" ], EZCMD.String (fun _s ->
+                                                 initial_arg_too_late "-L"),
+                    EZCMD.info
+                      ~docs:"INITIAL ARGUMENTS"
+                      ~docv:"PLUGIN"
+                      "Load plugin PLUGIN (a .cmxs or a .ml file)";
 
 
-    [ "I" ; "include-dir" ], EZCMD.String (fun _s ->
-                 initial_arg_too_late "-I"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"DIR"
-      "Add DIR to the list of directories when plugins should be searched for";
+                    [ "I" ; "include-dir" ], EZCMD.String (fun _s ->
+                                                 initial_arg_too_late "-I"),
+                    EZCMD.info
+                      ~docs:"INITIAL ARGUMENTS"
+                      ~docv:"DIR"
+                      "Add DIR to the list of directories when plugins should be searched for";
 
 
-    [ "v" ; "verbose" ], EZCMD.Unit (fun () ->
-                 initial_arg_too_late "-I"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      "Increase verbosity";
+                    [ "v" ; "verbose" ], EZCMD.Unit (fun () ->
+                                             initial_arg_too_late "-I"),
+                    EZCMD.info
+                      ~docs:"INITIAL ARGUMENTS"
+                      "Increase verbosity";
 
 
-    [ "C" ; "config-file" ], EZCMD.String (fun _s ->
-                 initial_arg_too_late "-C"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"CONFIG-FILE"
-      "Load CONFIG-FILE instead of searching for .yalocaml";
+                    [ "C" ; "config-file" ], EZCMD.String (fun _s ->
+                                                 initial_arg_too_late "-C"),
+                    EZCMD.info
+                      ~docs:"INITIAL ARGUMENTS"
+                      ~docv:"CONFIG-FILE"
+                      "Load CONFIG-FILE instead of searching for .yalocaml";
 
-    [ "no-load-plugins" ], EZCMD.Unit (fun () ->
-                               initial_arg_too_late "--no-load-plugins"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      "Do not load plugins"
-  ]
+                    [ "no-load-plugins" ], EZCMD.Unit (fun () ->
+                                               initial_arg_too_late "--no-load-plugins"),
+                    EZCMD.info
+                      ~docs:"INITIAL ARGUMENTS"
+                      "Do not load plugins"
+                  ]
 
-let cmd = EZCMD.sub
-            "yalo"
-            ~doc:"Plugin-based linter for OCaml files"
-            ~args
-            ~man:[]
-            (fun () -> ())
-
+(* TODO : register args inside the plugin too for later documentation
+   generation ? *)
+(* TODO: print a config printer too *)
+let add_args _plugin specs =
+  arg_specs := !arg_specs @ specs
 
 let parse args =
-  
+
+  let cmd = EZCMD.sub
+                 "yalo"
+                 ~doc:"Plugin-based linter for OCaml files"
+                 ~args: !arg_specs
+                 ~man:[]
+                 (fun () -> ())
+  in
   EZCMD.main cmd ~argv:(Array.of_list (Sys.argv.(0) :: args));
 
   begin

@@ -942,8 +942,8 @@ let () =
        particularly useful when using the [lint] dune stanza, which ignores typical lint \
        errors."
 
-open EzCompat
-open Yalo.Types
+open Yalo.V1
+open Yalo_plugin_ocaml.V1
 
 let lint_error msg =
   Ppxlib.Driver.Lint_error.of_string
@@ -952,38 +952,30 @@ let lint_error msg =
 
 (* TODO: find the name of the file ! *)
 let new_dummy_file file_kind =
-  { file_name = "<ppxlib>" ; (* TODO *)
-    file_uid = 0;
-    file_crc = Digest.string ""; (* TODO *)
-    file_kind ;
-    file_done = false ;
-    file_projects = StringMap.empty ;
-    file_messages = StringMap.empty ;
-    file_warnings_done = StringSet.empty ;
-  }
+  YALOLANG.new_file "<ppxlib>" ~file_kind ~file_crc:(Digest.string "")
 
 let () =
   Driver.register_transformation
     "ppx_yalo"
     ~lint_intf:(fun sg ->
-      let file = new_dummy_file MLI in
+      let file = new_dummy_file OCAMLLANG.mli_file in
       Yalo.Main.common_init () |> Yalo.Main.final_init;
-      Yalo.Engine.lint_ast_intf ~file sg ;
+      Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       List.map lint_error (Yalo.Engine.get_messages ()))
     ~lint_impl:(fun st ->
-      let file = new_dummy_file ML in
+      let file = new_dummy_file OCAMLLANG.ml_file in
       Yalo.Main.common_init () |> Yalo.Main.final_init;
-      Yalo.Engine.lint_ast_impl ~file st ;
+      Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       List.map lint_error (Yalo.Engine.get_messages ()))
     ~intf:(fun sg ->
-      let file = new_dummy_file MLI in
+      let file = new_dummy_file OCAMLLANG.mli_file in
       Yalo.Main.common_init () |> Yalo.Main.final_init;
-      Yalo.Engine.lint_ast_intf ~file sg ;
+      Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       Yalo.Main.display_messages () ;
       sg)
     ~impl:(fun st ->
-      let file = new_dummy_file ML in
+      let file = new_dummy_file OCAMLLANG.ml_file in
       Yalo.Main.common_init () |> Yalo.Main.final_init;
-      Yalo.Engine.lint_ast_impl ~file st ;
+      Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       Yalo.Main.display_messages () ;
       st)
