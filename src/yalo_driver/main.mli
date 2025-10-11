@@ -10,5 +10,6 @@
 (*                                                                        *)
 (**************************************************************************)
 
+val common_init : unit -> unit
 
-let () = Yalo_driver.Main.main ()
+val main : unit -> unit

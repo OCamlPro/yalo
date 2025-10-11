@@ -99,4 +99,7 @@ dir = "src/yalo_plugin_YALO"
 [[package]]
 dir = "src/yalo_plugin_FIND"
 
+[[package]]
+dir = "src/yalo_driver"
+
 

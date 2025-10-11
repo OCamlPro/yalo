@@ -25,6 +25,7 @@ let all_tags = Hashtbl.create 13
 let all_nstags = Hashtbl.create 13
 let all_warnings = ref []
 let all_linters = ref []
+let all_plugins_args = ref []
 
 let all_files = (Hashtbl.create 113 : (string, file) Hashtbl.t)
 let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
@@ -41,7 +42,7 @@ let get_messages () =
   messages := [];
   ms
 
-let new_plugin ?(version="0.1.0") plugin_name =
+let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
   if Hashtbl.mem all_plugins plugin_name then begin
       Printf.eprintf "Configuration error: plugin %s is defined twice.\n%!" plugin_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
@@ -49,7 +50,8 @@ let new_plugin ?(version="0.1.0") plugin_name =
     end;
   let ns = { plugin_name ;
              plugin_version = version ;
-             plugin_languages = StringMap.empty
+             plugin_languages = StringMap.empty ;
+             plugin_args = args;
            }
   in
   Hashtbl.add all_plugins plugin_name ns;
@@ -432,3 +434,9 @@ let add_file ?file_kind ?p file_name =
             add_file ~file_kind ?p file_name
      in
      iter_ext extensions
+
+
+let add_plugin_args plugin specs =
+  plugin.plugin_args <- plugin.plugin_args @ specs ;
+  all_plugins_args := !all_plugins_args @ specs ;
+  ()

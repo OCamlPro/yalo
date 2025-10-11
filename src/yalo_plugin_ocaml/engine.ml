@@ -162,7 +162,7 @@ let arg_lint_ast_from_cmt = ref false
 let arg_lint_ast_from_src = ref true
 
 let () =
-  YALO.add_args plugin Ezcmd.V2.[
+  YALO.add_plugin_args plugin Ezcmd.V2.[
 
       ["lint-ast-from-cmt"], EZCMD.Set arg_lint_ast_from_cmt,
       EZCMD.info "Call parsetree linters on cmt files";

@@ -70,7 +70,7 @@ end
 module YALO = struct
 
   let new_plugin = Engine.new_plugin
-  let add_args = Args.add_args
+  let add_plugin_args = Engine.add_plugin_args
 
   let new_namespace = Engine.new_namespace
   let new_tag = Engine.new_tag

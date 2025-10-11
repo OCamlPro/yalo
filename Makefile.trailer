@@ -6,7 +6,7 @@ YALO_FINAL_ARGS=--print-config
 
 
 yalotest: build
-	$(YALO_RUN) . $(YALO_FINAL_ARGS)
+	$(YALO_RUN) lint . $(YALO_FINAL_ARGS)
 
 yalofind: build
-	$(YALO_RUN) -L yalo_plugin_FIND --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)
+	$(YALO_RUN) lint -L yalo_plugin_FIND --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)

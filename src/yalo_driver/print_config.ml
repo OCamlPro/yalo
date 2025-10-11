@@ -11,8 +11,8 @@
 (**************************************************************************)
 
 open EzCompat (* for IntMap *)
-open Types
-open Config.OP
+open Yalo.Types
+open Yalo.Config.OP
 
 let eprint () =
 
@@ -34,7 +34,7 @@ let eprint () =
       Printf.eprintf "        warnings %S%s\n%!" dir
         (if !Args.arg_skip_config_warnings then
           " (skipped)" else "")
-    ) !!Config.config_warnings ;
+    ) !!Yalo.Config.config_warnings ;
   List.iter (fun dir ->
       Printf.eprintf "        warnings %S\n%!" dir
     ) !Args.arg_warnings ;
@@ -59,7 +59,7 @@ let eprint () =
   List.iter (fun dir ->
       Printf.eprintf "        project %S\n%!" dir
     ) !Args.arg_projects ;
-  Printf.eprintf "   --verbose: %d\n%!" !Args.arg_verbose ;
+  Printf.eprintf "   --verbose: %d\n%!" !Args.arg_verbosity ;
 
   (*
   Printf.eprintf "   --lint-ast-from-cmt: %b\n%!" !Args.arg_lint_ast_from_cmt ;
@@ -84,7 +84,7 @@ let eprint () =
             (String.concat " "
                (List.map (fun t -> t.tag_name) w.w_tags))
         ) ns.ns_warnings ;
-    ) Engine.all_namespaces ;
+    ) Yalo.Engine.all_namespaces ;
 
   Printf.eprintf "Projects:\n%!";
   Hashtbl.iter (fun _ p ->
@@ -95,6 +95,6 @@ let eprint () =
         (
           p.project_files
         ) 
-    ) Engine.all_projects ;
+    ) Yalo.Engine.all_projects ;
 
   ()  

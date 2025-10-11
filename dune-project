@@ -14,7 +14,7 @@
  (description "This is the description\nof the yalo OCaml project\n")
  (depends
    (ocaml (>= 4.07.0))
-   (yalo_lib ( >= :version ))
+   (yalo_driver ( >= :version ))
    ppx_inline_test
    ppx_expect
    odoc
@@ -95,6 +95,28 @@
    (ocaml (>= 4.07.0))
    (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_driver)
+ (synopsis "The yalo project")
+ (description "This is the description\nof the yalo OCaml project\n")
+ (depends
+   (ocaml (>= 4.07.0))
+   (yalo_lib ( >= :version ))
+   ppxlib
+   odoc-parser
+   ocaml-compiler-libs
+   (ez_file (and (>= 0.3.0) (< 1.0.0)))
+   (ez_config (and (>= 0.1.0) (< 1.0.0)))
+   (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
+   (directories ( = 0.2 ))
+   base-unix
    ppx_inline_test
    ppx_expect
    odoc

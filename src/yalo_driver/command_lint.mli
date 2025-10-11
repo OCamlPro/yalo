@@ -10,9 +10,5 @@
 (*                                                                        *)
 (**************************************************************************)
 
-val common_init : unit -> unit
-val final_init : unit -> unit
+val cmd : string -> Ezcmd.V2.EZCMD.TYPES.sub
 
-val display_messages : unit -> unit
-
-val main : unit -> unit

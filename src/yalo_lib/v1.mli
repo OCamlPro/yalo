@@ -67,8 +67,12 @@ open YALOTYPES
 
 module YALO : sig
 
-  val new_plugin : ?version:string -> string -> plugin
-  val add_args : plugin ->
+  val new_plugin : ?version:string ->
+                   ?args:(string list * Ezcmd.V2.EZCMD.spec *
+                            Ezcmd.V2.EZCMD.TYPES.info)
+                   list ->
+                   string -> plugin
+  val add_plugin_args : plugin ->
     (string list * Ezcmd.V2.EZCMD.spec * Ezcmd.V2.EZCMD.TYPES.info)
       list -> unit
 

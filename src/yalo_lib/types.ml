@@ -12,23 +12,12 @@
 
 open EzCompat
 
-(*
-type linter_level =
-  | Linter_src_file
-  | Linter_src_content
-  | Linter_src_line
-
-  | Linter_sig
-  | Linter_ast_intf
-  | Linter_ast_impl
-  | Linter_tast_intf
-  | Linter_tast_impl
- *)
-
 type plugin = {
     plugin_name : string;
     plugin_version : string ;
     mutable plugin_languages : language StringMap.t ;
+    mutable plugin_args :
+              (string list * Ezcmd.V2.EZCMD.spec * Ezcmd.V2.EZCMD.TYPES.info) list ;
   }
 
 and language = {
