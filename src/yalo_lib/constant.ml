@@ -11,6 +11,6 @@
 (**************************************************************************)
 
 let temp_dir = "_yalo"
-let project_basename = ".yalo-project"
-let config_basename = ".yalocaml"
+(* let project_basename = ".yalo-project" *)
+let config_basename = ".yaloconf"
 let cache_basename = "yalo.cache"

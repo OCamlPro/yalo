@@ -33,33 +33,35 @@ let lint_error msg =
 
 (* TODO: find the name of the file ! *)
 let new_dummy_file file_kind =
-  YALOLANG.new_file "<ppxlib>" ~file_kind ~file_crc:(Digest.string "")
+  let fs = Yalo.Main.init () in
+  (* TODO : we should probably create a real tree of folders to the
+     document instead of a faked name, in case the name is used for
+     linting, so that we can benefit from the fileattrs *)
+  let basename = "<ppxlib>" in
+  let file_doc = YALO_INTERNAL.get_document fs.fs_folder basename in
+  YALO_INTERNAL.new_file basename ~file_doc ~file_kind ~file_crc:(Digest.string "")
 
 let () =
   Driver.register_transformation
     "ppx_yalo"
     ~lint_intf:(fun sg ->
       let file = new_dummy_file OCAMLLANG.mli_file in
-      Yalo.Main.init ();
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       List.map lint_error (Yalo.Engine.get_messages ()))
     ~lint_impl:(fun st ->
       let file = new_dummy_file OCAMLLANG.ml_file in
-      Yalo.Main.init ();
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       List.map lint_error (Yalo.Engine.get_messages ()))
     ~intf:(fun sg ->
       let file = new_dummy_file OCAMLLANG.mli_file in
-      Yalo.Main.init ();
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       Yalo.Lint_project.display_messages () ;
       sg)
     ~impl:(fun st ->
       let file = new_dummy_file OCAMLLANG.ml_file in
-      Yalo.Main.init ();
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       Yalo.Lint_project.display_messages () ;

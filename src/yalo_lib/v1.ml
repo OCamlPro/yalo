@@ -24,7 +24,9 @@ module YALOTYPES = struct
   type config_section = EzConfig.config_section
   type linter = Types.linter
   type file_kind = Types.file_kind
-
+  type document = Types.document
+  type folder = Types.folder
+  
   type position = Lexing.position = {
       pos_fname : string;
       pos_lnum : int;
@@ -80,6 +82,7 @@ module YALO = struct
   let warn = Engine.warn
 
   let file_name ~file = file.file_name
+  let doc_name ~file_doc = file_doc.doc_name
 
   let mkloc = Engine.mkloc
 
@@ -90,6 +93,7 @@ module YALO = struct
 
   module STORE = File_store
 
+  let verbose n = !Engine.verbosity >= n
 end
 
 module YALOLANG = struct
@@ -97,9 +101,6 @@ module YALOLANG = struct
     let new_language = Engine.new_language
     let new_file_kind = Engine.new_file_kind
     let new_linter = Engine.new_linter
-
-    let new_file = Engine.new_file (* don't use *)
-    let add_file = Engine.add_file
 
     (* utils *)
     let new_gen_linter = Engine.new_gen_linter
@@ -109,6 +110,13 @@ module YALOLANG = struct
     let iter_linters_close = Engine.iter_linters_close
     let iter_linters = Engine.iter_linters
 
+end
+
+module YALO_INTERNAL = struct
+
+    let new_file = Engine.new_file (* don't use *)
+    let add_file = Engine.add_file
+    let get_document = Engine.get_document
 end
 
 let init () = ()

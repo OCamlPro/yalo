@@ -26,7 +26,7 @@ let arg_explicit_files = ref ([] : string list )
 let arg_source_directories = ref ([] : string list )
 let arg_build_directories = ref ([] : string list )
 
-let arg_verbosity = ref 0
+let arg_verbosity = Yalo.Engine.verbosity
 let arg_first_arg = ref ""
 let arg_projects = ref ([] : string list)
 
@@ -66,13 +66,10 @@ let parse_initial_args args =
        iter args
     | [] ->
        arg_no_load_plugins := true;
-       "", []
+       "help", []
     | cmd :: args -> cmd, args
   in
   let cmd, args = iter args in
-  let args = match args with
-    | [] -> [ "--help" ]
-    | _ -> args in
   cmd, args
 
 let initial_arg_too_late name =

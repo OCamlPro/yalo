@@ -10,22 +10,6 @@
 (*                                                                        *)
 (**************************************************************************)
 
-(* open EzCompat *)
-(* open Ez_file.V1 *)
-(* open Yalo.Config.OP *)
-
-let common_inited = ref false
-let common_init () =
-  if not !common_inited then begin
-      common_inited := true ;
-      Yalo.Main.init
-        ?config_file: !Args.arg_config_file
-        ~load_dirs: !Args.arg_load_dirs
-        ~plugins: !Args.arg_load_plugins
-        ~no_load_plugins: !Args.arg_no_load_plugins
-        ();
-    end
-
 open Ezcmd.V2
 
 module MAIN =
@@ -53,10 +37,14 @@ type command_kind =
 
 let commands = [
     "lint", LOAD_PLUGINS, Command_lint.cmd ;
+    "lint-no-plugins", NO_PLUGINS, Command_lint.cmd ;
   ]
 
 
 let main () =
+  (* This is useless: Ezcmd.V2 only sets backtrace if the
+     backtrace_var is defined or -v specified on command line *)
+  Printexc.record_backtrace true;
 
   let args = Array.to_list Sys.argv in
   let cmd, args = match args with
@@ -68,13 +56,15 @@ let main () =
 
   let argv = Array.of_list (cmd :: subcmd :: args) in
 
-  let _v = NO_PLUGINS in
+  let needs_to_load_plugins = ref false in
   List.iter (fun (name, kind, _sub) ->
       if subcmd = name then
         match kind with
-        | LOAD_PLUGINS -> common_init ()
+        | LOAD_PLUGINS -> needs_to_load_plugins := true
         | NO_PLUGINS -> ()
     ) commands ;
+
+  let _fs = Init.get_fs () in
 
   (* sub-commands arguments may come from plugins... *)
   let commands =
@@ -87,5 +77,13 @@ let main () =
     ~common_args:[]
     ~argv
     commands
-    ;
+  ;
+
+    begin match !Args.arg_save_config with
+    | None -> ()
+    | Some filename ->
+       Yalo.Config.save filename;
+       Printf.eprintf "Config saved to file %S\n%!" filename
+    end;
+
   ()

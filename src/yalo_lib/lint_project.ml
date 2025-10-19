@@ -71,148 +71,188 @@ let display_messages () =
        ) messages ;
      if !nerrors > 0 then exit 2
 
-let new_project name =
-  match Hashtbl.find Engine.all_projects name with
-  | p -> p
-  | exception Not_found ->
-     let p = {
-         project_name = name ;
-         project_files = [] ;
-       } in
-     Hashtbl.add Engine.all_projects name p ;
-     p
+(* TODO: explicit files and -p PROJECT should be forbidden to appear
+   together *)
 
 let scan_projects
-      ~project_all
-      ~map_src_projects
-      ~explicit_files
-      ~source_directories
-      ~build_directories
+      ~fs
+      ~paths
       ()
   =
 
-  let add_file_to_lint ?(error=false) ~build ~source ?p file =
-    if source && Filename.check_suffix file ".ml" then
-      Engine.add_file file ?p
-    else
-      if source && Filename.check_suffix file ".mli" then
-        Engine.add_file file ?p
-      else
-        if build && Filename.check_suffix file ".cmt" then
-          Engine.add_file file ?p
+  begin
+    match paths with
+    | [] ->
+       fs.fs_folder.folder_scan <- Scan_forced
+    | paths ->
+       List.iter (fun path ->
+           let rec iter folder path =
+             match path with
+             | [] ->
+                folder.folder_scan <- Scan_forced
+             | basename :: path ->
+                let file_name = folder.folder_name // basename in
+                if Sys.is_directory file_name then
+                  let folder = Engine.get_folder folder basename in
+                  iter folder path
+                else
+                  match path with
+                  | _ :: _ ->
+                     Printf.eprintf "Configuration error: path %S is not a folder\n%!" basename;
+                     exit 2
+                  | [] ->
+                     let _doc = Engine.get_document folder  basename in
+                     ()
+           in
+           iter fs.fs_folder path
+         ) paths
+  end;
+
+
+  let matcher = Regexps.MATCHER.create
+                  ~exact:true
+                  (!Engine.profiles_fileattrs @ !!Config.fileattrs ) in
+  let get_fileattrs file_name =
+    match Regexps.MATCHER.find_all matcher file_name with
+    | None -> []
+    | Some (_,_,fileattrs) -> fileattrs
+  in
+
+  let folders_queue = Queue.create () in
+  let default_project = Engine.new_project !!Config.default_project in
+  fs.fs_folder.folder_project <- default_project ;
+  Queue.add fs.fs_folder folders_queue ;
+
+  (*
+    let add_file_to_lint ~file_folder ?(error=false) ~build ~source ?p
+    file_name =
+
+    let fileattrs = match Regexps.MATCHER.find_all matcher file_name with
+    | None -> []
+    | Some (_,_,fileattrs) -> fileattrs
+    in
+    let file_tags = ref StringSet.empty in
+    let file_tags = !file_tags in
+    Engine.add_file ~file_folder ~file_tags file_name ?p
+    in
+   *)
+  
+  (* Some rules:
+   * at this point, all explicit_files are subnames of the current
+   directory. If none, we need to add "".
+
+   * if we find a .yaloconf file inside a directory that we are
+   planning to add, we skip the corresponding directory. If it is
+   explicit, we error.
+
+   * we scan all other files and directories
+   *)
+
+  let read_folder folder =
+    let files = Sys.readdir (match folder.folder_name with
+                  | "" -> "."
+                  | name -> name) in
+    let set = ref StringSet.empty in
+    Array.iter (fun basename ->
+        set := StringSet.add basename !set) files ;
+    !set
+  in
+
+  while not (Queue.is_empty folders_queue) do
+    let folder = Queue.take folders_queue in
+
+    if Engine.verbose 2 then
+      Printf.eprintf "Checking folder %S\n%!" folder.folder_name ;
+
+    let attrs = get_fileattrs folder.folder_name in
+    List.iter (function attrs ->
+                 List.iter (function
+                     | Project project_name ->
+                        if Engine.verbose 2 then
+                          Printf.eprintf "   Project %S\n%!" project_name ;
+                        folder.folder_project <- Engine.new_project project_name
+                     | Skipdir skipdir ->
+                        if Engine.verbose 2 then
+                          Printf.eprintf "   Skipdir %b\n%!" skipdir ;
+                        begin
+                          match folder.folder_scan, skipdir with
+                          | Scan_maybe, true ->
+                             folder.folder_scan <- Scan_disabled
+                          | _ -> ()
+                        end
+                     | Tag tagname ->
+                        if Engine.verbose 2 then
+                          Printf.eprintf "   Tag %S\n%!" tagname ;
+                        folder.folder_tags <- StringSet.add tagname folder.folder_tags
+                   ) attrs ;
+      ) attrs ;
+
+    let add_files =
+      match folder.folder_scan with
+      | Scan_disabled -> StringSet.empty
+      | Scan_forced -> read_folder folder
+      | Scan_maybe ->
+         let set = read_folder folder in
+         if StringSet.mem Constant.config_basename set
+            || StringSet.mem ".git" set then
+           StringSet.empty
+         else
+           set
+    in
+
+    StringSet.iter (fun basename ->
+        let file_name = folder.folder_name // basename in
+        if Sys.is_directory file_name then
+          let subfolder = Engine.get_folder folder basename in
+          subfolder.folder_project <- folder.folder_project ;
+          subfolder.folder_tags <- folder.folder_tags ;
+
+          begin
+            match subfolder.folder_scan with
+            | Scan_disabled ->
+               subfolder.folder_scan <- Scan_maybe
+            | _ -> ()
+          end
         else
-          if build && Filename.check_suffix file ".cmti" then
-            Engine.add_file file ?p
-          else
-            (* TODO : cmi files ? *)
-            if error then
-              begin
-                Printf.eprintf "Error: don't know what to do with %s\n%!" file;
-                exit 2
-              end
-  in
+          let doc = Engine.get_document folder basename in
+          doc.doc_tags <- folder.folder_tags ;
+          ()
+      ) add_files ;
 
-  (* TODO: the .yalo-project is not copied into the _build/default
-     directory. We may need to remember paths indicated by
-     .yalo-project files and use them when scanning build dirs. *)
+    StringMap.iter (fun _ subfolder ->
+        Queue.add subfolder folders_queue
+      ) folder.folder_folders ;
 
-  (* TODO: this is wrong, this file should be loaded only
-     on source-directories *)
-  let default_project_name =
-    if Sys.file_exists Constant.project_basename then
-      match Yalo_project.read Constant.project_basename with
-      | { pr_project = Some name ; _ } -> name
-      | _ -> "."
-    else
-      "." (* TODO document *)
-  in
+    StringMap.iter (fun _ file_doc ->
+        let attrs = get_fileattrs file_doc.doc_name in
+        List.iter
+          (function attrs ->
+             List.iter (function
+                 | Project project_name ->
+                    if Engine.verbose 2 then
+                      Printf.eprintf "   Skipping Project %S\n%!" project_name ;
+                 | Skipdir skipdir ->
+                    if Engine.verbose 2 then
+                      Printf.eprintf "   Skipping Skipdir %b\n%!" skipdir ;
+                 | Tag tagname ->
+                    if Engine.verbose 2 then
+                      Printf.eprintf "   Tag %S\n%!" tagname ;
+                    file_doc.doc_tags <- StringSet.add tagname file_doc.doc_tags
+               ) attrs ;
+          ) attrs ;
+        Engine.add_file ~file_doc ()
 
-  List.iter (add_file_to_lint
-               ~error:true
-               ~build:true
-               ~source:true) explicit_files;
+      ) folder.folder_docs ;
 
-  (* TODO: instead of this, we will use a list of projects in the
-     .yalocaml file, specifying which dirs belong to which
-     projects. *)
-  let map_src = ref StringMap.empty in
-
-  let scan_directory ~is_build dir =
-    let is_source = not is_build in
-    let dirs = Queue.create () in
-    Queue.add (None, "") dirs;
-    while not (Queue.is_empty dirs) do
-      let p, subdir = Queue.take dirs in
-      let files = Sys.readdir (dir // subdir) in
-      Array.sort compare files;
-      Array.iter (fun basename ->
-          let subfile = subdir // basename in
-          let file = dir // subfile in
-          if Sys.is_directory file then
-            match basename.[0] with
-            (* always skip directories starting with _ *)
-            | '_' -> ()
-            (* skip directories starting with . only for sources, as
-               dune stores object files into such directories *)
-            | '.' when is_source -> ()
-            | _ ->
-               let p =
-                 let yalo_project_file =
-                   file // Constant.project_basename
-                 in
-                 if Sys.file_exists yalo_project_file then
-                   let ypr = Yalo_project.read yalo_project_file in
-
-                   match ypr.pr_project with
-                   | None -> p
-                   | Some name ->
-
-                      if is_source && map_src_projects then
-                        map_src := StringMap.add subfile name !map_src;
-                      match p with
-                      | None when name = default_project_name ->
-                         None
-                      | _ -> Some ( new_project name )
-                      else
-                        if is_build && map_src_projects then
-                          match StringMap.find subfile !map_src with
-                          | exception Not_found -> p
-                          | name ->
-                             match p with
-                             | None when name = default_project_name ->
-                                None
-                             | _ -> Some ( new_project name )
-                        else
-                          p
-               in
-               Queue.add (p, subfile) dirs
-          else
-            add_file_to_lint
-              ~build:is_build
-              ~source:is_source
-              ?p file
-        ) files
-    done
-  in
-
-  List.iter (scan_directory ~is_build:false) source_directories ;
-  List.iter (scan_directory ~is_build:true) build_directories ;
-
-  let project_default = new_project default_project_name in
+  done ;
 
   let add_file_project file p =
     p.project_files <- file :: p.project_files
   in
 
   Hashtbl.iter (fun _ file ->
-      if file.file_projects = StringMap.empty then
-        file.file_projects <-
-          StringMap.add
-            project_default.project_name project_default
-            file.file_projects ;
-      add_file_project file project_all ;
-      StringMap.iter (fun _ p ->
-          add_file_project file p) file.file_projects
+      add_file_project file file.file_project ;
+      add_file_project file fs.fs_project ;
     ) Engine.all_files ;
 
   Hashtbl.iter (fun _ p ->
@@ -224,13 +264,13 @@ let scan_projects
   ()
 
 let lint_projects
-      ~project_all
+      ~fs
       ~projects
       ()=
 
   let projects_to_lint =
     match projects with
-    | [] -> [ project_all ]
+    | [] -> [ fs.fs_folder.folder_project ]
     | list ->
        List.map (fun name ->
            try
@@ -241,7 +281,6 @@ let lint_projects
                  Printf.eprintf "  * project %S%s\n%!" p.project_name
                    (match p.project_name with
                    | "_" -> " (all files)"
-                   | "." -> " (default project)"
                    | _ -> "")
                ) Engine.all_projects ;
              exit 2
@@ -257,7 +296,7 @@ let lint_projects
       List.iter (fun file ->
           if not file.file_done then begin
               file.file_done <- true;
-              file.file_kind.kind_checker ~file
+              file.file_kind.kind_lint ~file
             end
         ) (
           p.project_files
@@ -270,25 +309,18 @@ let lint_projects
   ()
 
 let main
-      ~explicit_files
-      ~map_src_projects
-      ~source_directories
-      ~build_directories
+      ~fs
+      ~paths
       ~projects
       () =
 
-  let project_all = new_project "_" in (* TODO Document *)
-
   scan_projects
-    ~project_all
-    ~explicit_files
-    ~map_src_projects
-    ~source_directories
-    ~build_directories
+    ~fs
+    ~paths
     ();
 
   lint_projects
-    ~project_all
+    ~fs
     ~projects
     ();
 

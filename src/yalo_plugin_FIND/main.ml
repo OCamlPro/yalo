@@ -70,7 +70,6 @@ let w_tast_impl =
     ~msg:"Linting typedtree of implementation"
 
 let () =
-  Printf.eprintf "yalo_plugin_FIND installed.\n%!";
 
   OCAMLLANG.new_src_file_linter ns "src-file-linter"
     ~warnings:[w_src_file]

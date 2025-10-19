@@ -9,3 +9,6 @@
 (*                                                                        *)
 (*                                                                        *)
 (**************************************************************************)
+
+val get_fs :
+  ?needs_to_load_plugins:bool -> unit -> Yalo.Types.fsroot

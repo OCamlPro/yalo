@@ -5,12 +5,12 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-7e86883be456854d15ea5bcfd0c076bf:.
+1659e31d0a84478bee8729f9a897fbf7:.
 # end context for .
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-76f2eb98bf75819eb1040c554d0c9cde:.github/workflows/workflow.yml
+42f9f25c2b301cd58679406a15b21fd4:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -45,7 +45,7 @@ cf4da9c43c0026cec0ba46b9cfe8407e:LICENSE.md
 
 # begin context for Makefile
 # file Makefile
-546ee7c212d8253394655e861c298e7c:Makefile
+4aa6ab1aab4a6a292e9a97572b2f25b7:Makefile
 # end context for Makefile
 
 # begin context for README.md
@@ -95,7 +95,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-57bfd3a3e9ad57ae336b1675adc64a38:dune-project
+e098b0dc0813bcae3d2ad2bbf88edfcf:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -108,14 +108,19 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 30a1f902543847e8bacc8664b5a87359:opam/yalo.opam
 # end context for opam/yalo.opam
 
+# begin context for opam/yalo_config.opam
+# file opam/yalo_config.opam
+d61f45af31c699f4b4a4d065f052489a:opam/yalo_config.opam
+# end context for opam/yalo_config.opam
+
 # begin context for opam/yalo_driver.opam
 # file opam/yalo_driver.opam
-51b2db87d0e54b58e2ddc2384bf9ad49:opam/yalo_driver.opam
+a2224bbff2967050380499f5a152e361:opam/yalo_driver.opam
 # end context for opam/yalo_driver.opam
 
 # begin context for opam/yalo_lib.opam
 # file opam/yalo_lib.opam
-2045c77d5046ebf084de016cfc917caa:opam/yalo_lib.opam
+93e639b4390e74fae2a2dedcab0f37ae:opam/yalo_lib.opam
 # end context for opam/yalo_lib.opam
 
 # begin context for opam/yalo_plugin_FIND.opam
@@ -238,9 +243,24 @@ fb1504b512f9ec6892f760e14511b3ed:src/ppx_yalo/version.mlt
 fb1504b512f9ec6892f760e14511b3ed:src/yalo/version.mlt
 # end context for src/yalo/version.mlt
 
+# begin context for src/yalo_config/dune
+# file src/yalo_config/dune
+371225da8cade758793ac3bdcbef687f:src/yalo_config/dune
+# end context for src/yalo_config/dune
+
+# begin context for src/yalo_config/index.mld
+# file src/yalo_config/index.mld
+0c90a127275c17df1fc49e8338d3abdf:src/yalo_config/index.mld
+# end context for src/yalo_config/index.mld
+
+# begin context for src/yalo_config/version.mlt
+# file src/yalo_config/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_config/version.mlt
+# end context for src/yalo_config/version.mlt
+
 # begin context for src/yalo_driver/dune
 # file src/yalo_driver/dune
-178423e76e198b7079be8dfdf9cb487a:src/yalo_driver/dune
+f09c6e72d4c6f417c8140a16c17dec47:src/yalo_driver/dune
 # end context for src/yalo_driver/dune
 
 # begin context for src/yalo_driver/index.mld
@@ -255,7 +275,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_driver/version.mlt
 
 # begin context for src/yalo_lib/dune
 # file src/yalo_lib/dune
-b53e3748361c173634d31718b904b9e1:src/yalo_lib/dune
+4ad18ec87cca002404827a1a490486c2:src/yalo_lib/dune
 # end context for src/yalo_lib/dune
 
 # begin context for src/yalo_lib/index.mld
@@ -320,7 +340,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_ocaml/version.mlt
 
 # begin context for test/expect-tests/dune
 # file test/expect-tests/dune
-1f56fd86a38307299a9eb09a81655a45:test/expect-tests/dune
+f49174ef1f884174820d4893bd28c74b:test/expect-tests/dune
 # end context for test/expect-tests/dune
 
 # begin context for test/expect-tests/test.ml
@@ -330,7 +350,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_ocaml/version.mlt
 
 # begin context for test/inline-tests/dune
 # file test/inline-tests/dune
-c5e8ad8e329283ed7ecf84dcb53b4bcf:test/inline-tests/dune
+f28a9c9dc94089d3c5cfaf424e5ed2f3:test/inline-tests/dune
 # end context for test/inline-tests/dune
 
 # begin context for test/inline-tests/test.ml
@@ -340,7 +360,7 @@ c5e8ad8e329283ed7ecf84dcb53b4bcf:test/inline-tests/dune
 
 # begin context for test/output-tests/dune
 # file test/output-tests/dune
-4c71b610c2c76890e4b7db29dc383eba:test/output-tests/dune
+6e0ac4559f0bf8ee6bc3bd97c626035c:test/output-tests/dune
 # end context for test/output-tests/dune
 
 # begin context for test/output-tests/test1.expected

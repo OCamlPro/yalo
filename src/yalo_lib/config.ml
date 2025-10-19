@@ -54,8 +54,10 @@ module EzConfig = struct
 
       include EzConfig.LowLevel
 
-      let create_section_option section path ~short_help ?(long_help = [ short_help ]) ?level option_type default_value =
-        LowLevel.create_section_option section path ~short_help long_help ?level option_type default_value
+      let create_section_option section path ~short_help
+            ?(long_help = [ short_help ]) ?level option_type default_value =
+        LowLevel.create_section_option section path ~short_help long_help
+          ?level option_type default_value
 
       let string_list_option = list_option string_option
 
@@ -93,15 +95,15 @@ let main_section = EZCONFIG.create_config_section
 
 let config_load_plugins =
   create_config_option main_section
-    ~path: [ "load_plugins" ]
+    ~path: [ "plugins" ]
     ~short_help:"List of plugins to load (in this specific order)"
     EZCONFIG.string_list_option
     [ "yalo_plugin_ocaml"; "yalo_plugin_YALO" ]
 
 let config_load_dirs =
   create_config_option main_section
-    ~path:[ "load_dirs" ]
-    ~short_help:"List of directories to search for plugin files"
+    ~path:[ "search_path" ]
+    ~short_help:"List of directories to search for plugin/profile files"
     EZCONFIG.string_list_option
     [ ]
 
@@ -118,3 +120,101 @@ let config_errors =
     ~short_help:"List of specifications to activate errors"
     EZCONFIG.string_list_option
     [ "danger" ]
+
+module FILEATTR = struct
+  open EZCONFIG.LowLevel
+
+  let of_option = function
+    | Module list ->
+       List.map (function
+           | "project", v ->
+              Project ( EZCONFIG.LowLevel.value_to_string v )
+           | "skipdir", v ->
+              Skipdir ( EZCONFIG.LowLevel.value_to_bool v )
+           | "tag", v ->
+              Tag ( EZCONFIG.LowLevel.value_to_string v )
+           | s, _ ->
+              Printf.kprintf failwith
+                "Unknown fileattr name %S" s
+         ) list
+    | _ -> failwith "Parse error"
+
+  let to_option fileattrs =
+    Module (
+    List.map (function
+        | Project name ->
+           "project", string_to_value name ;
+        | Tag tagname ->
+           "tag", string_to_value tagname ;
+        | Skipdir bool ->
+           "skipdir", bool_to_value bool ;
+      ) fileattrs
+      )
+
+  let option =
+    EZCONFIG.define_option_class "fileattr"
+      of_option to_option
+
+end
+
+let default_project =
+  create_config_option main_section
+    ~path:[ "project" ]
+    ~short_help:"The name of this project, starting from the root"
+    EZCONFIG.string_option
+    "default"
+
+let fileattrs =
+  create_config_option main_section
+    ~path:[ "fileattrs" ]
+    ~short_help:"Associate attributes with files and folders"
+    (EZCONFIG.list_option
+       (EZCONFIG.tuple2_option
+          (EZCONFIG.string_option, FILEATTR.option)))
+    []
+
+let config_profiles =
+  create_config_option main_section
+    ~path:[ "profiles" ]
+    ~short_help:"List of profiles to use for this project (NAME means yalo-NAME.conf should be loaded)"
+    EZCONFIG.string_list_option
+    []
+
+let profiles_section =
+  EZCONFIG.create_config_section
+    config_file ["profiles"]
+    "Options with special behavior in profiles "
+
+let profile_plugins =
+  create_config_option profiles_section
+    ~path: [ "profile_plugins" ]
+    ~level:10
+    ~short_help:"List of plugins to load (in this specific order) for this profile"
+    EZCONFIG.string_list_option
+    []
+
+let profile_load_dirs =
+  create_config_option profiles_section
+    ~path:[ "profile_search_path" ]
+    ~level:10
+    ~short_help:"List of directories to search for plugin files for this profile"
+    EZCONFIG.string_list_option
+    []
+
+let profile_profiles =
+  create_config_option profiles_section
+    ~path:[ "profile_profiles" ]
+    ~short_help:"List of other profiles to use for this profile"
+    ~level:10
+    EZCONFIG.string_list_option
+    []
+
+let profile_fileattrs =
+  create_config_option profiles_section
+    ~path:[ "profile_fileattrs" ]
+    ~level:10
+    ~short_help:"Associate attributes with files and folders"
+    (EZCONFIG.list_option
+       (EZCONFIG.tuple2_option
+          (EZCONFIG.string_option, FILEATTR.option)))
+    []

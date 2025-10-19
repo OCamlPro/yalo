@@ -16,21 +16,41 @@ module OCAMLLANG = struct
 
   let ocaml = Engine.ocaml
 
-  let ml_file = YALOLANG.new_file_kind ocaml ~exts:[ "ml" ]
-                  "OCaml Implementation Source File"
-                  Engine.check_impl_source
-  let mli_file = YALOLANG.new_file_kind ocaml ~exts:[ "mli" ]
-                   "OCaml Interface Source File"
-                   Engine.check_intf_source
-  let cmi_file = YALOLANG.new_file_kind ocaml ~exts:[ "cmi" ]
-                   "OCaml Interface Compiled File"
-                   Engine.check_cmi
-  let cmti_file = YALOLANG.new_file_kind ocaml ~exts:[ "cmti" ]
-                    "OCaml Interface Typedtree File"
-                    Engine.check_cmt
-  let cmt_file = YALOLANG.new_file_kind ocaml ~exts:[ "cmt" ]
-                   "OCaml Implementation Typedtree File"
-                   Engine.check_cmt
+  let ml_file = YALOLANG.new_file_kind
+                  ~lang:ocaml
+                  ~exts:[ "ml" ]
+                  ~name:"OCaml Implementation Source File"
+                  ~validate:Engine.check_source
+                  ~lint:Engine.check_impl_source
+                  ()
+  let mli_file = YALOLANG.new_file_kind
+                   ~lang:ocaml
+                   ~exts:[ "mli" ]
+                   ~name:"OCaml Interface Source File"
+                   ~validate:Engine.check_source
+                   ~lint:Engine.check_intf_source
+                   ()
+  let cmi_file = YALOLANG.new_file_kind
+                   ~lang:ocaml
+                   ~exts:[ "cmi" ]
+                   ~name:"OCaml Interface Compiled File"
+                   ~validate:Engine.check_artefact
+                   ~lint:Engine.check_cmi
+                   ()
+  let cmti_file = YALOLANG.new_file_kind
+                    ~lang:ocaml
+                    ~exts:[ "cmti" ]
+                    ~name:"OCaml Interface Typedtree File"
+                    ~validate:Engine.check_artefact
+                    ~lint:Engine.check_cmt
+                    ()
+  let cmt_file = YALOLANG.new_file_kind
+                   ~lang:ocaml
+                   ~exts:[ "cmt" ]
+                   ~name:"OCaml Implementation Typedtree File"
+                   ~validate:Engine.check_artefact
+                   ~lint:Engine.check_cmt
+                   ()
 
   let new_src_file_linter ns name ~warnings
         ?on_begin ?on_end f =

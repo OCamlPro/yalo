@@ -6,5 +6,5 @@
   (pps ppx_expect))
  (inline_tests
   (modes best)) ; add js for testing with nodejs
- (libraries yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver) ; add your project libraries here
+ (libraries yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver yalo_config) ; add your project libraries here
  )

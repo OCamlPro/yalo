@@ -32,7 +32,8 @@ and file_kind = {
     kind_language : language ;
     kind_name : string ;
     kind_exts : string list ;
-    kind_checker : (file:file -> unit) ;
+    kind_validate : (file_doc:document -> bool) ;
+    kind_lint : (file:file -> unit) ;
   }
 
 and namespace = {
@@ -64,15 +65,53 @@ and project = {
     mutable project_files : file list ;
   }
 
+and fsroot = {
+    fs_root : string ;
+    fs_folder : folder ;
+    (* the path to the sub-folder where we started before chdir to .yaloconf  *)
+    fs_subpath : string list ;
+    fs_project : project ;
+  }
+
+and folder = {
+    folder_root : fsroot ;
+    folder_parent : folder ;
+
+    folder_basename : string ;
+    folder_name : string ; (* name till fs_root *)
+
+    mutable folder_tags : StringSet.t ;
+    mutable folder_project : project ;
+    mutable folder_scan : scan_kind ;
+    mutable folder_docs : document StringMap.t ;
+    mutable folder_folders : folder StringMap.t ;
+  }
+
+and scan_kind =
+  | Scan_disabled
+  | Scan_forced
+  | Scan_maybe
+
+and document = {
+    doc_parent : folder ;
+
+    doc_basename : string ;
+    doc_name : string ; (* name till fs_root *)
+    mutable doc_tags : StringSet.t ;
+    mutable doc_file : file option ;
+  }
+
 and file = {
     file_kind : file_kind ; (* first field for polymorphic compare *)
     file_uid : int ;
 
-    file_name : string ;
+    file_doc : document ;
+    file_name : string ; (* same as file_doc.doc_name ! *)
+
     file_crc : Digest.t ;
     mutable file_warnings_done : StringSet.t ;
     mutable file_done : bool ;
-    mutable file_projects : project StringMap.t ;
+    mutable file_project : project ;
     mutable file_messages : message StringMap.t ;
   }
 
@@ -151,3 +190,8 @@ type src_content_input = {
     content_loc : Location.t ;
     content_string : string ;
   }
+
+type file_attr =
+  | Project of string
+  | Skipdir of bool
+  | Tag of string

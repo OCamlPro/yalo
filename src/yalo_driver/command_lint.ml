@@ -80,6 +80,7 @@ let cmd command_name =
         ~skip_config_warnings: !Args.arg_skip_config_warnings
         (!Args.arg_warnings, !Args.arg_errors);
 
+      (*
       begin
         match !Args.arg_explicit_files,
               !Args.arg_source_directories,
@@ -93,21 +94,22 @@ let cmd command_name =
            Args.arg_build_directories := "_build/default" :: !Args.arg_build_directories
         | _ -> ()
       end;
-
-      begin match !Args.arg_save_config with
-      | None -> ()
-      | Some filename ->
-         Yalo.Config.save filename
-      end;
+       *)
 
       if !Args.arg_print_config then
         Print_config.eprint ();
 
+      let fs = Init.get_fs () in
+
+      let paths =
+        List.map (fun filename ->
+            Yalo.Utils.path_of_filename ~subpath:fs.fs_subpath filename
+          ) !Args.arg_explicit_files
+      in
+
       Yalo.Lint_project.main
-        ~explicit_files: !Args.arg_explicit_files
-        ~map_src_projects: !Args.arg_map_src_projects
-        ~source_directories: !Args.arg_source_directories
-        ~build_directories: !Args.arg_build_directories
+        ~fs
+        ~paths
         ~projects: !Args.arg_projects
         ();
 

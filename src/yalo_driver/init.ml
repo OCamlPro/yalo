@@ -10,3 +10,21 @@
 (*                                                                        *)
 (**************************************************************************)
 
+let fsroot = ref None
+let get_fs ?(needs_to_load_plugins=true) () =
+  match !fsroot with
+  | Some fs -> fs
+  | None ->
+     let can_load_plugins =
+       needs_to_load_plugins
+       && not !Args.arg_no_load_plugins
+     in
+     let fs = Yalo.Main.init
+                ?config_file: !Args.arg_config_file
+                ~load_dirs: !Args.arg_load_dirs
+                ~plugins: !Args.arg_load_plugins
+                ~can_load_plugins
+                ()
+     in
+     fsroot := Some fs;
+     fs

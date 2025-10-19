@@ -22,6 +22,8 @@ module YALOTYPES : sig
   type language
   type file_kind
   type linter
+  type document
+  type folder
   
   type position = Lexing.position = {
       pos_fname : string;
@@ -67,6 +69,7 @@ open YALOTYPES
 
 module YALO : sig
 
+  val verbose : int -> bool 
   val new_plugin : ?version:string ->
                    ?args:(string list * Ezcmd.V2.EZCMD.spec *
                             Ezcmd.V2.EZCMD.TYPES.info)
@@ -89,27 +92,10 @@ module YALO : sig
     name:string -> msg:string -> int -> warning
   val tag_danger : tag
 
-(*  
-  val new_src_file_linter :
-    plugin ->
-    string ->
-    warnings:warning list ->
-    ?on_begin : (unit -> unit) ->
-    ?on_end : (unit -> unit) ->
-    (file:file -> src_file_input -> unit) -> unit
-
-  val new_src_content_linter : src_content_input new_gen_linter
-  val new_src_line_linter : src_line_input new_gen_linter
-  val new_sig_linter : Cmi_format.cmi_infos new_gen_linter
-  val new_ast_intf_linter :  Ppxlib.Parsetree.signature new_gen_linter
-  val new_ast_impl_linter :  Ppxlib.Parsetree.structure new_gen_linter
-  val new_tast_intf_linter : Typedtree.signature new_gen_linter
-  val new_tast_impl_linter : Typedtree.structure new_gen_linter
- *)
-  
   val warn : location -> file:file -> ?msg:string -> warning -> unit
 
   val file_name : file:file -> string
+  val doc_name : file_doc:document -> string
   val mkloc :
     bol:int ->
     ?start_cnum:int ->
@@ -142,10 +128,14 @@ end
 module YALOLANG : sig
 
   val new_language : plugin -> string -> language
-  val new_file_kind : language -> ?exts:string list ->
-                      string ->
-                      (file:file -> unit) ->
-                      file_kind
+  val new_file_kind :
+    lang:language ->
+    ?exts:string list ->
+    name:string ->
+    ?validate:(file_doc:document -> bool) ->
+    lint:(file:file -> unit) ->
+    unit ->
+    file_kind
 
   val new_linter :
     language ->
@@ -169,8 +159,6 @@ module YALOLANG : sig
     ?on_close:(file:YALOTYPES.file -> unit) ->
     ?on_end:(unit -> unit) -> 'a -> unit
 
-    val add_file : ?file_kind:file_kind -> ?p:project -> string -> unit
-
     val filter_linters :
            file:file ->
            (linter * 'a) list -> (linter * 'a) list
@@ -186,10 +174,20 @@ module YALOLANG : sig
       (linter * (file:file -> 'a -> unit)) list ->
       'a -> unit
 
-    (* do not use *)
-    val new_file : 
-           file_kind:file_kind ->
-           file_crc:Digest.t -> string -> file
+end
+
+module YALO_INTERNAL : sig
+
+  val add_file :
+    file_doc:Types.document ->
+    ?file_kind:YALOTYPES.file_kind ->
+    unit ->
+    unit
+  val new_file :
+    file_doc:Types.document ->
+    file_kind:file_kind ->
+    file_crc:Digest.t -> string -> file
+  val get_document : Types.folder -> string -> Types.document
 
 end
 

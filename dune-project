@@ -28,11 +28,12 @@
  (description "This is the description\nof the yalo OCaml project\n")
  (depends
    (ocaml (>= 4.07.0))
+   (yalo_config ( >= :version ))
+   re
    ppxlib
    odoc-parser
    ocaml-compiler-libs
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
-   (ez_config (and (>= 0.1.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
    (directories ( = 0.2 ))
    base-unix
@@ -113,10 +114,24 @@
    odoc-parser
    ocaml-compiler-libs
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
-   (ez_config (and (>= 0.1.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
    (directories ( = 0.2 ))
    base-unix
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_config)
+ (synopsis "The yalo project")
+ (description "This is the description\nof the yalo OCaml project\n")
+ (depends
+   (ocaml (>= 4.07.0))
+   (ez_file (and (>= 0.3.0) (< 1.0.0)))
+   camlp-streams
    ppx_inline_test
    ppx_expect
    odoc

@@ -14,20 +14,22 @@ open Ez_file.V1
 open EzFile.OP
 
 let find_file ?from file =
-  let rec iter dirname =
+  let rec iter dirname revpath =
     let filename = dirname // file in
-    if Sys.file_exists filename then filename else
+    if Sys.file_exists filename then
+      filename, List.rev revpath
+    else
       let newdir = Filename.dirname dirname in
       if newdir = dirname then
         raise Not_found
       else
-        iter newdir
+        iter newdir (Filename.basename dirname :: revpath)
   in
   let from = match from with
     | None -> Sys.getcwd ()
     | Some dir -> dir
   in
-  iter from
+  iter from []
 
 
 let find_in_path path name =
@@ -42,3 +44,41 @@ let find_in_path path name =
           else try_dir rem
     in
     try_dir path
+
+let path_of_filename ?(subpath=[]) filename =
+
+  let b = Bytes.of_string filename in
+  for i = 0 to Bytes.length b -1 do
+    if filename.[i] = '\\' then Bytes.set b i '/'
+  done;
+  let path = String.split_on_char '/' (Bytes.unsafe_to_string b) in
+  let path =
+    match subpath with
+    | [] -> path
+    | _ ->
+       match path with
+       | "" :: _ :: _ -> path (* absolute path, won't work on windows *)
+       | _ -> subpath @ path
+  in
+  let rec normalize_path path =
+    match path with
+      [] -> []
+    | dir :: tail ->
+       let dir = dir :: normalize_path tail in
+       match dir with
+       | "" :: path -> path
+       | "." :: path -> path
+       | ".." :: _ -> dir
+       | _ :: ".." :: path -> path
+       | _ -> dir
+  in
+  normalize_path path
+
+let filename_of_path path =
+  match path with
+  | [ ]  -> "."
+  | [ "" ]  -> "."
+  | _ -> String.concat "/" path
+
+let normalize_filename ?subpath filename =
+  path_of_filename ?subpath filename |> filename_of_path

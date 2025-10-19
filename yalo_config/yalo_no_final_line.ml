@@ -32,7 +32,6 @@ let w_windows_newline =
     ~msg:"Line contains a \\r\\n instead of only \\n"
 
 let () =
-  Printf.eprintf "yalo_plugin_no_final_line installed.\n%!";
   OCAMLLANG.new_src_line_linter ns "ocp_check_line2"
     ~warnings:[w_no_final_newline ; w_windows_newline]
     (fun ~file { line_loc = loc;

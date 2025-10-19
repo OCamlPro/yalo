@@ -1,7 +1,7 @@
 
 # name of package
-name = "yalo_lib"
-skeleton = "library"
+name = "yalo_config"
+# skeleton = ...
 
 # version if different from project version
 # version = "0.1.0"
@@ -25,13 +25,6 @@ gen-version = "version.ml"
 # default is [ "ocamllex", "ocamlyacc" ] 
 # generators = [ "ocamllex", "menhir" ]
 
-# menhir options for the package
-#Example:
-#version = "2.0"
-#parser = { modules = ["parser"]; tokens = "Tokens" }
-#tokens = { modules = ["tokens"]}
-# menhir = ...
-
 # whether all modules should be packed/wrapped (default is true)
 # pack-modules = false
 
@@ -39,11 +32,11 @@ gen-version = "version.ml"
 # optional = true
 
 # module name used to pack modules (if pack-modules is true)
-pack = "Yalo"
+pack = "ezConfig"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 
-preprocess = "pps ppxlib.metaquot"
+# preprocess = "pps ppx_deriving_encoding"
 
 # files to skip while updating at package level
 # skip = []
@@ -53,19 +46,8 @@ preprocess = "pps ppxlib.metaquot"
 #   ez_file = ">=0.1 <1.3"
 #   base-unix = { libname = "unix", version = ">=base" } 
 [dependencies]
-directories = "=0.2"
-ez_cmdliner = "0.2.0"
-yalo_config = ":version"
 ez_file = "0.3.0"
-ocaml-compiler-libs = { libname ="ocaml-compiler-libs.common" }
-#compiler-libs = { libname = "compiler-libs.common" }
-odoc-parser = ""
-#ppx_template = { libname = "ppx_template.expander" }
-ppxlib = ""
-#ppxlib_jane = ""
-#ppxlib.stdppx = ""
-base-unix = { libname = "dynlink" }
-re = ""
+camlp-streams = ""
 
 # package tools dependencies
 [tools]
@@ -80,8 +62,5 @@ re = ""
 #  no-opam-test = "yes" 
 #  no-opam-doc = "yes" 
 #  gen-opam = "some" | "all" 
-#  dune-stanzas = "(flags (:standard (:include linking.sexp)))" 
-#  static-clibs = "unix" 
-
 [fields]
-# dune-flags = " "
+# ...

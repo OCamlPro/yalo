@@ -1,0 +1,33 @@
+
+
+(*************************************)
+(*   Never edit options files while  *)
+(*       the program is running      *)
+(*************************************)
+(* SECTION : main                    *)
+(* Options for Yalo itself           *)
+(*************************************)
+
+(* List of plugins to load *)
+plugins = [
+  "yalo_no_final_line.ml";
+]
+
+(* List of directories to search for plugin files *)
+search_path = [
+	  "yalo_config" ;
+	  "_build/install/default/lib/yalo_plugin_ocaml" ;
+	  "_build/install/default/lib/yalo_plugin_YALO" ;
+	  "_build/install/default/lib/yalo_plugin_FIND" ;
+	  "_build/install/default/lib/yalo_lib" ;
+]
+
+profiles = [ "ocaml" "ocamlpro" ]
+
+project = "yalo"
+
+fileattrs = [
+ "src/yalo_config", { project = "ez_config" } ;
+ "_build/default/src/yalo_config", { project = "ez_config" } ;
+]
+

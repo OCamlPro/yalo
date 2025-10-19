@@ -20,7 +20,7 @@ all: build
 build:
 	./scripts/before.sh build
 	opam exec -- dune build @install
-	./scripts/copy-bin.sh yalo yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver
+	./scripts/copy-bin.sh yalo yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver yalo_config
 	./scripts/after.sh build
 
 build-deps:

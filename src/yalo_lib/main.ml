@@ -10,9 +10,16 @@
 (*                                                                        *)
 (**************************************************************************)
 
+open EzCompat
 open Ez_file.V1
 open EzFile.OP
 open Config.OP
+
+let load_plugin file =
+  try
+    Dynlink.loadfile file
+  with
+    Dynlink.Error (Module_already_loaded _) -> ()
 
 let load_plugins
       ~load_dirs
@@ -23,7 +30,8 @@ let load_plugins
     (List.rev load_dirs) @ Clflags.include_dirs.contents;
 
   List.iter (fun arg ->
-      Printf.eprintf "Loading %s\n%!" arg;
+      if Engine.verbose 1 then
+        Printf.eprintf "Loading %s\n%!" arg;
       let file =
         if Filename.check_suffix arg ".cmxs" ||
              Filename.check_suffix arg ".cmx" ||
@@ -82,7 +90,7 @@ let load_plugins
           try
             if Sys.file_exists file_obj then
               try
-                Dynlink.loadfile file_obj
+                load_plugin file_obj
               with exn ->
                 Printf.eprintf "Loading %s failed. Rebuilding plugin\n%!" file_obj;
                 Sys.remove file_obj;
@@ -94,8 +102,12 @@ let load_plugins
                 EzFile.write_file file_ml source;
                 (* TODO: bytecode version *)
                 let cmd = Printf.sprintf
-                            "ocamlopt -shared -opaque -I %s -o %s %s"
-                            (String.concat " -I " load_dirs)
+                            "ocamlopt -shared -opaque %s -o %s %s"
+                            (match load_dirs with
+                            | [] -> ""
+                            | dirs ->
+                               Printf.sprintf "-I '%s'"
+                                 (String.concat "' -I '" dirs))
                             file_obj file_ml
                 in
                 Printf.eprintf "Call: %s\n%!" cmd;
@@ -104,44 +116,49 @@ let load_plugins
                     Printf.eprintf "Error: could not compile %s\n%!" arg;
                     exit 2
                   end;
-                Dynlink.loadfile file_obj
+                load_plugin file_obj
         end
       else
-        Dynlink.loadfile file
+        load_plugin file
     ) plugins;
 
-  Printf.eprintf "load plugins done\n%!"
+  ()
 
 let init
       ?config_file
       ?(load_dirs=[])
       ?(plugins=[])
-      ?(no_load_plugins=false)
+      ?(can_load_plugins=true)
       () =
-  begin
-    try ignore ( Sys.getcwd () )
-    with _ ->
+
+  let fs_root =
+    try Sys.getcwd () with _ ->
       Printf.eprintf "Current directory does not exist anymore. Move back up.\n%!";
       exit 2
-  end ;
-  Printexc.record_backtrace true;
+  in
 
-  let load_dirs, config_file =
+  let fs_root, fs_subpath, load_dirs, config_file =
     match config_file with
-    | Some file -> load_dirs, Some file
+    | Some file -> fs_root, [], load_dirs, Some file
     | None ->
        try
          (* TODO we may want to load the .yalocaml, starting from
             the file what we are supposed to parse. But we only
             see it at the end ? We could add a
             -T <target-file> early arg for that. *)
-         let file = Utils.find_file Constant.config_basename in
+         let file, subpath = Utils.find_file Constant.config_basename in
          let dir = Filename.dirname file in
-         let load_dirs = dir :: load_dirs in
-         load_dirs, Some file
+         Printf.eprintf "Entering %s\n%!" dir;
+         Sys.chdir dir ;
+         let load_dirs = "." :: List.map (Utils.normalize_filename ~subpath)
+                                  load_dirs in
+         dir, subpath, load_dirs, Some file
        with Not_found ->
-         load_dirs, None
+         fs_root, [], load_dirs, None
   in
+
+  let fs = Engine.new_fs ~fs_root ~fs_subpath in
+
 
   begin
     match config_file with
@@ -149,17 +166,54 @@ let init
        Printf.eprintf "Warning: no file %s found. Using default config.\n%!" Constant.config_basename;
        ()
     | Some file ->
-       Config.load file
+       Config.load file ;
+       let load_dirs = load_dirs @ !!Config.config_load_dirs in
+       let profiles = ref !!Config.config_profiles in
+       let loaded_profiles = ref StringSet.empty in
+       let rec iter () =
+         match !profiles with
+         | [] -> ()
+         | profile :: others ->
+            profiles := others ;
+
+            if not @@ StringSet.mem profile !loaded_profiles then
+              let file = Utils.find_in_path load_dirs
+                           ("yalo-" ^ profile ^ ".conf") in
+              Config.append file ;
+              loaded_profiles := StringSet.add profile !loaded_profiles;
+
+              Engine.profiles_load_dirs :=
+                !Engine.profiles_load_dirs @ !!Config.profile_load_dirs ;
+              Config.profile_load_dirs =:= [];
+
+              Engine.profiles_plugins :=
+                !Engine.profiles_plugins @ !!Config.profile_plugins ;
+              Config.profile_plugins =:= [];
+
+              profiles := !profiles @ !!Config.profile_profiles ;
+              Engine.profiles_profiles := !Engine.profiles_profiles
+                                          @ !!Config.profile_profiles ;
+              Config.profile_profiles =:= [];
+
+              Engine.profiles_fileattrs := !Engine.profiles_fileattrs @
+                                    !!Config.profile_fileattrs ;
+              Config.profile_fileattrs =:= [];
+
+              iter ()
+       in
+       iter ()
   end;
 
-  let load_dirs = load_dirs @ !!Config.config_load_dirs in
+  let load_dirs =
+    load_dirs @ !!Config.config_load_dirs @
+      !Engine.profiles_load_dirs in
   let plugins =
-    !!Config.config_load_plugins @ plugins in
+    !Engine.profiles_plugins @ !!Config.config_load_plugins @ plugins in
 
-  if not no_load_plugins then
+  if can_load_plugins then
     load_plugins
       ~load_dirs
       ~plugins
       ();
 
-  ()
+  fs

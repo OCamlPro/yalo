@@ -10,6 +10,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
+open EzCompat
 open Yalo.V1.YALOTYPES
 open Yalo.V1
 
@@ -194,7 +195,9 @@ end
 
 let check_impl_source ~file =
   let file_ml = YALO.file_name ~file in
-  Printf.eprintf "check_impl_source %S\n%!" file_ml;
+
+  if YALO.verbose 2 then
+    Printf.eprintf "check_impl_source %S\n%!" file_ml;
   lint_src_file ~file ;
 
   begin
@@ -219,7 +222,8 @@ let check_impl_source ~file =
 
 let check_intf_source ~file =
   let file_mli = YALO.file_name ~file in
-  Printf.eprintf "check_impl_source %S\n%!" file_mli;
+  if YALO.verbose 2 then
+    Printf.eprintf "check_impl_source %S\n%!" file_mli;
   lint_src_file ~file ;
 
   begin
@@ -244,13 +248,15 @@ let check_intf_source ~file =
 
 let check_cmi ~file =
   let file_cmi = YALO.file_name ~file in
-  Printf.eprintf "check_cmi %S\n%!" file_cmi;
+  if YALO.verbose 2 then
+    Printf.eprintf "check_cmi %S\n%!" file_cmi;
   let cmi = Cmi_format.read_cmi file_cmi in
   lint_sig ~file cmi
 
 let check_cmt ~file =
   let file_cmt = YALO.file_name ~file in
-  Printf.eprintf "check_cmt %S\n%!" file_cmt;
+  if YALO.verbose 2 then
+    Printf.eprintf "check_cmt %S\n%!" file_cmt;
   let cmt = Cmt_format.read_cmt file_cmt in
   match cmt.cmt_annots with
   | Implementation tst ->
@@ -279,4 +285,23 @@ let check_cmt ~file =
   | _ ->
      Printf.eprintf "Warning: file %s does not match a single module.\n%!" file_cmt
 
+let non_source_directories =
+  StringSet.of_list [ "_build" ; "_opam" ; "_drom" ]
 
+let check_source ~file_doc =
+  let file_name = YALO.doc_name ~file_doc in
+  let path = String.split_on_char '/' file_name in
+  List.for_all (fun component ->
+      not @@ StringSet.mem component non_source_directories) path
+
+let check_artefact ~file_doc =
+  let file_name = YALO.doc_name ~file_doc in
+  let path = String.split_on_char '/' file_name in
+  let rec iter path =
+    match path with
+    | "_build" :: "install" :: _ -> false
+    | "_opam" :: _ -> false
+    | [] -> true
+    | _ :: path -> iter path
+  in
+  iter path

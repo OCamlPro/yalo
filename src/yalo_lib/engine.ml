@@ -12,9 +12,20 @@
 
 open EzCompat (* for IntMap *)
 open Types
+open Ez_file.V1
+open EzFile.OP
+
 
 let file_kind_uids = ref 0
 let file_uids = ref 0
+
+let verbosity = ref 0
+let verbose n = !verbosity >= n
+
+let profiles_fileattrs = ref ([] : (string * Types.file_attr list) list)
+let profiles_load_dirs = ref ([] : string list)
+let profiles_plugins = ref ([] : string list)
+let profiles_profiles = ref ([] : string list)
 
 let all_plugins = Hashtbl.create 13
 let all_languages = Hashtbl.create 13
@@ -33,7 +44,7 @@ let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
 let active_warnings = ref StringMap.empty
 let active_linters = ref []
 
-let file_classifier = ref (fun _file_name -> None)
+let file_classifier = ref (fun ~file_doc:_ _file_name -> None)
 
 let messages = ref []
 
@@ -55,6 +66,8 @@ let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
            }
   in
   Hashtbl.add all_plugins plugin_name ns;
+  if verbose 1 then
+    Printf.eprintf "  Plugin %S installed\n%!" plugin_name ;
   ns
 
 let new_language plugin lang_name =
@@ -71,9 +84,12 @@ let new_language plugin lang_name =
   Hashtbl.add all_languages lang_name lang;
   plugin.plugin_languages <- StringMap.add lang_name lang
                                plugin.plugin_languages ;
+  if verbose 1 then
+    Printf.eprintf "  Language %S installed\n%!" lang_name ;
   lang
 
-let new_file_kind lang ?(exts=[]) name checker =
+let new_file_kind ~lang ?(exts=[]) ~name
+      ?(validate=fun ~file_doc:_ -> true) ~lint () =
   let kind_uid = !file_kind_uids in
   incr file_kind_uids ;
   (* TODO check uniqueness *)
@@ -83,7 +99,8 @@ let new_file_kind lang ?(exts=[]) name checker =
       kind_language = lang ;
       kind_name = name ;
       kind_exts = exts ;
-      kind_checker = checker ;
+      kind_validate = validate ;
+      kind_lint = lint ;
     } in
   lang.lang_kinds <- StringMap.add name file_kind lang.lang_kinds;
   List.iter (fun ext ->
@@ -119,6 +136,8 @@ let new_namespace plugin ns_name =
              ns_linters = StringMap.empty;
            } in
   Hashtbl.add all_namespaces ns_name ns;
+  if verbose 1 then
+    Printf.eprintf "  Namespace %S installed\n%!" ns_name ;
   ns
 
 let new_tag tag_name =
@@ -374,7 +393,7 @@ let lint_with_active_linters active_linters_ref =
      iter_linters_close ~file linters ;
      ()
 
-let new_file ~file_kind ~file_crc file_name =
+let new_file ~file_doc ~file_kind ~file_crc file_name =
   let file_uid = !file_uids in
   incr file_uids ;
   {
@@ -382,39 +401,35 @@ let new_file ~file_kind ~file_crc file_name =
     file_uid ;
     file_crc ;
     file_kind ;
-    file_projects = StringMap.empty ;
+    file_doc ;
+    file_project = file_doc.doc_parent.folder_project ;
     file_messages = StringMap.empty ;
     file_done = false ;
     file_warnings_done = StringSet.empty ;
   }
 
-let add_file ~file_kind ?p file_name =
-  Printf.eprintf "add_file %s %s\n%!"
-    file_name (match p with
-    | None -> ""
-    | Some p -> Printf.sprintf " (%s)" p.project_name);
-  let file_crc = Digest.file file_name in
-  let file =
-    match Hashtbl.find all_files file_name with
-    | file -> file
-    | exception Not_found ->
-       let file = new_file ~file_kind ~file_crc file_name in
-       Hashtbl.add all_files file_name file;
-       file
-  in
-  begin
-    match p with
-    | None -> ()
-    | Some p ->
-       file.file_projects <-
-         StringMap.add p.project_name p file.file_projects
-  end
+let add_file ~file_doc ~file_kind =
+  if file_kind.kind_validate ~file_doc then
+    let file_name = file_doc.doc_name in
+    if verbose 2 then
+      Printf.eprintf "add_file %s %s\n%!"
+        file_name file_doc.doc_parent.folder_project.project_name ;
 
-let add_file ?file_kind ?p file_name =
+    let file_crc = Digest.file file_name in
+    match Hashtbl.find all_files file_name with
+    | _file -> assert false
+    | exception Not_found ->
+       let file = new_file ~file_doc ~file_kind ~file_crc file_name in
+       Hashtbl.add all_files file_name file;
+       file_doc.doc_file <- Some file ;
+       ()
+
+let add_file ~file_doc ?file_kind () =
   match file_kind with
   | Some file_kind ->
-     add_file ~file_kind ?p file_name
+     add_file ~file_doc ~file_kind
   | None ->
+     let file_name = file_doc.doc_name in
      let basename = Filename.basename file_name in
      let _basename, extensions = EzString.cut_at basename '.' in
      let extensions = String.lowercase extensions in
@@ -426,12 +441,14 @@ let add_file ?file_kind ?p file_name =
             let _, ext = EzString.cut_at ext '.' in
             iter_ext ext
          | file_kind ->
-            add_file ~file_kind ?p file_name
+            add_file ~file_doc ~file_kind
        else
-         match !file_classifier file_name with
-         | None -> ()
+         match !file_classifier ~file_doc file_name with
+         | None ->
+            if verbose 2 then
+              Printf.eprintf "Skipping file %S\n%!" file_name
          | Some file_kind ->
-            add_file ~file_kind ?p file_name
+            add_file ~file_doc ~file_kind
      in
      iter_ext extensions
 
@@ -440,3 +457,77 @@ let add_plugin_args plugin specs =
   plugin.plugin_args <- plugin.plugin_args @ specs ;
   all_plugins_args := !all_plugins_args @ specs ;
   ()
+
+let new_project name =
+  match Hashtbl.find all_projects name with
+  | p -> p
+  | exception Not_found ->
+     let p = {
+         project_name = name ;
+         project_files = [] ;
+       } in
+     Hashtbl.add all_projects name p ;
+     p
+
+let new_fs ~fs_root ~fs_subpath =
+
+  let project_all = new_project "_" in
+  let project_default = new_project "default" in
+  let rec fs_folder = {
+      folder_root ;
+      folder_parent = fs_folder ;
+      folder_basename = "";
+      folder_name = "";
+      folder_tags = StringSet.empty ;
+      folder_docs = StringMap.empty ;
+      folder_folders = StringMap.empty ;
+      folder_project = project_default ;
+      folder_scan = Scan_disabled ;
+    }
+  and folder_root =
+  {
+    fs_root ;
+    fs_project = project_all ;
+    fs_folder ;
+    fs_subpath ;
+  }
+  in
+  folder_root
+
+let get_folder folder_parent basename =
+  match StringMap.find basename folder_parent.folder_folders with
+  | folder -> folder
+  | exception Not_found ->
+     let folder = {
+         folder_root = folder_parent.folder_root ;
+         folder_parent ;
+         folder_basename = basename ;
+         folder_name = folder_parent.folder_name // basename ;
+         folder_tags = StringSet.empty ;
+         folder_docs = StringMap.empty ;
+         folder_folders = StringMap.empty ;
+         folder_project = folder_parent.folder_project ;
+         folder_scan = Scan_disabled ;
+       } in
+     folder_parent.folder_folders <-
+       StringMap.add basename folder
+         folder_parent.folder_folders;
+     folder
+
+let get_document doc_parent basename =
+  match StringMap.find basename doc_parent.folder_docs with
+  | doc -> doc
+  | exception Not_found ->
+     let doc = {
+         doc_parent ;
+         doc_basename = basename ;
+         doc_name = doc_parent.folder_name // basename;
+         doc_tags = StringSet.empty ;
+         doc_file = None ;
+       } in
+     doc_parent.folder_docs <-
+       StringMap.add basename doc
+         doc_parent.folder_docs;
+     doc
+
+

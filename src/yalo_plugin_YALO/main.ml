@@ -56,7 +56,6 @@ let w_windows_newline =
     ~msg:"Line contains a \\r\\n instead of only \\n"
 
 let () =
-  Printf.eprintf "yalo_plugin_YALO installed.\n%!";
   OCAMLLANG.new_src_line_linter ns "ocp_check_line"
     ~warnings:[w_line_too_long; w_spaces_at_end]
     (fun ~file { line_loc = loc ;
@@ -70,7 +69,7 @@ let () =
         if len = 0 && String.length line > 0  then
           YALO.warn loc ~file w_no_final_newline
       end;
-      
+
       let len = String.length line in
       if len > 0 then begin
           if len > 80 then
