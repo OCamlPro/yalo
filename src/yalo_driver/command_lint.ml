@@ -18,16 +18,6 @@ let arg_specs = Args.[
             arg_explicit_files := list),
     EZCMD.info ~docv:"FILES" "List of files that should be explicitely linted. You can also use --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for .cmi/.cmt/.cmti fles) to automatically find files to lint in a project. Specifying . here is a shortcut for --source-dir . --build-dir _build";
 
-    ["build-dir"], EZCMD.String (fun s ->
-                       arg_build_directories := !arg_build_directories @ [s]
-                     ),
-    EZCMD.info ~docv:"DIR" "Recurse in build directory DIR, looking for .cmt/.cmti files";
-
-    ["source-dir"], EZCMD.String (fun s ->
-                        arg_source_directories := !arg_source_directories @ [s]
-                      ),
-    EZCMD.info ~docv:"DIR" "Recurse in source directory DIR, looking for .ml/.mli files";
-
     [ "skip-config-warnings" ], EZCMD.Set arg_skip_config_warnings,
     EZCMD.info "Skip warnings and errors settings by config file";
 
@@ -79,22 +69,6 @@ let cmd command_name =
       Yalo.Lint_project.activate_warnings_and_linters
         ~skip_config_warnings: !Args.arg_skip_config_warnings
         (!Args.arg_warnings, !Args.arg_errors);
-
-      (*
-      begin
-        match !Args.arg_explicit_files,
-              !Args.arg_source_directories,
-              !Args.arg_build_directories with
-        | [], [], [] ->
-           Args.arg_source_directories := [ "." ];
-           Args.arg_build_directories := [ "_build/default" ];
-        | [ "." ], _, _ ->
-           Args.arg_explicit_files := [] ;
-           Args.arg_source_directories := "." :: !Args.arg_source_directories;
-           Args.arg_build_directories := "_build/default" :: !Args.arg_build_directories
-        | _ -> ()
-      end;
-       *)
 
       if !Args.arg_print_config then
         Print_config.eprint ();

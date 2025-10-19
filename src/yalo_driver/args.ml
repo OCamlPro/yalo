@@ -23,8 +23,6 @@ let arg_load_dirs = ref [ "." ]
 let arg_warnings = ref ( [] : string list )
 let arg_errors = ref ([] : string list )
 let arg_explicit_files = ref ([] : string list )
-let arg_source_directories = ref ([] : string list )
-let arg_build_directories = ref ([] : string list )
 
 let arg_verbosity = Yalo.Engine.verbosity
 let arg_first_arg = ref ""

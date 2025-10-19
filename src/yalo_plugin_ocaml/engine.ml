@@ -305,3 +305,24 @@ let check_artefact ~file_doc =
     | _ :: path -> iter path
   in
   iter path
+
+(* This function will propagate projects from the source tree
+   to the _build/default artefact tree *)
+let folder_updater ~folder =
+  let open Yalo.Types in
+  let name = folder.folder_name in
+  let path = String.split_on_char '/' name in
+  match path with
+  | "_build" :: "default" :: path ->
+     let rec iter folder2 path =
+       match path with
+       | [] ->
+          folder.folder_project <- folder2.folder_project
+       | basename :: path ->
+          match StringMap.find basename folder2.folder_folders with
+          | exception Not_found -> () (* weird *)
+          | folder2 ->
+             iter folder2 path
+     in
+     iter folder.folder_root.fs_folder path
+  | _ -> ()

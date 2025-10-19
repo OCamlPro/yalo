@@ -65,4 +65,6 @@ module OCAMLLANG = struct
   let new_tast_intf_linter = Engine.new_tast_intf_linter
   let new_tast_impl_linter = Engine.new_tast_impl_linter
 
+  let () =
+    Yalo.Engine.add_folder_updater Engine.folder_updater
 end

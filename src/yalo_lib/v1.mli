@@ -174,6 +174,37 @@ module YALOLANG : sig
       (linter * (file:file -> 'a -> unit)) list ->
       'a -> unit
 
+    (*
+    module FS : sig
+      type t
+      val get_folder : t -> string -> folder
+    end
+
+    module FOLDER : sig
+      type t = folder
+      val root : t -> FS.t
+      val project : t -> project
+      val parent : t -> t option
+      val basename : t -> string
+      val name : t -> string
+
+      val set_project : t -> project -> unit
+    end
+
+    module DOCUMENT : sig
+      type t = document
+      val parent : t -> folder
+      val basename : t -> string
+      val name : t -> string
+      end
+      
+     val add_file_classifier :
+       (file_doc:YALOTYPES.document -> YALOTYPES.file_kind option) ->
+       unit
+     val add_folder_updater : (folder:YALOTYPES.folder -> unit) -> unit
+     *)
+
+
 end
 
 module YALO_INTERNAL : sig

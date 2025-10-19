@@ -118,35 +118,13 @@ let scan_projects
     | Some (_,_,fileattrs) -> fileattrs
   in
 
+  (* Because we use a queue, we explore folders breath-first, so that
+     we have the guarrantee that at depth N, we have already scanned
+     all folders at depth N-1. *)
   let folders_queue = Queue.create () in
   let default_project = Engine.new_project !!Config.default_project in
   fs.fs_folder.folder_project <- default_project ;
   Queue.add fs.fs_folder folders_queue ;
-
-  (*
-    let add_file_to_lint ~file_folder ?(error=false) ~build ~source ?p
-    file_name =
-
-    let fileattrs = match Regexps.MATCHER.find_all matcher file_name with
-    | None -> []
-    | Some (_,_,fileattrs) -> fileattrs
-    in
-    let file_tags = ref StringSet.empty in
-    let file_tags = !file_tags in
-    Engine.add_file ~file_folder ~file_tags file_name ?p
-    in
-   *)
-  
-  (* Some rules:
-   * at this point, all explicit_files are subnames of the current
-   directory. If none, we need to add "".
-
-   * if we find a .yaloconf file inside a directory that we are
-   planning to add, we skip the corresponding directory. If it is
-   explicit, we error.
-
-   * we scan all other files and directories
-   *)
 
   let read_folder folder =
     let files = Sys.readdir (match folder.folder_name with
@@ -163,6 +141,8 @@ let scan_projects
 
     if Engine.verbose 2 then
       Printf.eprintf "Checking folder %S\n%!" folder.folder_name ;
+
+    !Engine.folder_updater ~folder ;
 
     let attrs = get_fileattrs folder.folder_name in
     List.iter (function attrs ->
@@ -286,7 +266,8 @@ let lint_projects
              exit 2
          ) list
   in
-
+  
+  let files_done = ref 0 in
   List.iter (fun l ->
       l.linter_begin ()
     ) !Engine.active_linters;
@@ -296,6 +277,7 @@ let lint_projects
       List.iter (fun file ->
           if not file.file_done then begin
               file.file_done <- true;
+              incr files_done ;
               file.file_kind.kind_lint ~file
             end
         ) (
@@ -306,6 +288,8 @@ let lint_projects
   List.iter (fun l ->
       l.linter_end ()
     ) !Engine.active_linters;
+
+  Printf.eprintf "%d files linted\n%!" !files_done;
   ()
 
 let main

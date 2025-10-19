@@ -50,13 +50,6 @@ let eprint () =
     ) !Args.arg_errors ;
   Printf.eprintf "   --source-dir\n%!";
   List.iter (fun dir ->
-      Printf.eprintf "        dir %S\n%!" dir
-    ) !Args.arg_source_directories ;
-  Printf.eprintf "   --build-dir\n%!";
-  List.iter (fun dir ->
-      Printf.eprintf "        dir %S\n%!" dir
-    ) !Args.arg_build_directories ;
-  List.iter (fun dir ->
       Printf.eprintf "        project %S\n%!" dir
     ) !Args.arg_projects ;
   Printf.eprintf "   --verbose: %d\n%!" !Args.arg_verbosity ;

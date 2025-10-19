@@ -44,7 +44,8 @@ let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
 let active_warnings = ref StringMap.empty
 let active_linters = ref []
 
-let file_classifier = ref (fun ~file_doc:_ _file_name -> None)
+let file_classifier = ref (fun ~file_doc:_ -> None)
+let folder_updater = ref (fun ~folder:(_:folder) -> ())
 
 let messages = ref []
 
@@ -443,7 +444,7 @@ let add_file ~file_doc ?file_kind () =
          | file_kind ->
             add_file ~file_doc ~file_kind
        else
-         match !file_classifier ~file_doc file_name with
+         match !file_classifier ~file_doc with
          | None ->
             if verbose 2 then
               Printf.eprintf "Skipping file %S\n%!" file_name
@@ -531,3 +532,15 @@ let get_document doc_parent basename =
      doc
 
 
+let add_file_classifier f =
+  let old_f = !file_classifier in
+  file_classifier := (fun ~file_doc ->
+    match f ~file_doc with
+    | Some file_kind -> Some file_kind
+    | None -> old_f ~file_doc)
+
+let add_folder_updater f =
+  let old_f = !folder_updater in
+  folder_updater := (fun ~folder ->
+    old_f ~folder ;
+    f ~folder)

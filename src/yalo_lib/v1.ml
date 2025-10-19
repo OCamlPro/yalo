@@ -93,7 +93,7 @@ module YALO = struct
 
   module STORE = File_store
 
-  let verbose n = !Engine.verbosity >= n
+  let verbose = Engine.verbose
 end
 
 module YALOLANG = struct
@@ -109,6 +109,11 @@ module YALOLANG = struct
     let iter_linters_open = Engine.iter_linters_open
     let iter_linters_close = Engine.iter_linters_close
     let iter_linters = Engine.iter_linters
+
+    (*
+    let add_file_classifier = Engine.add_file_classifier
+    let add_folder_updater = Engine.add_folder_updater
+     *)
 
 end
 
