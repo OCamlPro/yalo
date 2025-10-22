@@ -11,7 +11,6 @@
 (**************************************************************************)
 
 open Ezcmd.V2
-open Yalo.Types
 open Yalo.Config.OP
 
 let arg_specs = Args.[
@@ -33,29 +32,8 @@ let arg_specs = Args.[
     EZCMD.info ~docv:"SPEC"
       "Set errors according to SPEC-ification";
 
-    [ "message-format" ],
-    EZCMD.String (function
-        | "human" -> arg_message_format := Format_Human
-        | "sarif" -> arg_message_format := Format_Sarif
-        | "short" -> arg_message_format := Format_Short
-(* TODO Clippy: human, short, json, json-diagnostic-short,
-   json-diagnostic-rendered-ansi, json-render-diagnostics *)
-        | s ->
-           Printf.eprintf "Configuration error: message format %S does not exist\n%!" s;
-           exit 2
-      ),
-    EZCMD.info ~docv:"FORMAT"
-      "Set message format to FORMAT: human, short, sarif(JSON)";
-
-    [ "p" ; "package" ],
-    EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
+    [ "p" ], EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
     EZCMD.info ~docv:"PROJECT" "Lint only files from PROJECT";
-    (* TODO      --all-targets       Check all targets *)
-
-    [ "autofix" ],
-    EZCMD.Set Args.arg_autofix,
-    EZCMD.info "Apply all automatic replacements" ;
-    
   ]
 
 let cmd command_name =

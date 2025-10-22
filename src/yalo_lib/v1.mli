@@ -92,7 +92,8 @@ module YALO : sig
     name:string -> msg:string -> int -> warning
   val tag_danger : tag
 
-  val warn : location -> file:file -> ?msg:string -> warning -> unit
+  val warn : location -> file:file -> ?msg:string -> ?autofix:string ->
+             warning -> unit
 
   val file_name : file:file -> string
   val doc_name : file_doc:document -> string

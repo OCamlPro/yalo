@@ -297,7 +297,7 @@ let activate_linters () =
         end
     ) !all_linters
 
-let warn msg_loc ~file ?msg w =
+let warn msg_loc ~file ?msg ?autofix w =
   if w.w_level_error || w.w_level_warning then
     let msg_string =
       match msg with
@@ -316,6 +316,7 @@ let warn msg_loc ~file ?msg w =
         msg_warning = w;
         msg_file = file ;
         msg_idstr ;
+        msg_autofix = autofix ;
       } in
     file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
     messages := m :: !messages

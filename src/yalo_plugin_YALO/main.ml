@@ -67,7 +67,7 @@ let () =
         if len > 1 && sep.[0] = '\r' then
           YALO.warn loc ~file w_windows_newline;
         if len = 0 && String.length line > 0  then
-          YALO.warn loc ~file w_no_final_newline
+          YALO.warn loc ~file w_no_final_newline ~autofix:"\n"
       end;
 
       let len = String.length line in

@@ -14,6 +14,16 @@ of the yalo OCaml project
 
 FAQ:
 
+* How to improve pretty-printing of yalo errors ?
+
+Yalo can output messages in SARIF JSON format, using
+`--message-format=sarif`. You can then use tools for this format, such
+as `sarif-fmt`:
+
+```
+yalo lint --message-format=sarif | sarif-fmt
+```
+
 * When I execute yalo and compile a local plugin, the execution always
 fails with a Dynlink.Inconsistent_implementation ?
 

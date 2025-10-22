@@ -131,10 +131,13 @@ and location = Location.t = {
 
 and message = {
     msg_warning : warning ;
-    msg_file : file ;
+    msg_file : file ; (* Warning: this file may not be the file where
+                         the error was spotted, for example a .cmt
+                         file instead of the .ml in the location. *)
     msg_idstr : string ;
     msg_loc : location ;
     msg_string : string ;
+    msg_autofix : string option ;
   }
 
 and linter = {
@@ -195,3 +198,8 @@ type file_attr =
   | Project of string
   | Skipdir of bool
   | Tag of string
+
+type message_format =
+  | Format_Human
+  | Format_Sarif
+  | Format_Short

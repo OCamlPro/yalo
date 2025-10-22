@@ -35,44 +35,19 @@ open Types
 open EzFile.OP
 open Config.OP
 
-let display_messages () =
-  match Engine.get_messages () with
-  | [] -> ()
-  | messages ->
-     let nwarnings = ref 0 in
-     let nerrors = ref 0 in
-     List.iter (fun m ->
-         if m.msg_warning.w_level_error then
-           incr nerrors
-         else
-           incr nwarnings ;
-       ) messages ;
-     begin
-       match !nwarnings, !nerrors with
-       | 0, n ->
-          Printf.eprintf "Yalo: %d errors found\n" n
-       | n, 0 ->
-          Printf.eprintf "Yalo: %d warnings found\n" n
-       | nw, ne ->
-          Printf.eprintf "Yalo: %d errors and %d warnings found\n" ne nw
-     end;
-     List.iter (fun m ->
-         Location.print_loc Format.str_formatter m.msg_loc;
-         let loc = Format.flush_str_formatter () in
-         Printf.eprintf "%s\n%!" loc;
-         Printf.eprintf "%s (%s): %s\n%!"
-           (if m.msg_warning.w_level_error then
-             "Error"
-           else
-             "Warning")
-           m.msg_warning.w_idstr
-           m.msg_string;
-       (* TODO: display context ? *)
-       ) messages ;
-     if !nerrors > 0 then exit 2
-
 (* TODO: explicit files and -p PROJECT should be forbidden to appear
    together *)
+
+type file_kind =
+  | FOLDER
+  | DOCUMENT
+  | OTHER
+
+let file_kind filename =
+  match (Unix.lstat filename).st_kind with
+  | Unix.S_DIR -> FOLDER
+  | Unix.S_REG -> DOCUMENT
+  | _ -> OTHER
 
 let scan_projects
       ~fs
@@ -85,26 +60,32 @@ let scan_projects
     | [] ->
        fs.fs_folder.folder_scan <- Scan_forced
     | paths ->
-       List.iter (fun path ->
+       List.iter (fun filepath ->
            let rec iter folder path =
              match path with
              | [] ->
                 folder.folder_scan <- Scan_forced
              | basename :: path ->
                 let file_name = folder.folder_name // basename in
-                if Sys.is_directory file_name then
-                  let folder = Engine.get_folder folder basename in
-                  iter folder path
-                else
-                  match path with
-                  | _ :: _ ->
-                     Printf.eprintf "Configuration error: path %S is not a folder\n%!" basename;
-                     exit 2
-                  | [] ->
-                     let _doc = Engine.get_document folder  basename in
-                     ()
+                match file_kind file_name with
+                | OTHER ->
+                   Printf.eprintf
+                     "Configuration error: while scanning %s, cannot cross links and other special files\n%!"
+                     (Utils.filename_of_path filepath);
+                   exit 2;
+                | FOLDER ->
+                   let folder = Engine.get_folder folder basename in
+                   iter folder path
+                | DOCUMENT ->
+                   match path with
+                   | _ :: _ ->
+                      Printf.eprintf "Configuration error: path %S is not a folder\n%!" basename;
+                      exit 2
+                   | [] ->
+                      let _doc = Engine.get_document folder  basename in
+                      ()
            in
-           iter fs.fs_folder path
+           iter fs.fs_folder filepath
          ) paths
   end;
 
@@ -182,21 +163,23 @@ let scan_projects
 
     StringSet.iter (fun basename ->
         let file_name = folder.folder_name // basename in
-        if Sys.is_directory file_name then
-          let subfolder = Engine.get_folder folder basename in
-          subfolder.folder_project <- folder.folder_project ;
-          subfolder.folder_tags <- folder.folder_tags ;
+        match file_kind file_name with
+        | FOLDER ->
+           let subfolder = Engine.get_folder folder basename in
+           subfolder.folder_project <- folder.folder_project ;
+           subfolder.folder_tags <- folder.folder_tags ;
 
-          begin
-            match subfolder.folder_scan with
-            | Scan_disabled ->
-               subfolder.folder_scan <- Scan_maybe
-            | _ -> ()
-          end
-        else
-          let doc = Engine.get_document folder basename in
-          doc.doc_tags <- folder.folder_tags ;
-          ()
+           begin
+             match subfolder.folder_scan with
+             | Scan_disabled ->
+                subfolder.folder_scan <- Scan_maybe
+             | _ -> ()
+           end
+        | DOCUMENT ->
+           let doc = Engine.get_document folder basename in
+           doc.doc_tags <- folder.folder_tags ;
+           ()
+        | OTHER -> ()
       ) add_files ;
 
     StringMap.iter (fun _ subfolder ->
@@ -296,6 +279,8 @@ let main
       ~fs
       ~paths
       ~projects
+      ?format
+      ?(autofix=false)
       () =
 
   scan_projects
@@ -309,9 +294,10 @@ let main
     ();
 
   (* TODO: also display cached messages *)
-  display_messages ();
+  let messages = Engine.get_messages () in
+  Message_format.display_messages ?format messages;
 
-  (* val display_messages : unit -> unit *)
+  if autofix then Autofix.apply messages ;
   ()
 
 let activate_warnings_and_linters

@@ -38,6 +38,7 @@ type command_kind =
 let commands = [
     "lint", LOAD_PLUGINS, Command_lint.cmd ;
     "lint-no-plugins", NO_PLUGINS, Command_lint.cmd ;
+    "doc", NO_PLUGINS, Command_doc.cmd ;
   ]
 
 
