@@ -37,33 +37,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Retrieve opam cache
-        uses: actions/cache@v2
-        id: cache-opam
-        with:
-          path: ~/.opam
-          key: v2-${{ runner.os }}-yalo-${{ matrix.ocaml-compiler }}-${{ hashFiles('opam/*.opam') }}
-#          restore-keys: |
-#            v2-${{ runner.os }}-opam-${{ matrix.ocaml-compiler }}-
-
-      - name: Use OCaml ${{ matrix.ocaml-compiler }}
-        uses: avsm/setup-ocaml@v2
-        with:
-          ocaml-compiler: ${{ matrix.ocaml-compiler }}
-          opam-pin: false
-          opam-depext: false
-
       - name: Set git user
         run: |
           git config --global user.name github-actions
           git config --global user.email github-actions-bot@users.noreply.github.com
 
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: avsm/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          opam-pin: false
+
+      - name: Retrieve opam cache
+        uses: actions/cache@v4
+        id: cache-opam
+        with:
+          path: ~/.opam
+          key: v2-${{ runner.os }}-yalo-${{ matrix.ocaml-compiler }}-${{ hashFiles('opam/*.opam') }}-repo=
+
       # use fields.opam-repo = "git+https://" to add an 'extra' opam repository
 
       - run: opam pin add . -y --no-action
-
-      - run: opam depext -y yalo yalo_misc yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver yalo_config
-#        if: steps.cache-opam.outputs.cache-hit != 'true'
 
       - run: opam install -y opam/*.opam --deps-only --with-test
 #        if: steps.cache-opam.outputs.cache-hit != 'true'
