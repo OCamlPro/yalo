@@ -1,6 +1,6 @@
 
 # name of package
-name = "yalo_lib"
+name = "yalo_misc"
 skeleton = "library"
 
 # version if different from project version
@@ -39,7 +39,7 @@ gen-version = "version.ml"
 # optional = true
 
 # module name used to pack modules (if pack-modules is true)
-pack = "Yalo"
+# pack = "Yalo_misc"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 
@@ -66,7 +66,6 @@ ppxlib = ""
 #ppxlib.stdppx = ""
 base-unix = { libname = "dynlink" }
 re = ""
-yalo_misc = ":version"
 
 # package tools dependencies
 [tools]

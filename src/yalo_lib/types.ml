@@ -201,5 +201,6 @@ type file_attr =
 
 type message_format =
   | Format_Human
+  | Format_Context
   | Format_Sarif
   | Format_Short

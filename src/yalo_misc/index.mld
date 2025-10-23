@@ -1,0 +1,9 @@
+{1 Library yalo_misc}
+
+This is the description
+of the yalo OCaml project
+
+
+
+The entry point of this library is the module: {!Yalo_misc}.
+

@@ -14,16 +14,16 @@ open Ez_file.V1
 open EzFile.OP
 
 let find_file ?from file =
-  let rec iter dirname revpath =
+  let rec iter dirname path =
     let filename = dirname // file in
     if Sys.file_exists filename then
-      filename, List.rev revpath
+      filename, path
     else
       let newdir = Filename.dirname dirname in
       if newdir = dirname then
         raise Not_found
       else
-        iter newdir (Filename.basename dirname :: revpath)
+        iter newdir (Filename.basename dirname :: path)
   in
   let from = match from with
     | None -> Sys.getcwd ()
@@ -82,3 +82,15 @@ let filename_of_path path =
 
 let normalize_filename ?subpath filename =
   path_of_filename ?subpath filename |> filename_of_path
+
+let rec safe_mkdir dir =
+  match Unix.stat dir with
+  | exception _ ->
+     let dirdir = Filename.dirname dir in
+     safe_mkdir dirdir;
+     Unix.mkdir dir 0o755
+  | st ->
+     match st.st_kind with
+     | S_DIR -> ()
+     | _ ->
+        Printf.kprintf failwith "Utils.safe_mkdir: %s is a special file" dir

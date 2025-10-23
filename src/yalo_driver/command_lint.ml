@@ -35,6 +35,7 @@ let arg_specs = Args.[
 
     [ "message-format" ],
     EZCMD.String (function
+        | "context" -> arg_message_format := Format_Context
         | "human" -> arg_message_format := Format_Human
         | "sarif" -> arg_message_format := Format_Sarif
         | "short" -> arg_message_format := Format_Short
@@ -53,9 +54,16 @@ let arg_specs = Args.[
     (* TODO      --all-targets       Check all targets *)
 
     [ "autofix" ],
-    EZCMD.Set Args.arg_autofix,
-    EZCMD.info "Apply all automatic replacements" ;
-    
+    EZCMD.Unit (fun () ->
+        match !Args.arg_autofix_inplace with
+        | None -> Args.arg_autofix_inplace := Some false
+        | Some _ -> ()),
+    EZCMD.info "Apply all automatic replacements (files created in _YALO/)" ;
+
+    [ "autofix-inplace" ],
+    EZCMD.Unit (fun () -> Args.arg_autofix_inplace := Some true),
+    EZCMD.info "Autofix files in place" ;
+
   ]
 
 let cmd command_name =
@@ -99,7 +107,7 @@ let cmd command_name =
 
       let paths =
         List.map (fun filename ->
-            Yalo.Utils.path_of_filename ~subpath:fs.fs_subpath filename
+            Yalo_misc.Utils.path_of_filename ~subpath:fs.fs_subpath filename
           ) !Args.arg_explicit_files
       in
 
@@ -108,7 +116,7 @@ let cmd command_name =
         ~paths
         ~projects: !Args.arg_projects
         ~format:!Args.arg_message_format
-        ~autofix:!Args.arg_autofix
+        ?autofix: !Args.arg_autofix_inplace 
         ();
 
     )

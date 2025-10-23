@@ -157,12 +157,19 @@ module FILEATTR = struct
 
 end
 
-let default_project =
+let project =
   create_config_option main_section
     ~path:[ "project" ]
     ~short_help:"The name of this project, starting from the root"
     EZCONFIG.string_option
     "default"
+
+let default_target =
+  create_config_option main_section
+    ~path:[ "default_target" ]
+    ~short_help:"The name of the project to lint by default"
+    (EZCONFIG.option_option EZCONFIG.string_option)
+    None
 
 let fileattrs =
   create_config_option main_section

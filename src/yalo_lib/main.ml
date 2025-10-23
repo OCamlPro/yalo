@@ -49,7 +49,7 @@ let load_plugins
                 ".cmo")
       in
       let file = try
-          Utils.find_in_path load_dirs file
+          Yalo_misc.Utils.find_in_path load_dirs file
         with Not_found ->
           try
             let is_plugin = ref true in
@@ -146,11 +146,12 @@ let init
             the file what we are supposed to parse. But we only
             see it at the end ? We could add a
             -T <target-file> early arg for that. *)
-         let file, subpath = Utils.find_file Constant.config_basename in
+         let file, subpath = Yalo_misc.Utils.find_file Constant.config_basename in
          let dir = Filename.dirname file in
-         Printf.eprintf "Entering %s\n%!" dir;
+         Printf.eprintf "yalo: Entering directory '%s'\n%!" dir;
          Sys.chdir dir ;
-         let load_dirs = "." :: List.map (Utils.normalize_filename ~subpath)
+         let load_dirs = "." ::
+                           List.map (Yalo_misc.Utils.normalize_filename ~subpath)
                                   load_dirs in
          dir, subpath, load_dirs, Some file
        with Not_found ->
@@ -177,7 +178,7 @@ let init
             profiles := others ;
 
             if not @@ StringSet.mem profile !loaded_profiles then
-              let file = Utils.find_in_path load_dirs
+              let file = Yalo_misc.Utils.find_in_path load_dirs
                            ("yalo-" ^ profile ^ ".conf") in
               Config.append file ;
               loaded_profiles := StringSet.add profile !loaded_profiles;

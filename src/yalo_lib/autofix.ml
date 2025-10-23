@@ -12,9 +12,9 @@
 
 open Types
 
-open Ez_autofix.TYPES
+open Yalo_misc.Ez_autofix.TYPES
 
-let apply messages =
+let apply ~inplace messages =
   let repls = ref [] in
   List.iter (fun m ->
       match m.msg_autofix with
@@ -26,11 +26,26 @@ let apply messages =
          let repl = {
              repl_file = start.pos_fname ;
              repl_pos1 = start.pos_cnum ;
-             repl_pos2 = stop.pos_cnum+1 ;
+             repl_pos2 = stop.pos_cnum ;
              repl_text ;
            } in
          repls := repl :: !repls
     ) messages ;
-  let napplied, skipped = Ez_autofix.apply !repls in
-  Printf.eprintf "Autofix applied %d patches and skipped %d patches\n%!"
-    napplied (List.length skipped)
+  let files = Yalo_misc.Ez_autofix.apply
+                ~destdir:(if inplace then "" else "_YALO")
+                ~suffix:"" !repls in
+
+  List.iter (fun (file, applied, skipped) ->
+      let napplied = List.length applied in
+      let nskipped = List.length skipped in
+      if napplied = 0 then
+        Printf.eprintf "File %S not created because %d patches were skipped\n%!"
+          file nskipped
+      else begin
+          Printf.eprintf "File %S created with %d patches applied"
+            file napplied;
+          if nskipped > 0 then
+            Printf.eprintf " and %d patches skipped" nskipped;
+          Printf.eprintf "\n%!"
+        end
+    ) files

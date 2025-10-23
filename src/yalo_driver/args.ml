@@ -35,8 +35,8 @@ let arg_map_src_projects = ref true
 let arg_save_config = ref (None : string option)
 let arg_profile = ref (None : string option)
 
-let arg_message_format = ref Yalo.Types.Format_Human
-let arg_autofix = ref false
+let arg_message_format = ref Yalo.Types.Format_Context
+let arg_autofix_inplace = ref (None : bool option)
 
 let parse_initial_args args =
   let rec iter args =

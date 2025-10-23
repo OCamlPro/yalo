@@ -25,11 +25,13 @@ search_path = [
 profiles = [ "ocaml" "ocamlpro" ]
 
 project = "yalo"
+default_target = "yalo_test"
 
 fileattrs = [
  "src/yalo_config", { project = "ez_config" } ;
  "src/yalo_plugin_ocaml", { project = "yalo_plugin_ocaml" } ;
  "src/yalo_plugin_YALO", { project = "yalo_plugin_YALO" } ;
  "src/yalo_plugin_FIND", { project = "yalo_plugin_FIND" } ;
+ "test/ocaml", { project = "yalo_test" } ;
 ]
 

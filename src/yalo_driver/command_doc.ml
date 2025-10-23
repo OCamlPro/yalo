@@ -77,7 +77,7 @@ let cmd command_name =
 
       let paths =
         List.map (fun filename ->
-            Yalo.Utils.path_of_filename ~subpath:fs.fs_subpath filename
+            Yalo_misc.Utils.path_of_filename ~subpath:fs.fs_subpath filename
           ) !Args.arg_explicit_files
       in
 
@@ -86,7 +86,6 @@ let cmd command_name =
         ~paths
         ~projects: !Args.arg_projects
         ~format:!Args.arg_message_format
-        ~autofix:!Args.arg_autofix
         ();
 
     )

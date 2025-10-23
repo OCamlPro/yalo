@@ -61,6 +61,8 @@ let scan_projects
        fs.fs_folder.folder_scan <- Scan_forced
     | paths ->
        List.iter (fun filepath ->
+           Printf.eprintf "filepath %s\n%!"
+                  ( String.concat "/" filepath);
            let rec iter folder path =
              match path with
              | [] ->
@@ -71,7 +73,7 @@ let scan_projects
                 | OTHER ->
                    Printf.eprintf
                      "Configuration error: while scanning %s, cannot cross links and other special files\n%!"
-                     (Utils.filename_of_path filepath);
+                     (Yalo_misc.Utils.filename_of_path filepath);
                    exit 2;
                 | FOLDER ->
                    let folder = Engine.get_folder folder basename in
@@ -96,14 +98,15 @@ let scan_projects
   let get_fileattrs file_name =
     match Regexps.MATCHER.find_all matcher file_name with
     | None -> []
-    | Some (_,_,fileattrs) -> fileattrs
+    | Some (_,_,fileattrs) ->
+       fileattrs
   in
 
   (* Because we use a queue, we explore folders breath-first, so that
      we have the guarrantee that at depth N, we have already scanned
      all folders at depth N-1. *)
   let folders_queue = Queue.create () in
-  let default_project = Engine.new_project !!Config.default_project in
+  let default_project = Engine.new_project !!Config.project in
   fs.fs_folder.folder_project <- default_project ;
   Queue.add fs.fs_folder folders_queue ;
 
@@ -233,7 +236,11 @@ let lint_projects
 
   let projects_to_lint =
     match projects with
-    | [] -> [ fs.fs_folder.folder_project ]
+    | [] -> begin
+        match !!Config.default_target with
+        | None -> [ fs.fs_folder.folder_project ]
+        | Some name -> [ Engine.new_project name ]
+      end
     | list ->
        List.map (fun name ->
            try
@@ -249,7 +256,7 @@ let lint_projects
              exit 2
          ) list
   in
-  
+
   let files_done = ref 0 in
   List.iter (fun l ->
       l.linter_begin ()
@@ -280,7 +287,7 @@ let main
       ~paths
       ~projects
       ?format
-      ?(autofix=false)
+      ?autofix
       () =
 
   scan_projects
@@ -297,13 +304,19 @@ let main
   let messages = Engine.get_messages () in
   Message_format.display_messages ?format messages;
 
-  if autofix then Autofix.apply messages ;
+  begin match autofix with
+  | None -> ()
+  | Some inplace ->
+     Autofix.apply ~inplace messages ;
+  end;
   ()
 
 let activate_warnings_and_linters
       ?(skip_config_warnings=false) (arg_warnings, arg_errors) =
 
-  let set_warning set w = w.w_level_warning <- set in
+  let set_warning set w =
+    w.w_level_warning <- set
+  in
   let set_error set w = w.w_level_error <- set in
 
   if not skip_config_warnings then

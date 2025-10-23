@@ -19,6 +19,13 @@ module TYPES : sig
     }
 end
 
-val apply : TYPES.replacement list (* to replace *)
-            ->
-            int * TYPES.replacement list (* applied x skipped *)
+val apply :
+  ?destdir:string -> (* root destination dir *)
+  ?suffix:string -> (* suffix to append to target *)
+  TYPES.replacement list -> (* to replace *)
+
+  (string *
+     TYPES.replacement list * (* applied *)
+       TYPES.replacement list (* skipped *)
+  ) list
+    

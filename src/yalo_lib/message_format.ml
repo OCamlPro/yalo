@@ -10,64 +10,50 @@
 (*                                                                        *)
 (**************************************************************************)
 
+
+open Ez_file.V1
+open Yalo_misc.Ez_json.TYPES
+
 open Types
 
-module JSON = struct
 
-  (* TODO: use an external library for that !!! *)
-  type json =
-    | OBJECT of (string * json) list
-    | LIST of json list
-    | STRING of string
-    | INT of int
-    | BOOL of bool
-    | NULL
 
-  let to_string json =
-    let b = Buffer.create 1000 in
-    let rec iter_json b json =
-    match json with
-    | OBJECT assocs ->
-       Printf.bprintf b  "{";
-       let rec iter assocs =
-         match assocs with
-         | [] -> ()
-         | [ name, v ] ->
-            Printf.bprintf b  "%S: " name; iter_json b v
-         | (name, v ) :: assocs ->
-            Printf.bprintf b  "%S: " name; iter_json b v ;
-            Printf.bprintf b  ",";
-            iter assocs
-       in
-       iter assocs ;
-       Printf.bprintf b  "}";
-    | LIST list ->
-       Printf.bprintf b  "[";
-       let rec iter list =
-         match list with
-         | [] -> ()
-         | [ v ] ->
-            iter_json b v
-         | v :: list ->
-            iter_json b v ; Printf.bprintf b  ",";
-            iter list
-       in
-       iter list ;
-       Printf.bprintf b  "]";
-    | STRING s ->
-       Printf.bprintf b  "%S" s
-    | INT n ->
-       Printf.bprintf b  "%d" n
-    | BOOL bool ->
-       Printf.bprintf b  "%b" bool
-    | NULL ->
-       Printf.bprintf b  "null"
+let show_context loc =
+  let start = loc.loc_start in
+  let stop = loc.loc_end in
+  let file_name = start.pos_fname in
+  try
+    let lines = EzFile.read_lines file_name in
+    let rec iter i lines =
+      if i < Array.length lines then
+        if i >= start.pos_lnum-3 then begin
+            Printf.eprintf "%05d %c %s\n%!"
+              (i+1)
+              (if i+1 >= start.pos_lnum &&
+                    i+1 <= stop.pos_lnum then
+                '>'
+              else ' ')
+              lines.(i)
+          ;
+            if i+1 = stop.pos_lnum then begin
+                let c1 = start.pos_cnum - start.pos_bol in
+                let c2 = stop.pos_cnum - stop.pos_bol in
+                let c0 = min c1 c2 in
+                let c1 = max c1 c2 in
+                Printf.eprintf "%s%s\n%!"
+                  (String.make (c0+5+3) ' ')
+                  (String.make (c1-c0) '^')
+
+              end;
+            if i < stop.pos_lnum+2 then
+              iter (i+1) lines
+          end
+        else
+          iter (i+1) lines
     in
-    iter_json b json;
-    Buffer.contents b
-end
+    iter 0 lines
+  with _ -> ()
 
-open JSON
 
 let display_human ~format messages =
   match messages with
@@ -92,8 +78,11 @@ let display_human ~format messages =
      end;
      List.iter (fun m ->
          match format with
-         | Format_Human ->
-          (* warning: src/main.rs:2:5: unnecessary repetition *)
+         | Format_Human | Format_Context ->
+            (* warning: src/main.rs:2:5: unnecessary repetition *)
+            Printf.eprintf "%d-%d\n%!"
+                m.msg_loc.loc_start.pos_cnum
+                m.msg_loc.loc_end.pos_cnum;
             Location.print_loc Format.str_formatter m.msg_loc;
             let loc = Format.flush_str_formatter () in
             Printf.eprintf "%s\n%!" loc;
@@ -104,6 +93,15 @@ let display_human ~format messages =
                 "Warning")
               m.msg_warning.w_idstr
               m.msg_string;
+            begin
+              match m.msg_autofix with
+              | None -> ()
+              | Some text ->
+                 Printf.eprintf "  Possible replacement (--autofix): %S\n"
+                   text
+            end;
+            if format = Format_Context then
+              show_context m.msg_loc
 
          | Format_Short ->
             let pos = m.msg_loc.loc_start in
@@ -201,7 +199,7 @@ let display_sarif messages =
       ) messages
   in
   let str =
-    JSON.to_string
+    Yalo_misc.Ez_json.to_string
       (OBJECT [
            "$schema", STRING "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json" ;
            "version", STRING "2.1.0";
@@ -227,7 +225,8 @@ let display_sarif messages =
 let display_messages ?(format=Format_Human) messages =
   let nerrors =
     match format with
-    | Format_Human -> display_human ~format messages
+    | Format_Human
+      | Format_Context -> display_human ~format messages
     | Format_Sarif -> display_sarif messages
     | Format_Short -> display_human ~format messages
   in

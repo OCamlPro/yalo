@@ -85,6 +85,9 @@ yalo-deps.opam.locked
 dir = "src/yalo"
 
 [[package]]
+dir = "src/yalo_misc"
+
+[[package]]
 dir = "src/yalo_lib"
 
 [[package]]
