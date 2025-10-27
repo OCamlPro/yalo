@@ -17,7 +17,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_driver ( >= :version ))
    ppx_inline_test
    ppx_expect
@@ -36,7 +36,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_config ( >= :version ))
    re
    ppxlib
@@ -63,7 +63,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_misc ( >= :version ))
    (yalo_config ( >= :version ))
    re
@@ -91,7 +91,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
    ppx_inline_test
@@ -111,7 +111,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_lib ( >= :version ))
    ppx_inline_test
    ppx_expect
@@ -130,7 +130,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
    ppx_inline_test
@@ -150,7 +150,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_plugin_ocaml ( >= :version ))
    (yalo_lib ( >= :version ))
    ppx_inline_test
@@ -170,7 +170,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (yalo_lib ( >= :version ))
    ppxlib
    odoc-parser
@@ -196,7 +196,7 @@
   )
 
  (depends
-   (ocaml (>= 4.07.0))
+   (ocaml (>= 4.08.0))
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    camlp-streams
    ppx_inline_test

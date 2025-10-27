@@ -5,12 +5,12 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-4285180634318198b152d3da70a87ba9:.
+c784b6b0157febd8dcc4def216316e75:.
 # end context for .
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-7add5d788130b2d5333fa351d4d9356b:.github/workflows/workflow.yml
+0c48b5dd0f34ab656ec27c1a1a164321:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -60,7 +60,7 @@ eb5dffdcdfe0cf7252a14f6332d1bf50:Makefile
 
 # begin context for Makefile.drom
 # file Makefile.drom
-32a426f65d59797dcf19eb3829047615:Makefile.drom
+9a381f4ba4239a1a5f62d587d2b9fbef:Makefile.drom
 # end context for Makefile.drom
 
 # begin context for README.md
@@ -110,52 +110,52 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-dbf43da0879c1debcfa6ec0dd13aa659:dune-project
+b42ab655c92889b816e9bf54a0b72954:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
 # file opam/ppx_yalo.opam
-23cb3651b25c3515bfee9ffa4857809b:opam/ppx_yalo.opam
+700f89c0c42d13af21e3b2cc51869b49:opam/ppx_yalo.opam
 # end context for opam/ppx_yalo.opam
 
 # begin context for opam/yalo.opam
 # file opam/yalo.opam
-295a7db59b30bebaffb1bd12511c68e9:opam/yalo.opam
+2aafb90a98640ed632d036d11ec5b02c:opam/yalo.opam
 # end context for opam/yalo.opam
 
 # begin context for opam/yalo_config.opam
 # file opam/yalo_config.opam
-4905a45815ae245316f85cbe67b6e4cd:opam/yalo_config.opam
+351ef5581c9ca475a145fef2f7b122a3:opam/yalo_config.opam
 # end context for opam/yalo_config.opam
 
 # begin context for opam/yalo_driver.opam
 # file opam/yalo_driver.opam
-8b0918166f1b47b19a44239c6a37f81b:opam/yalo_driver.opam
+edaf59a2f710f4324f07a61d2593c76a:opam/yalo_driver.opam
 # end context for opam/yalo_driver.opam
 
 # begin context for opam/yalo_lib.opam
 # file opam/yalo_lib.opam
-06bade4bbbbc1a51278400cf4a167077:opam/yalo_lib.opam
+c3ae4a5675f42600233cc8c87faec212:opam/yalo_lib.opam
 # end context for opam/yalo_lib.opam
 
 # begin context for opam/yalo_misc.opam
 # file opam/yalo_misc.opam
-6146015ab332a82937e6d456f8d26b32:opam/yalo_misc.opam
+743eadf2467523edb8ed537628fc941c:opam/yalo_misc.opam
 # end context for opam/yalo_misc.opam
 
 # begin context for opam/yalo_plugin_FIND.opam
 # file opam/yalo_plugin_FIND.opam
-e61a7c8dc6882c49cbab816d7b0d4489:opam/yalo_plugin_FIND.opam
+047ef6e64e1fe4496b3d68e2b05a0206:opam/yalo_plugin_FIND.opam
 # end context for opam/yalo_plugin_FIND.opam
 
 # begin context for opam/yalo_plugin_YALO.opam
 # file opam/yalo_plugin_YALO.opam
-79c9169904797df27e1e85752c7753d5:opam/yalo_plugin_YALO.opam
+f05f8bb58f3638f610ceca4b06189e05:opam/yalo_plugin_YALO.opam
 # end context for opam/yalo_plugin_YALO.opam
 
 # begin context for opam/yalo_plugin_ocaml.opam
 # file opam/yalo_plugin_ocaml.opam
-044a4e80fee0799ffcf4297bcd7f687b:opam/yalo_plugin_ocaml.opam
+97883014f93ca734beb9cdf0d0ec1b49:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
 
 # begin context for opam/yalo_plugin_ocamlpro.opam
