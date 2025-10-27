@@ -37,7 +37,7 @@ install: [
 ]
 depends: [
   "ocaml" {>= "4.07.0"}
-  "dune" {>= "2.7.0"}
+  "dune" {>= "2.8.0"}
   "ez_file" {>= "0.3.0" & < "1.0.0"}
   "camlp-streams" {}
   "ppx_inline_test" {with-test}
