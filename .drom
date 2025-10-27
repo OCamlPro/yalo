@@ -10,7 +10,7 @@ version:0.9.0
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-0c48b5dd0f34ab656ec27c1a1a164321:.github/workflows/workflow.yml
+c39ea087ca141975fe7d257b220d5205:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -157,11 +157,6 @@ b3998db4a97a37d7a3a59a004214b018:opam/yalo_plugin_YALO.opam
 # file opam/yalo_plugin_ocaml.opam
 1f5b31f41bb9cd9ba5b9e07d323a742e:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
-
-# begin context for opam/yalo_plugin_ocamlpro.opam
-# file opam/yalo_plugin_ocamlpro.opam
-3261e44970f09a8b7d00a0df4c7e74cf:opam/yalo_plugin_ocamlpro.opam
-# end context for opam/yalo_plugin_ocamlpro.opam
 
 # begin context for scripts/after.sh
 # file scripts/after.sh
