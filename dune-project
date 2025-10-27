@@ -18,7 +18,7 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_driver ( >= :version ))
+   (yalo_driver (= :version))
    ppx_inline_test
    ppx_expect
    odoc
@@ -37,7 +37,7 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_config ( >= :version ))
+   (yalo_config (= :version))
    re
    ppxlib
    odoc-parser
@@ -64,8 +64,8 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_misc ( >= :version ))
-   (yalo_config ( >= :version ))
+   (yalo_misc (= :version))
+   (yalo_config (= :version))
    re
    ppxlib
    odoc-parser
@@ -92,8 +92,8 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml ( >= :version ))
-   (yalo_lib ( >= :version ))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
    ppx_inline_test
    ppx_expect
    odoc
@@ -112,7 +112,7 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_lib ( >= :version ))
+   (yalo_lib (= :version))
    ppx_inline_test
    ppx_expect
    odoc
@@ -131,8 +131,8 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml ( >= :version ))
-   (yalo_lib ( >= :version ))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
    ppx_inline_test
    ppx_expect
    odoc
@@ -151,8 +151,8 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml ( >= :version ))
-   (yalo_lib ( >= :version ))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
    ppx_inline_test
    ppx_expect
    odoc
@@ -171,7 +171,7 @@
 
  (depends
    (ocaml (>= 4.08.0))
-   (yalo_lib ( >= :version ))
+   (yalo_lib (= :version))
    ppxlib
    odoc-parser
    ocaml-compiler-libs

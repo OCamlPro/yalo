@@ -60,7 +60,7 @@ ocaml-compiler-libs = { libname ="ocaml-compiler-libs.common" }
 odoc-parser = ""
 ppxlib = ""
 base-unix = { libname = "dynlink" }
-yalo_lib = ":version"
+yalo_lib = "version"
 
 # package tools dependencies
 [tools]

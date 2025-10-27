@@ -38,7 +38,7 @@ install: [
 depends: [
   "ocaml" {>= "4.08.0"}
   "dune" {>= "2.8.0"}
-  "yalo_config" {>= ":version"}
+  "yalo_config" {= version}
   "re" {}
   "ppxlib" {}
   "odoc-parser" {}

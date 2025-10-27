@@ -53,8 +53,8 @@ preprocess = "pps ppxlib.metaquot"
 #   ez_file = ">=0.1 <1.3"
 #   base-unix = { libname = "unix", version = ">=base" } 
 [dependencies]
-yalo_lib = ":version"
-yalo_plugin_ocaml = ":version"
+yalo_lib = "version"
+yalo_plugin_ocaml = "version"
 
 # package tools dependencies
 [tools]

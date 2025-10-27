@@ -55,7 +55,7 @@ preprocess = "pps ppxlib.metaquot"
 [dependencies]
 directories = "=0.2"
 ez_cmdliner = "0.2.0"
-yalo_config = ":version"
+yalo_config = "version"
 ez_file = "0.3.0"
 ocaml-compiler-libs = { libname ="ocaml-compiler-libs.common" }
 #compiler-libs = { libname = "compiler-libs.common" }
@@ -66,7 +66,7 @@ ppxlib = ""
 #ppxlib.stdppx = ""
 base-unix = { libname = "dynlink" }
 re = ""
-yalo_misc = ":version"
+yalo_misc = "version"
 
 # package tools dependencies
 [tools]
