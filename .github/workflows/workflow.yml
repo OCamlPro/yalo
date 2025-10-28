@@ -32,6 +32,7 @@ jobs:
 # we need permissions to deploy docs
     permissions:
       contents: write
+      security-events: write
 
     runs-on: ${{ matrix.os }}
 
