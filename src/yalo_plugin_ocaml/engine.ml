@@ -120,7 +120,6 @@ let lint_src_file ~file =
                in
                let line_line = String.sub s pos0 (pos1-pos0) in
                let line_sep = String.sub s pos1 (pos2-pos1+1) in
-               Printf.eprintf "LINE %d-%d %S\n%!" pos0 pos1 line_line;
                let line_loc =
                  YALO.mkloc ~bol:pos0 ~lnum ~end_cnum:pos1 ~file () in
                YALOLANG.iter_linters ~file src_line_linters

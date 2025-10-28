@@ -178,7 +178,6 @@ let display_sarif messages =
             "message", OBJECT [
                            "text", STRING m.msg_string ;
                          ];
-            "toto", STRING "toto";
             "locations",
             LIST [
                 OBJECT [
