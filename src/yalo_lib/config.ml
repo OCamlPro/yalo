@@ -56,12 +56,13 @@ module EzConfig = struct
 
       let create_section_option section path ~short_help
             ?(long_help = [ short_help ]) ?level option_type default_value =
-        LowLevel.create_section_option section path ~short_help long_help
+        create_section_option section path ~short_help long_help
           ?level option_type default_value
 
       let string_list_option = list_option string_option
 
       module OP = EzConfig.OP
+
     end
   end
 end
@@ -122,17 +123,19 @@ let config_errors =
     [ "danger" ]
 
 module FILEATTR = struct
-  open EZCONFIG.LowLevel
+  open EZCONFIG
 
   let of_option = function
     | Module list ->
        List.map (function
+           | "project", StringValue v ->
+              Project ( EzString.split v ':' )
            | "project", v ->
-              Project ( EZCONFIG.LowLevel.value_to_string v )
+              Project ( EZCONFIG.value_to_list EZCONFIG.value_to_string v )
            | "skipdir", v ->
-              Skipdir ( EZCONFIG.LowLevel.value_to_bool v )
+              Skipdir ( EZCONFIG.value_to_bool v )
            | "tag", v ->
-              Tag ( EZCONFIG.LowLevel.value_to_string v )
+              Tag ( EZCONFIG.value_to_string v )
            | s, _ ->
               Printf.kprintf failwith
                 "Unknown fileattr name %S" s
@@ -142,8 +145,12 @@ module FILEATTR = struct
   let to_option fileattrs =
     Module (
     List.map (function
-        | Project name ->
-           "project", string_to_value name ;
+        | Project [ name ] ->
+           "project", StringValue name ;
+        | Project list ->
+           "project",
+           EZCONFIG.list_to_value
+             EZCONFIG.string_to_value list
         | Tag tagname ->
            "tag", string_to_value tagname ;
         | Skipdir bool ->

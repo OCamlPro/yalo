@@ -42,12 +42,14 @@ type file_kind =
   | FOLDER
   | DOCUMENT
   | OTHER
+  | INEXISTENT
 
 let file_kind filename =
   match (Unix.lstat filename).st_kind with
   | Unix.S_DIR -> FOLDER
   | Unix.S_REG -> DOCUMENT
   | _ -> OTHER
+  | exception _ -> INEXISTENT
 
 let scan_projects
       ~fs
@@ -61,8 +63,9 @@ let scan_projects
        fs.fs_folder.folder_scan <- Scan_forced
     | paths ->
        List.iter (fun filepath ->
-           Printf.eprintf "filepath %s\n%!"
-                  ( String.concat "/" filepath);
+           let fullname = String.concat "/" filepath in
+           if Engine.verbose 2 then
+             Printf.eprintf "add scanning root %s\n%!" fullname ;
            let rec iter folder path =
              match path with
              | [] ->
@@ -78,6 +81,10 @@ let scan_projects
                 | FOLDER ->
                    let folder = Engine.get_folder folder basename in
                    iter folder path
+                | INEXISTENT ->
+                   Printf.eprintf "File argument %S does not exist\n%!"
+                     fullname;
+                   exit 2
                 | DOCUMENT ->
                    match path with
                    | _ :: _ ->
@@ -107,7 +114,7 @@ let scan_projects
      all folders at depth N-1. *)
   let folders_queue = Queue.create () in
   let default_project = Engine.new_project !!Config.project in
-  fs.fs_folder.folder_project <- default_project ;
+  fs.fs_folder.folder_projects <- Engine.project_map_add default_project ;
   Queue.add fs.fs_folder folders_queue ;
 
   let read_folder folder =
@@ -131,10 +138,17 @@ let scan_projects
     let attrs = get_fileattrs folder.folder_name in
     List.iter (function attrs ->
                  List.iter (function
-                     | Project project_name ->
+                     | Project projects ->
                         if Engine.verbose 2 then
-                          Printf.eprintf "   Project %S\n%!" project_name ;
-                        folder.folder_project <- Engine.new_project project_name
+                          Printf.eprintf "   Projects %S\n%!"
+                            ( String.concat ":" projects ) ;
+                        folder.folder_projects <- StringMap.empty ;
+                        List.iter (fun project_name ->
+                            folder.folder_projects <-
+                              Engine.project_map_add
+                                (Engine.new_project project_name)
+                                ~map:folder.folder_projects)
+                            projects
                      | Skipdir skipdir ->
                         if Engine.verbose 2 then
                           Printf.eprintf "   Skipdir %b\n%!" skipdir ;
@@ -169,7 +183,7 @@ let scan_projects
         match file_kind file_name with
         | FOLDER ->
            let subfolder = Engine.get_folder folder basename in
-           subfolder.folder_project <- folder.folder_project ;
+           subfolder.folder_projects <- folder.folder_projects ;
            subfolder.folder_tags <- folder.folder_tags ;
 
            begin
@@ -183,6 +197,7 @@ let scan_projects
            doc.doc_tags <- folder.folder_tags ;
            ()
         | OTHER -> ()
+        | INEXISTENT -> assert false
       ) add_files ;
 
     StringMap.iter (fun _ subfolder ->
@@ -194,9 +209,10 @@ let scan_projects
         List.iter
           (function attrs ->
              List.iter (function
-                 | Project project_name ->
+                 | Project projects ->
                     if Engine.verbose 2 then
-                      Printf.eprintf "   Skipping Project %S\n%!" project_name ;
+                      Printf.eprintf "   Skipping Project %S\n%!"
+                        (String.concat ":" projects) ;
                  | Skipdir skipdir ->
                     if Engine.verbose 2 then
                       Printf.eprintf "   Skipping Skipdir %b\n%!" skipdir ;
@@ -217,7 +233,8 @@ let scan_projects
   in
 
   Hashtbl.iter (fun _ file ->
-      add_file_project file file.file_project ;
+      StringMap.iter (fun _ p ->
+          add_file_project file p) file.file_projects ;
       add_file_project file fs.fs_project ;
     ) Engine.all_files ;
 
@@ -238,7 +255,9 @@ let lint_projects
     match projects with
     | [] -> begin
         match !!Config.default_target with
-        | None -> [ fs.fs_folder.folder_project ]
+        | None ->
+           StringMap.to_list fs.fs_folder.folder_projects |>
+             List.map snd
         | Some name -> [ Engine.new_project name ]
       end
     | list ->

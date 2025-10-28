@@ -8,5 +8,5 @@ yalofind: build
 
 yalo_sarif: build
 	mkdir -p _yalo
-	opam exec -- $(YALO_RUN) lint yalo --message-format sarif > _yalo/test.sarif
+	opam exec -- $(YALO_RUN) lint -p yalo --message-format sarif > _yalo/test.sarif
 

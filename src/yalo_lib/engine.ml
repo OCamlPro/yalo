@@ -404,18 +404,23 @@ let new_file ~file_doc ~file_kind ~file_crc file_name =
     file_crc ;
     file_kind ;
     file_doc ;
-    file_project = file_doc.doc_parent.folder_project ;
+    file_projects = file_doc.doc_parent.folder_projects ;
     file_messages = StringMap.empty ;
     file_done = false ;
     file_warnings_done = StringSet.empty ;
   }
+
+let string_of_projects map =
+  StringMap.to_list map |>
+    List.map fst |>
+    String.concat ":"
 
 let add_file ~file_doc ~file_kind =
   if file_kind.kind_validate ~file_doc then
     let file_name = file_doc.doc_name in
     if verbose 2 then
       Printf.eprintf "add_file %s %s\n%!"
-        file_name file_doc.doc_parent.folder_project.project_name ;
+        file_name (string_of_projects file_doc.doc_parent.folder_projects);
 
     let file_crc = Digest.file file_name in
     match Hashtbl.find all_files file_name with
@@ -471,6 +476,9 @@ let new_project name =
      Hashtbl.add all_projects name p ;
      p
 
+let project_map_add ?(map=StringMap.empty) p =
+  StringMap.add p.project_name p map
+
 let new_fs ~fs_root ~fs_subpath =
 
   let project_all = new_project "_" in
@@ -483,7 +491,7 @@ let new_fs ~fs_root ~fs_subpath =
       folder_tags = StringSet.empty ;
       folder_docs = StringMap.empty ;
       folder_folders = StringMap.empty ;
-      folder_project = project_default ;
+      folder_projects = project_map_add project_default ;
       folder_scan = Scan_disabled ;
     }
   and folder_root =
@@ -508,7 +516,7 @@ let get_folder folder_parent basename =
          folder_tags = StringSet.empty ;
          folder_docs = StringMap.empty ;
          folder_folders = StringMap.empty ;
-         folder_project = folder_parent.folder_project ;
+         folder_projects = folder_parent.folder_projects ;
          folder_scan = Scan_disabled ;
        } in
      folder_parent.folder_folders <-

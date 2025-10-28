@@ -317,7 +317,7 @@ let folder_updater ~folder =
      let rec iter folder2 path =
        match path with
        | [] ->
-          folder.folder_project <- folder2.folder_project
+          folder.folder_projects <- folder2.folder_projects
        | basename :: path ->
           match StringMap.find basename folder2.folder_folders with
           | exception Not_found -> () (* weird *)
