@@ -7,5 +7,6 @@ yalofind: build
 	$(YALO_RUN) lint -L yalo_plugin_FIND --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)
 
 yalo_sarif: build
+	mkdir -p _yalo
 	$(YALO_RUN) lint --message-format sarif > _yalo/test.sarif
 
