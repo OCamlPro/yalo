@@ -33,6 +33,7 @@ jobs:
     permissions:
       contents: write
       security-events: write
+      actions: read
 
     runs-on: ${{ matrix.os }}
 
