@@ -10,16 +10,17 @@
 (*                                                                        *)
 (**************************************************************************)
 
+open EzCompat
 open Ezcmd.V2
+open Ez_file.V1
+open EzFile.OP
+
 open Yalo.Config.OP
+open Yalo.Types
+
+let arg_output_dir = ref "."
 
 let arg_specs = Args.[
-    [], EZCMD.Anons (fun list ->
-            arg_explicit_files := list),
-    EZCMD.info ~docv:"FILES" "List of files that should be explicitely linted. You can also use --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for .cmi/.cmt/.cmti fles) to automatically find files to lint in a project. Specifying . here is a shortcut for --source-dir . --build-dir _build";
-
-    [ "skip-config-warnings" ], EZCMD.Set arg_skip_config_warnings,
-    EZCMD.info "Skip warnings and errors settings by config file";
 
     [ "profile" ], EZCMD.String (fun s -> arg_profile := Some s),
     EZCMD.info ~docv:"FILE" "Read warnings+errors profile from FILE";
@@ -32,9 +33,93 @@ let arg_specs = Args.[
     EZCMD.info ~docv:"SPEC"
       "Set errors according to SPEC-ification";
 
-    [ "p" ], EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
-    EZCMD.info ~docv:"PROJECT" "Lint only files from PROJECT";
+    [ "dir" ], EZCMD.String (fun s -> arg_output_dir := s),
+    EZCMD.info ~docv:"DIRECTORY" "Target directory for output";
   ]
+
+
+
+let clippy_gen dir =
+  Yalo_misc.Utils.safe_mkdir dir ;
+
+  let impls = ref StringSet.empty in
+  let groups = ref StringSet.empty in
+  let namespaces = ref StringSet.empty in
+  let rules =
+    List.map Yalo_misc.Clippy.(fun w ->
+      let applicability = {
+          is_multi_part_suggestion = false ;
+          applicability = "Unresolved" ;
+        } in
+      let level = match w.w_level_warning,
+                        w.w_level_error with
+          _, true -> "deny"
+        | true, _ -> "warn"
+        | _ -> "allow"
+      in
+
+      let namespace = w.w_namespace.ns_name in
+      namespaces := StringSet.add namespace !namespaces ;
+
+      let impl = w.w_namespace.ns_plugin.plugin_name in
+      impls := StringSet.add impl !impls ;
+
+      let tags = List.map (fun tag -> tag.tag_name) w.w_tags in
+      let group = String.concat ":" tags in
+
+      List.iter (fun tag ->
+          groups := StringSet.add tag !groups) tags ;
+
+      let docs = Printf.sprintf
+                   "### Message\n%s\n### Description\n%s"
+                   w.w_msg
+                   w.w_desc
+      in
+      {
+        id = Printf.sprintf "%s %s" w.w_idstr w.w_name;
+        namespace ;
+        group ;
+        tags ;
+        level ;
+        impl ;
+        docs ;
+        applicability ;
+      }
+    ) (List.rev !Yalo.Engine.all_warnings)
+  in
+
+  let json_file = dir // "lints.json" in
+  EzFile.write_file json_file ( Yalo_misc.Clippy.json_of_rules rules );
+  Printf.eprintf "File %s created\n%!" json_file;
+
+  let js_content =
+    Printf.sprintf
+      {|
+var NAMESPACES_FILTERS_DEFAULT = {
+    "%s": true };
+var IMPL_FILTERS_DEFAULT = {
+    "%s": true };
+var LEVEL_FILTERS_DEFAULT = {
+    allow: true,
+    warn: true,
+    deny: true
+};
+var GROUPS_FILTER_DEFAULT = {
+    "%s": true
+};
+|}
+      (String.concat "\": true,\n    \"" (StringSet.to_list !namespaces))
+      (String.concat "\": true,\n    \"" (StringSet.to_list !impls))
+      (String.concat "\": true,\n    \"" (StringSet.to_list !groups))
+  in
+
+  let js_file = dir // "groups.js" in
+  EzFile.write_file js_file js_content ;
+  Printf.eprintf "File %s created\n%!" js_file;
+
+  ()
+
+
 
 let cmd command_name =
 
@@ -48,7 +133,7 @@ let cmd command_name =
   EZCMD.sub
     command_name
     ~args
-    ~doc: "Lint a project or a list of files."
+    ~doc: "Generate the JSON documentation."
     ~man:[
       `S "DESCRIPTION";
       `Blocks [
@@ -74,18 +159,9 @@ let cmd command_name =
         Print_config.eprint ();
 
       let fs = Init.get_fs () in
-
-      let paths =
-        List.map (fun filename ->
-            Yalo_misc.Utils.path_of_filename ~subpath:fs.fs_subpath filename
-          ) !Args.arg_explicit_files
+      let dir =
+           Yalo_misc.Utils.normalize_filename ~subpath:fs.fs_subpath
+             !arg_output_dir
       in
-
-      Yalo.Lint_project.main
-        ~fs
-        ~paths
-        ~projects: !Args.arg_projects
-        ~format:!Args.arg_message_format
-        ();
-
+      clippy_gen dir
     )
