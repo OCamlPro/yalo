@@ -1,12 +1,12 @@
-YALO_COMMAND=./yalo
-YALO_INITIAL_ARGS=-I ./_build/install/default/lib/yalo_plugin_ocaml -I ./_build/install/default/lib/yalo_plugin_YALO  -I ./_build/install/default/lib/yalo_plugin_FIND -I _build/install/default/lib/yalo_lib -L yalo_no_final_line.ml
-
-YALO_RUN=$(YALO_COMMAND) $(YALO_INITIAL_ARGS)
-YALO_FINAL_ARGS=--print-config
-
+YALO_RUN=./yalo.exe
 
 yalotest: build
 	$(YALO_RUN) lint . $(YALO_FINAL_ARGS)
 
 yalofind: build
 	$(YALO_RUN) lint -L yalo_plugin_FIND --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)
+
+yalo_sarif: build
+	mkdir -p _yalo
+	opam exec -- $(YALO_RUN) lint -p yalo --message-format sarif > _yalo/test.sarif
+

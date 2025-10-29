@@ -8,8 +8,9 @@ _build
 .drom.config
 _*
 *.old
-log*
+*.log
 TODO.txt
 yalo-deps.opam.locked
+yalo.exe
 
 

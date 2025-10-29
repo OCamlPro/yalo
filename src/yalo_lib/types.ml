@@ -81,7 +81,7 @@ and folder = {
     folder_name : string ; (* name till fs_root *)
 
     mutable folder_tags : StringSet.t ;
-    mutable folder_project : project ;
+    mutable folder_projects : project StringMap.t ;
     mutable folder_scan : scan_kind ;
     mutable folder_docs : document StringMap.t ;
     mutable folder_folders : folder StringMap.t ;
@@ -111,7 +111,7 @@ and file = {
     file_crc : Digest.t ;
     mutable file_warnings_done : StringSet.t ;
     mutable file_done : bool ;
-    mutable file_project : project ;
+    mutable file_projects : project StringMap.t ;
     mutable file_messages : message StringMap.t ;
   }
 
@@ -195,7 +195,7 @@ type src_content_input = {
   }
 
 type file_attr =
-  | Project of string
+  | Project of string list
   | Skipdir of bool
   | Tag of string
 
@@ -204,3 +204,4 @@ type message_format =
   | Format_Context
   | Format_Sarif
   | Format_Short
+

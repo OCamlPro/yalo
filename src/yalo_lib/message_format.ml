@@ -80,9 +80,9 @@ let display_human ~format messages =
          match format with
          | Format_Human | Format_Context ->
             (* warning: src/main.rs:2:5: unnecessary repetition *)
-            Printf.eprintf "%d-%d\n%!"
+            (* Printf.eprintf "%d-%d\n%!"
                 m.msg_loc.loc_start.pos_cnum
-                m.msg_loc.loc_end.pos_cnum;
+                m.msg_loc.loc_end.pos_cnum; *)
             Location.print_loc Format.str_formatter m.msg_loc;
             let loc = Format.flush_str_formatter () in
             Printf.eprintf "%s\n%!" loc;
@@ -178,7 +178,6 @@ let display_sarif messages =
             "message", OBJECT [
                            "text", STRING m.msg_string ;
                          ];
-            "toto", STRING "toto";
             "locations",
             LIST [
                 OBJECT [
