@@ -11,11 +11,11 @@ Yalo aims at providing a code scanner for OCaml projects. Because most organizat
 """
 authors: ["Fabrice Le Fessant <fabrice.le_fessant@ocamlpro.com>"]
 maintainer: ["Fabrice Le Fessant <fabrice.le_fessant@ocamlpro.com>"]
-homepage: "https://lefessan.github.io/yalo"
-doc: "https://lefessan.github.io/yalo/sphinx"
-bug-reports: "https://github.com/lefessan/yalo/issues"
-dev-repo: "git+https://github.com/lefessan/yalo.git"
-tags: "org:lefessan"
+homepage: "https://ocamlpro.github.io/yalo"
+doc: "https://ocamlpro.github.io/yalo/sphinx"
+bug-reports: "https://github.com/ocamlpro/yalo/issues"
+dev-repo: "git+https://github.com/ocamlpro/yalo.git"
+tags: "org:ocamlpro"
 build: [
   ["dune" "subst"] {dev}
   ["sh" "-c" "./scripts/before.sh build '%{name}%'"]

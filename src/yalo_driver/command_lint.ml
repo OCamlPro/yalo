@@ -63,6 +63,10 @@ let arg_specs = Args.[
     EZCMD.Unit (fun () -> Args.arg_autofix_inplace := Some true),
     EZCMD.info "Autofix files in place" ;
 
+    [ "o" ; "output" ],
+    EZCMD.String (fun s -> arg_output := Some s),
+    EZCMD.info ~docv:"FILE" "File for JSON output";
+
   ]
 
 let cmd command_name =
@@ -96,18 +100,25 @@ let cmd command_name =
 
       let fs = Init.get_fs () in
 
-      let paths =
-        List.map (fun filename ->
-            Yalo_misc.Utils.path_of_filename ~subpath:fs.fs_subpath filename
-          ) !Args.arg_explicit_files
+      let path_of_filename =
+        Yalo_misc.Utils.path_of_filename ~subpath:fs.fs_subpath
       in
+      let normalize_filename =
+        Yalo_misc.Utils.normalize_filename ~subpath:fs.fs_subpath
+      in
+      let paths =
+        List.map path_of_filename !Args.arg_explicit_files
+      in
+
+      let output = Option.map normalize_filename !Args.arg_output in
 
       Yalo.Lint_project.main
         ~fs
         ~paths
         ~projects: !Args.arg_projects
         ~format:!Args.arg_message_format
-        ?autofix: !Args.arg_autofix_inplace 
+        ?autofix: !Args.arg_autofix_inplace
+        ?output
         ();
 
     )

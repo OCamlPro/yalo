@@ -96,10 +96,16 @@ let display_human ~format messages =
            m.msg_warning.w_idstr
            m.msg_string;
       | _ -> assert false
-    ) messages
+    ) messages ;
+  ()
 
 (* TODO: we should use the 'sarif' package instead *)
-let display_sarif messages =
+let display_sarif ?output messages =
+  let oc = match output with
+    | None -> stdout
+    | Some filename ->
+       open_out filename
+  in
   let results =
     List.map (fun m ->
         let loc = m.msg_loc in
@@ -196,14 +202,20 @@ let display_sarif messages =
              ]
       ])
   in
-  Printf.printf "%s%!\n" str
+  Printf.fprintf oc "%s%!\n" str ;
+  begin
+    match output with
+    | None -> ()
+    | Some _ -> close_out oc
+  end;
+  ()
 
-let display_messages ?(format=Format_Human) messages =
+let display_messages ?(format=Format_Human) ?output messages =
   begin
     match format with
     | Format_Human
-      | Format_Context -> display_human ~format messages
-    | Format_Sarif -> display_sarif messages
+    | Format_Context -> display_human ~format messages
+    | Format_Sarif -> display_sarif ?output messages
     | Format_Short -> display_human ~format messages
   end;
   let nwarnings = ref 0 in

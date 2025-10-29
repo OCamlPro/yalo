@@ -37,6 +37,7 @@ let arg_profile = ref (None : string option)
 
 let arg_message_format = ref Yalo.Types.Format_Context
 let arg_autofix_inplace = ref (None : bool option)
+let arg_output = ref (None : string option)
 
 let parse_initial_args args =
   let rec iter args =
@@ -65,7 +66,7 @@ let parse_initial_args args =
     | "-no-load-plugins" :: args ->
        arg_no_load_plugins := true;
        iter args
-    | [] ->
+    | [] | [ "--help" ] ->
        arg_no_load_plugins := true;
        "help", []
     | cmd :: args -> cmd, args

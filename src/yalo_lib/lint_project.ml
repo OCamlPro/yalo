@@ -306,6 +306,7 @@ let main
       ~projects
       ?format
       ?autofix
+      ?output
       () =
 
   scan_projects
@@ -320,7 +321,7 @@ let main
 
   (* TODO: also display cached messages *)
   let messages = Engine.get_messages () in
-  Message_format.display_messages ?format messages;
+  Message_format.display_messages ?format ?output messages;
 
   begin match autofix with
   | None -> ()
