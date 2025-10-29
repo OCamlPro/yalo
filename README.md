@@ -4,6 +4,8 @@
 
 # yalo
 
+![Logo](./docs/logo.png)
+
 This is the description
 of the yalo OCaml project
 

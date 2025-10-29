@@ -5,11 +5,11 @@
   (public_name yalo_misc)
   (wrapped true)
   ; use field 'dune-libraries' to add libraries without opam deps
-  (libraries yalo_config re ppxlib odoc-parser ocaml-compiler-libs.common ez_file ez_cmdliner directories dynlink )
+  (libraries yojson yalo_config re ppxlib ppx_deriving_yojson odoc-parser ocaml-compiler-libs.common ez_file ez_cmdliner directories dynlink )
   ; use field 'dune-flags' to set this value
   (flags (:standard))
   ; use field 'dune-stanzas' to add more stanzas here
-  (preprocess (pps ppxlib.metaquot))
+  (preprocess (pps ppx_deriving_yojson))
   
   )
 

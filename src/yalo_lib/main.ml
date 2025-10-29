@@ -77,54 +77,56 @@ let load_plugins
               ) load_dirs;
             exit 2
       in
-      if Filename.check_suffix file ".ml" then begin
-          let source = EzFile.read_file file in
-          let crc = Digest.string source in
-          let crc = Digest.to_hex crc in
-          (* TODO: create _yalo where .yalocaml is *)
-          let prefix = Printf.sprintf "%s/Yalo_%s"
-                         Constant.temp_dir crc in
-          (* TODO: bytecode version *)
-          let file_obj = prefix ^ ".cmxs" in
-          let file_ml = prefix ^ ".ml" in
+      if Filename.check_suffix file ".ml" then
+        let source = EzFile.read_file file in
+        let crc = Digest.string source in
+        let crc = Digest.to_hex crc in
+        (* TODO: create _yalo where .yalocaml is *)
+        let prefix = Printf.sprintf "%s/Yalo_%s"
+                       Constant.temp_dir crc in
+        (* TODO: bytecode version *)
+        let file_obj = prefix ^ ".cmxs" in
+        let file_ml = prefix ^ ".ml" in
 
-          let build_file () =
-            if not ( Sys.file_exists Constant.temp_dir ) then
-              Unix.mkdir Constant.temp_dir 0o755;
-            EzFile.write_file file_ml source;
-            (* TODO: bytecode version *)
-            let cmd = Printf.sprintf
-                        "ocamlopt -shared -opaque %s -o %s %s"
-                        (match load_dirs with
-                        | [] -> ""
-                        | dirs ->
-                           Printf.sprintf "-I '%s'"
-                             (String.concat "' -I '" dirs))
-                        file_obj file_ml
-            in
-            Printf.eprintf "Call: %s\n%!" cmd;
-            let ret = Sys.command cmd in
-            if ret <> 0 then begin
-                Printf.eprintf "Error: could not compile %s\n%!" arg;
-                ignore (Sys.command "find _build");
-                exit 2
-              end;
+        let build_file () =
+          if not ( Sys.file_exists Constant.temp_dir ) then
+            Unix.mkdir Constant.temp_dir 0o755;
+          EzFile.write_file file_ml source;
+          (* TODO: bytecode version *)
+          let cmd = Printf.sprintf
+                      "ocamlopt -shared -opaque %s -o %s %s"
+                      (match load_dirs with
+                      | [] -> ""
+                      | dirs ->
+                         Printf.sprintf "-I '%s'"
+                           (String.concat "' -I '" dirs))
+                      file_obj file_ml
           in
-          if Sys.file_exists file_obj then
-            try
-              load_plugin file_obj
-            with exn ->
-              Printf.eprintf "Loading %s failed (%s). Rebuilding plugin\n%!"
-                (Printexc.to_string exn) file_obj;
-              Sys.remove file_obj;
-              build_file ();
-              Printf.eprintf "\n\nRe-Run the same command to load the new compiled plugin\n%!";
+          Printf.eprintf "Call: %s\n%!" cmd;
+          let ret = Sys.command cmd in
+          if ret <> 0 then begin
+              Printf.eprintf "Error: could not compile %s\n%!" arg;
               exit 2
-          else begin
-              build_file ();
-              load_plugin file_obj
-            end
-        end
+            end;
+        in
+        if Sys.file_exists file_obj then
+          (* we cannot try to use a precompiled version, instead we need
+             to rebuild it everytime because of a bug in Dynlink:
+
+            try
+            load_plugin file_obj
+            with exn ->
+            Printf.eprintf "Loading %s failed (%s). Rebuilding plugin\n%!"
+            (Printexc.to_string exn) file_obj;
+           *)
+          let () = () in
+          Sys.remove file_obj;
+          build_file ();
+          load_plugin file_obj
+        else begin
+            build_file ();
+            load_plugin file_obj
+          end
       else
         load_plugin file
     ) plugins;
@@ -156,6 +158,9 @@ let init
          let file, subpath = Yalo_misc.Utils.find_file Constant.config_basename in
          let dir = Filename.dirname file in
          Printf.eprintf "yalo: Entering directory '%s'\n%!" dir;
+         at_exit (fun () ->
+             Printf.eprintf "yalo: Leaving directory '%s'\n%!" dir;
+           );
          Sys.chdir dir ;
          let load_dirs = "." ::
                            List.map (Yalo_misc.Utils.normalize_filename ~subpath)

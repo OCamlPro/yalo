@@ -43,7 +43,7 @@ gen-version = "version.ml"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 
-preprocess = "pps ppxlib.metaquot"
+preprocess = "pps ppx_deriving_yojson"
 
 # files to skip while updating at package level
 # skip = []
@@ -66,6 +66,8 @@ ppxlib = ""
 #ppxlib.stdppx = ""
 base-unix = { libname = "dynlink" }
 re = ""
+yojson = ""
+ppx_deriving_yojson = ""
 
 # package tools dependencies
 [tools]

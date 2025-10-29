@@ -9,9 +9,7 @@
 (*************************************)
 
 (* List of plugins to load *)
-plugins = [
-  "yalo_no_final_line.ml";
-]
+plugins = []
 
 (* List of directories to search for plugin files *)
 search_path = [

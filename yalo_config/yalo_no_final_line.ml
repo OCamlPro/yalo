@@ -13,7 +13,7 @@
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
-let plugin = YALO.new_plugin "YALO2" ~version:"0.1.0"
+let plugin = YALO.new_plugin "yalo_no_final_line" ~version:"0.1.0"
 
 let ns = YALO.new_namespace plugin "YALO2"
 
