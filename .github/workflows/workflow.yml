@@ -80,9 +80,11 @@ jobs:
       # Use fields.github-workflow-after-build to add something here
       - name: Run SARIF test
         run: make yalo_sarif
+        if: matrix.os != 'windows-latest'
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
+        if: matrix.os != 'windows-latest'
         with:
           sarif_file:  _yalo/test.sarif
           category: yalo-lint

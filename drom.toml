@@ -76,7 +76,7 @@ share-dirs = ["share"]
 dot-gitignore-trailer = """
 _*
 *.old
-log*
+*.log
 TODO.txt
 yalo-deps.opam.locked
 yalo.exe
@@ -85,9 +85,11 @@ yalo.exe
 github-workflow-after-build = """
       - name: Run SARIF test
         run: make yalo_sarif
+        if: matrix.os != 'windows-latest'
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
+        if: matrix.os != 'windows-latest'
         with:
           sarif_file:  _yalo/test.sarif
           category: yalo-lint
