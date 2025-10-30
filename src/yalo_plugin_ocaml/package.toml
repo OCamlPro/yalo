@@ -72,3 +72,8 @@ yalo_lib = "version"
 #  static-clibs = "unix" 
 [fields]
 dune-flags = ":standard -opaque"
+
+[sites]
+[[sites.share]]
+dir = "yalo"
+root = true

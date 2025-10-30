@@ -10,12 +10,22 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Ez_file.V1
-open EzFile.OP
+module OP = struct
+
+  let filename_concat dir file =
+    match dir with
+    | "" | "." -> file
+    | _ -> Printf.sprintf "%s/%s" dir file
+
+  let (///) = filename_concat
+
+end
+
+open OP
 
 let find_file ?from file =
   let rec iter dirname path =
-    let filename = dirname // file in
+    let filename = dirname /// file in
     if Sys.file_exists filename then
       filename, path
     else
@@ -39,14 +49,13 @@ let find_in_path path name =
     let rec try_dir = function
         [] -> raise Not_found
       | dir::rem ->
-          let fullname = Filename.concat dir name in
+          let fullname = dir /// name in
           if Sys.file_exists fullname then fullname
           else try_dir rem
     in
     try_dir path
 
 let path_of_filename ?(subpath=[]) filename =
-
   let b = Bytes.of_string filename in
   for i = 0 to Bytes.length b -1 do
     if filename.[i] = '\\' then Bytes.set b i '/'

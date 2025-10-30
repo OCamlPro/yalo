@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-95ca3e19fa246ff0418566e3aa6d58f1:.
+e8f3019c1f3ce3b2fa1ac356b661f87a:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -16,7 +16,7 @@ c6d4181b84516f70c8b63d41cba322fb:.drom_ignore
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-6bc3a56b5d824618fbc1edf04dab8e4c:.github/workflows/workflow.yml
+1178b876ca1bd7a5731d6429f466b031:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-df333e8631828a25ff1cf8076cd44a06:dune-project
+1566c841ba73476accfc3a4e74920fb1:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -126,7 +126,7 @@ df333e8631828a25ff1cf8076cd44a06:dune-project
 
 # begin context for opam/yalo.opam
 # file opam/yalo.opam
-2f9b65eb527c86a0c6da7f01878903cc:opam/yalo.opam
+ce2f5260b8b9ccaa424988935a5b7f73:opam/yalo.opam
 # end context for opam/yalo.opam
 
 # begin context for opam/yalo_config.opam
@@ -161,7 +161,7 @@ e20f037740e84fc60ed64d46fc18dc56:opam/yalo_plugin_FIND.opam
 
 # begin context for opam/yalo_plugin_ocaml.opam
 # file opam/yalo_plugin_ocaml.opam
-ee7ec55de91047aa6609326f5a884e09:opam/yalo_plugin_ocaml.opam
+352570ebc35685b796024388435f1464:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
 
 # begin context for scripts/after.sh
@@ -236,7 +236,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/ppx_yalo/version.mlt
 
 # begin context for src/yalo/dune
 # file src/yalo/dune
-b29b2ee3ce07a4512ed6c176d18a4bd4:src/yalo/dune
+d7f37da66dd18d247f45a12818807d15:src/yalo/dune
 # end context for src/yalo/dune
 
 # begin context for src/yalo/index.mld
@@ -371,7 +371,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_YALO/version.mlt
 
 # begin context for src/yalo_plugin_ocaml/dune
 # file src/yalo_plugin_ocaml/dune
-e31462dd2096887e839245d01c0a717a:src/yalo_plugin_ocaml/dune
+413d641cff8e2c944184658d52000913:src/yalo_plugin_ocaml/dune
 # end context for src/yalo_plugin_ocaml/dune
 
 # begin context for src/yalo_plugin_ocaml/index.mld

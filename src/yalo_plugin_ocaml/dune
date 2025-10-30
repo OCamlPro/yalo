@@ -5,7 +5,7 @@
   (public_name yalo_plugin_ocaml)
   (wrapped true)
   ; use field 'dune-libraries' to add libraries without opam deps
-  (libraries yalo_lib )
+  (libraries dune-site yalo_lib )
   ; use field 'dune-flags' to set this value
   (flags (:standard -opaque))
   ; use field 'dune-stanzas' to add more stanzas here
@@ -18,6 +18,11 @@
     (targets version.ml)
     (deps (:script version.mlt) package.toml)
     (action (with-stdout-to %{targets} (run %{ocaml} -I +unix unix.cma %{script}))))
+
+(generate_sites_module
+  (module sites)
+  (sites yalo_plugin_ocaml))
+
 
 (documentation
   (package yalo_plugin_ocaml))

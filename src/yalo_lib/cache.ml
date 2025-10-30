@@ -39,7 +39,7 @@ and cache = {
     mutable cached_files : cached_file StringMap.t ; (* by file name *)
   }
 
-let cache_file = Constant.temp_dir // Constant.cache_basename
+let cache_file = Constant.temp_dir /// Constant.cache_basename
 
 let save cache =
   if not (Sys.file_exists Constant.temp_dir) then

@@ -72,3 +72,10 @@ yalo_driver = "version"
 #  static-clibs = "unix" 
 [fields]
 dune-flags = ":standard (:include linking.sexp) -linkall"
+dune-trailer = """
+"""
+
+[sites]
+[[sites.share]]
+dir = "yalo"
+root = true

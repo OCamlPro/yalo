@@ -12,7 +12,6 @@
 
 open Ezcmd.V2
 open Yalo.Types
-open Yalo.Config.OP
 
 let arg_specs = Args.[
     [], EZCMD.Anons (fun list ->
@@ -87,16 +86,8 @@ let cmd command_name =
     ]
     (fun () ->
 
-      begin
-        match !Args.arg_profile with
-        | None -> ()
-        | Some filename ->
-           Yalo.Config.config_warnings =:= [];
-           Yalo.Config.config_errors =:= [];
-           Yalo.Config.append filename
-      end;
-
       Yalo.Lint_project.activate_warnings_and_linters
+        ?profile:!Args.arg_profile
         ~skip_config_warnings: !Args.arg_skip_config_warnings
         (!Args.arg_warnings, !Args.arg_errors);
 
