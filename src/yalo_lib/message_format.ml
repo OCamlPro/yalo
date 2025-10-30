@@ -54,15 +54,18 @@ let show_context loc =
     iter 0 lines
   with _ -> ()
 
+let short_location loc =
+  Printf.sprintf "%s:%d:%d[%d]"
+    loc.loc_start.pos_fname
+    loc.loc_start.pos_lnum
+    (loc.loc_start.pos_cnum - loc.loc_start.pos_bol + 1)
+    (loc.loc_end.pos_cnum - loc.loc_start.pos_cnum)
 
 let display_human ~format messages =
   List.iter (fun m ->
       match format with
       | Format_Human | Format_Context ->
          (* warning: src/main.rs:2:5: unnecessary repetition *)
-         (* Printf.eprintf "%d-%d\n%!"
-            m.msg_loc.loc_start.pos_cnum
-            m.msg_loc.loc_end.pos_cnum; *)
          Location.print_loc Format.str_formatter m.msg_loc;
          let loc = Format.flush_str_formatter () in
          Printf.eprintf "%s\n%!" loc;
@@ -75,10 +78,13 @@ let display_human ~format messages =
            m.msg_string;
          begin
            match m.msg_autofix with
-           | None -> ()
-           | Some text ->
-              Printf.eprintf "  Possible replacement (--autofix): %S\n"
-                text
+           | [] -> ()
+           | replacements ->
+              Printf.eprintf "  Possible replacements (--autofix):\n";
+              List.iter (fun (loc, text) ->
+                  Printf.eprintf "    %s: %S\n%!"
+                    (short_location loc) text
+                ) replacements
          end;
          if format = Format_Context then
            show_context m.msg_loc
@@ -96,10 +102,16 @@ let display_human ~format messages =
            m.msg_warning.w_idstr
            m.msg_string;
       | _ -> assert false
-    ) messages
+    ) messages ;
+  ()
 
 (* TODO: we should use the 'sarif' package instead *)
-let display_sarif messages =
+let display_sarif ?output messages =
+  let oc = match output with
+    | None -> stdout
+    | Some filename ->
+       open_out filename
+  in
   let results =
     List.map (fun m ->
         let loc = m.msg_loc in
@@ -196,14 +208,20 @@ let display_sarif messages =
              ]
       ])
   in
-  Printf.printf "%s%!\n" str
+  Printf.fprintf oc "%s%!\n" str ;
+  begin
+    match output with
+    | None -> ()
+    | Some _ -> close_out oc
+  end;
+  ()
 
-let display_messages ?(format=Format_Human) messages =
+let display_messages ?(format=Format_Human) ?output messages =
   begin
     match format with
     | Format_Human
-      | Format_Context -> display_human ~format messages
-    | Format_Sarif -> display_sarif messages
+    | Format_Context -> display_human ~format messages
+    | Format_Sarif -> display_sarif ?output messages
     | Format_Short -> display_human ~format messages
   end;
   let nwarnings = ref 0 in

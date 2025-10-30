@@ -55,6 +55,12 @@ let main () =
 
   let subcmd, args = Args.parse_initial_args args in
 
+  if String.length subcmd > 0 && subcmd.[0] = '-' then begin
+      Printf.eprintf
+        "Execution error: a subcommand is needed before argument %S\n%!" cmd;
+      exit 2
+    end;
+
   let argv = Array.of_list (cmd :: subcmd :: args) in
 
   let needs_to_load_plugins = ref false in

@@ -298,7 +298,7 @@ let activate_linters () =
         end
     ) !all_linters
 
-let warn msg_loc ~file ?msg ?autofix w =
+let warn msg_loc ~file ?msg ?(autofix=[]) w =
   if w.w_level_error || w.w_level_warning then
     let msg_string =
       match msg with

@@ -137,7 +137,7 @@ and message = {
     msg_idstr : string ;
     msg_loc : location ;
     msg_string : string ;
-    msg_autofix : string option ;
+    msg_autofix : ( location * string ) list ;
   }
 
 and linter = {

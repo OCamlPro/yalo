@@ -1,20 +1,62 @@
 
-[![Actions Status](https://github.com/lefessan/yalo/workflows/Main%20Workflow/badge.svg)](https://github.com/lefessan/yalo/actions)
-[![Release](https://img.shields.io/github/release/lefessan/yalo.svg)](https://github.com/lefessan/yalo/releases)
+[![Actions Status](https://github.com/OCamlPro/yalo/workflows/Main%20Workflow/badge.svg)](https://github.com/OCamlPro/yalo/actions)
+[![Release](https://img.shields.io/github/release/OCamlPro/yalo.svg)](https://github.com/OCamlPro/yalo/releases)
 
 # yalo
 
 ![Logo](./docs/logo.png)
 
-This is the description
-of the yalo OCaml project
+The drom tool is a wrapper over opam/dune in an attempt to provide a
+cargo-like user experience. It can be used to create full OCaml
+projects with sphinx and odoc documentation. It has specific knowledge
+of Github and will generate files for Github Actions CI and Github
+pages.
 
-* Website: https://lefessan.github.io/yalo
-* General Documentation: https://lefessan.github.io/yalo/sphinx
-* API Documentation: https://lefessan.github.io/yalo/doc
-* Sources: https://github.com/lefessan/yalo
+* Website: https://ocamlpro.github.io/yalo
+* General Documentation: https://OCamlPro.github.io/yalo/sphinx
+* API Documentation: https://OCamlPro.github.io/yalo/doc
+* Sources: https://github.com/OCamlPro/yalo
+* Lints Description: https://ocamlpro.github.io/yalo/lints
 
 FAQ:
+
+* How to configure a project ?
+
+At the project root:
+
+```
+touch .yaloconf
+yalo lint --save-config .yaloconf
+```
+will create a default `.yaloconf` file that you can improve.
+
+* How to integrate in Github workflows ?
+
+In your `.github/workflows` Yaml files, you can add the following
+sections:
+
+For permissions:
+```
+    permissions:
+      contents: write
+      security-events: write
+      actions: read
+```
+
+In the workflow (typically before or after tests):
+```
+      - name: Run Yalo with SARIF output
+        run: |
+	  opam exec -- yalo lint --message-format sarif > yalo.sarif
+        if: matrix.os != 'windows-latest'
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: matrix.os != 'windows-latest'
+        with:
+          sarif_file:  yalo.sarif
+          category: yalo-lint
+```
 
 * How to improve pretty-printing of yalo errors ?
 
