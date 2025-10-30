@@ -12,9 +12,8 @@
 
 open EzCompat (* for IntMap *)
 open Types
-open Ez_file.V1
-open EzFile.OP
-
+open Config.OP
+open Yalo_misc.Utils.OP
 
 let file_kind_uids = ref 0
 let file_uids = ref 0
@@ -26,6 +25,8 @@ let profiles_fileattrs = ref ([] : (string * Types.file_attr list) list)
 let profiles_load_dirs = ref ([] : string list)
 let profiles_plugins = ref ([] : string list)
 let profiles_profiles = ref ([] : string list)
+let profiles_warnings = ref ([] : string list)
+let profiles_errors = ref ([] : string list)
 
 let all_plugins = Hashtbl.create 13
 let all_languages = Hashtbl.create 13
@@ -512,7 +513,7 @@ let get_folder folder_parent basename =
          folder_root = folder_parent.folder_root ;
          folder_parent ;
          folder_basename = basename ;
-         folder_name = folder_parent.folder_name // basename ;
+         folder_name = folder_parent.folder_name /// basename ;
          folder_tags = StringSet.empty ;
          folder_docs = StringMap.empty ;
          folder_folders = StringMap.empty ;
@@ -531,7 +532,7 @@ let get_document doc_parent basename =
      let doc = {
          doc_parent ;
          doc_basename = basename ;
-         doc_name = doc_parent.folder_name // basename;
+         doc_name = doc_parent.folder_name /// basename;
          doc_tags = StringSet.empty ;
          doc_file = None ;
        } in
@@ -553,3 +554,7 @@ let add_folder_updater f =
   folder_updater := (fun ~folder ->
     old_f ~folder ;
     f ~folder)
+
+let profile_append ( profile_var, profile_option ) =
+  profile_var := !profile_var @ !!profile_option ;
+  profile_option =:= []

@@ -30,10 +30,9 @@
 
 open EzCompat
 
-open Ez_file.V1
 open Types
-open EzFile.OP
 open Config.OP
+open Yalo_misc.Utils.OP
 
 (* TODO: explicit files and -p PROJECT should be forbidden to appear
    together *)
@@ -71,7 +70,7 @@ let scan_projects
              | [] ->
                 folder.folder_scan <- Scan_forced
              | basename :: path ->
-                let file_name = folder.folder_name // basename in
+                let file_name = folder.folder_name /// basename in
                 match file_kind file_name with
                 | OTHER ->
                    Printf.eprintf
@@ -179,7 +178,7 @@ let scan_projects
     in
 
     StringSet.iter (fun basename ->
-        let file_name = folder.folder_name // basename in
+        let file_name = folder.folder_name /// basename in
         match file_kind file_name with
         | FOLDER ->
            let subfolder = Engine.get_folder folder basename in
@@ -331,7 +330,19 @@ let main
   ()
 
 let activate_warnings_and_linters
-      ?(skip_config_warnings=false) (arg_warnings, arg_errors) =
+      ?profile
+      ?(skip_config_warnings=false)
+      (arg_warnings, arg_errors) =
+
+
+  begin
+    match profile with
+    | None -> ()
+    | Some filename ->
+       Config.config_warnings =:= [];
+       Config.config_errors =:= [];
+       Config.append filename
+  end;
 
   let set_warning set w =
     w.w_level_warning <- set
@@ -339,11 +350,13 @@ let activate_warnings_and_linters
   let set_error set w = w.w_level_error <- set in
 
   if not skip_config_warnings then
-    Parse_spec.parse_spec_list !!Config.config_warnings set_warning ;
+    Parse_spec.parse_spec_list
+      ( !Engine.profiles_warnings @ !!Config.config_warnings ) set_warning ;
   Parse_spec.parse_spec_list arg_warnings set_warning ;
 
   if not skip_config_warnings then
-    Parse_spec.parse_spec_list !!Config.config_errors set_error ;
+    Parse_spec.parse_spec_list
+      ( !Engine.profiles_errors @ !!Config.config_errors ) set_error ;
   Parse_spec.parse_spec_list arg_errors set_error ;
 
   Engine.activate_linters ();

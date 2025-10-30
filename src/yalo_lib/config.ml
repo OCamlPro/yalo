@@ -24,7 +24,7 @@ module EzConfig = struct
 
       let create_config_file filename =
         EzConfig.create_config_file (FILE.of_string filename)
-      
+
       let load ?filename config_file =
         begin match filename with
         | None -> ()
@@ -32,10 +32,10 @@ module EzConfig = struct
            EzConfig.set_config_file config_file (FILE.of_string filename);
         end;
         EzConfig.load config_file
-      
+
       let append config_file filename =
         EzConfig.append config_file (FILE.of_string filename)
-      
+
       let save ?filename config_file =
         begin match filename with
         | None -> ()
@@ -194,6 +194,13 @@ let config_profiles =
     EZCONFIG.string_list_option
     []
 
+
+
+
+
+
+(* Modify main.ml to append these options for all profiles *)
+
 let profiles_section =
   EZCONFIG.create_config_section
     config_file ["profiles"]
@@ -231,4 +238,24 @@ let profile_fileattrs =
     (EZCONFIG.list_option
        (EZCONFIG.tuple2_option
           (EZCONFIG.string_option, FILEATTR.option)))
+    []
+
+let profile_warnings =
+  create_config_option profiles_section
+    ~path:[ "profile_warnings" ]
+    ~short_help:"List of specifications to activate warnings"
+    ~long_help: [
+      "List of specifications to activate warnings. These specifications";
+      "are used before the ones provided by the configuration, so that";
+      "the project configuration has the final word.";
+
+    ]
+    EZCONFIG.string_list_option
+    []
+
+let profile_errors =
+  create_config_option profiles_section
+    ~path:[ "profile_errors" ]
+    ~short_help:"List of specifications to activate errors"
+    EZCONFIG.string_list_option
     []

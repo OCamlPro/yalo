@@ -1,12 +1,17 @@
-YALO_RUN=./yalo.exe
+YALO_RUN=./yalo.exe -I yalo_config -I ./_build/install/default/lib/yalo_plugin_ocaml -I ./_build/install/default/lib/yalo_plugin_YALO -I ./_build/install/default/lib/yalo_plugin_FIND -I ./_build/install/default/lib/yalo_lib -I share
 
 yalotest: build
-	$(YALO_RUN) lint . $(YALO_FINAL_ARGS)
+	$(YALO_RUN) -L yalo_no_final_line.ml lint
+
+yaloyalo: build
+	$(YALO_RUN) lint -p yalo
 
 yalofind: build
-	$(YALO_RUN) lint -L yalo_plugin_FIND --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)
+	$(YALO_RUN) -L yalo_plugin_FIND lint --skip-config-warnings -w FIND $(YALO_FINAL_ARGS)
 
-yalo_sarif: build
-	mkdir -p _yalo
-	opam exec -- $(YALO_RUN) lint -p yalo --message-format sarif > _yalo/test.sarif
+yalo_sarif:
+	opam exec -- yalo lint -vv -p yalo --message-format sarif > _yalo.sarif 2> _yalo.log
 
+sarif: build
+	dune install
+	$(MAKE) yalo.sarif

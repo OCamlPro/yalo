@@ -13,9 +13,8 @@
 open EzCompat
 open Ezcmd.V2
 open Ez_file.V1
-open EzFile.OP
+open Yalo_misc.Utils.OP
 
-open Yalo.Config.OP
 open Yalo.Types
 
 let arg_output_dir = ref "."
@@ -88,7 +87,7 @@ let clippy_gen dir =
     ) (List.rev !Yalo.Engine.all_warnings)
   in
 
-  let json_file = dir // "lints.json" in
+  let json_file = dir /// "lints.json" in
   EzFile.write_file json_file ( Yalo_misc.Clippy.json_of_rules rules );
   Printf.eprintf "File %s created\n%!" json_file;
 
@@ -113,7 +112,7 @@ var GROUPS_FILTER_DEFAULT = {
       (String.concat "\": true,\n    \"" (StringSet.to_list !groups))
   in
 
-  let js_file = dir // "groups.js" in
+  let js_file = dir /// "groups.js" in
   EzFile.write_file js_file js_content ;
   Printf.eprintf "File %s created\n%!" js_file;
 
@@ -142,16 +141,8 @@ let cmd command_name =
     ]
     (fun () ->
 
-      begin
-        match !Args.arg_profile with
-        | None -> ()
-        | Some filename ->
-           Yalo.Config.config_warnings =:= [];
-           Yalo.Config.config_errors =:= [];
-           Yalo.Config.append filename
-      end;
-
       Yalo.Lint_project.activate_warnings_and_linters
+        ?profile:!Args.arg_profile
         ~skip_config_warnings: !Args.arg_skip_config_warnings
         (!Args.arg_warnings, !Args.arg_errors);
 

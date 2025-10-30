@@ -1,0 +1,12 @@
+
+; A plugin can define a profile file, but the profile must be copied
+; into `share/yalo/profiles` subdir. This is done by a combination of
+; the following stanza, and the stanza `(sites (share_root yalo))` in
+; the package description in dune-project
+
+(install
+ (package yalo_plugin_ocaml)
+ (section (site (yalo_plugin_ocaml yalo)))
+ (files
+  (yalo-ocaml.conf as profiles/yalo-ocaml.conf)
+  ))

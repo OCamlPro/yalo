@@ -12,7 +12,7 @@
 
 open EzCompat
 open Ez_file.V1
-open EzFile.OP
+open Yalo_misc.Utils.OP
 open Config.OP
 
 let load_plugin file =
@@ -21,13 +21,21 @@ let load_plugin file =
   with
     Dynlink.Error (Module_already_loaded _) -> ()
 
+let bin_dir = Sys.executable_name |> Filename.dirname
+let opam_dir = bin_dir |> Filename.dirname
+let lib_dir = opam_dir /// "lib"
+let share_dir = opam_dir /// "share"
+let yalo_share_dir = share_dir /// "yalo"
+let yalo_profiles_dir = yalo_share_dir /// "profiles"
+
 let load_plugins
       ~load_dirs
       ~plugins
       () =
+  let load_dirs = ref load_dirs in
   Clflags.error_style := Some Misc.Error_style.Contextual;
   Clflags.include_dirs :=
-    (List.rev load_dirs) @ Clflags.include_dirs.contents;
+    !load_dirs @ !Clflags.include_dirs;
 
   List.iter (fun arg ->
       if Engine.verbose 1 then
@@ -49,7 +57,7 @@ let load_plugins
                 ".cmo")
       in
       let file = try
-          Yalo_misc.Utils.find_in_path load_dirs file
+          Yalo_misc.Utils.find_in_path !Clflags.include_dirs file
         with Not_found ->
           try
             let is_plugin = ref true in
@@ -59,14 +67,12 @@ let load_plugins
               | _ -> ()
             done;
             if !is_plugin then
-              let refdir = Filename.dirname Sys.executable_name in
-              let file = refdir //
-                           Printf.sprintf "../lib/%s/%s.cmxs"
-                             arg arg
-              in
-              if Sys.file_exists file then
+              let plugin_dir = lib_dir /// arg in
+              let file = plugin_dir /// (arg ^ ".cmxs") in
+              if Sys.file_exists file then begin
+                  Clflags.include_dirs := plugin_dir :: !Clflags.include_dirs;
                 file
-              else
+              end else
                 raise Not_found
             else
               raise Not_found
@@ -74,7 +80,7 @@ let load_plugins
             Printf.eprintf "Error: could not find %S in:\n%!" arg;
             List.iter (fun dir ->
                 Printf.printf "  - %s\n%!" dir;
-              ) load_dirs;
+              ) !Clflags.include_dirs;
             exit 2
       in
       if Filename.check_suffix file ".ml" then
@@ -95,11 +101,11 @@ let load_plugins
           (* TODO: bytecode version *)
           let cmd = Printf.sprintf
                       "ocamlopt -shared -opaque %s -o %s %s"
-                      (match load_dirs with
-                      | [] -> ""
-                      | dirs ->
-                         Printf.sprintf "-I '%s'"
-                           (String.concat "' -I '" dirs))
+                      (let dirs = !Clflags.include_dirs in
+                       let yalo_lib_dir = lib_dir /// "yalo_lib" in
+                       let dirs = dirs @ [ yalo_lib_dir ] in
+                       Printf.sprintf "-I '%s'"
+                         (String.concat "' -I '" dirs))
                       file_obj file_ml
           in
           Printf.eprintf "Call: %s\n%!" cmd;
@@ -180,7 +186,9 @@ let init
        ()
     | Some file ->
        Config.load file ;
-       let load_dirs = load_dirs @ !!Config.config_load_dirs in
+       let load_dirs = load_dirs
+                       @ !!Config.config_load_dirs
+                       @ [ yalo_profiles_dir ] in
        let profiles = ref !!Config.config_profiles in
        let loaded_profiles = ref StringSet.empty in
        let rec iter () =
@@ -190,27 +198,32 @@ let init
             profiles := others ;
 
             if not @@ StringSet.mem profile !loaded_profiles then
-              let file = Yalo_misc.Utils.find_in_path load_dirs
-                           ("yalo-" ^ profile ^ ".conf") in
+              let basename = Printf.sprintf "yalo-%s.conf" profile in
+              let file = try
+                  Yalo_misc.Utils.find_in_path load_dirs basename
+                with Not_found ->
+                  Printf.eprintf
+                    "Execution error: profile %S not found in search path\n%!"
+                    basename;
+                  exit 2
+              in
               Config.append file ;
               loaded_profiles := StringSet.add profile !loaded_profiles;
 
-              Engine.profiles_load_dirs :=
-                !Engine.profiles_load_dirs @ !!Config.profile_load_dirs ;
-              Config.profile_load_dirs =:= [];
-
-              Engine.profiles_plugins :=
-                !Engine.profiles_plugins @ !!Config.profile_plugins ;
-              Config.profile_plugins =:= [];
-
               profiles := !profiles @ !!Config.profile_profiles ;
-              Engine.profiles_profiles := !Engine.profiles_profiles
-                                          @ !!Config.profile_profiles ;
-              Config.profile_profiles =:= [];
 
-              Engine.profiles_fileattrs := !Engine.profiles_fileattrs @
-                                    !!Config.profile_fileattrs ;
-              Config.profile_fileattrs =:= [];
+              Engine.profile_append ( Engine.profiles_fileattrs,
+                                      Config.profile_fileattrs ) ;
+
+              List.iter Engine.profile_append [
+
+                  Engine.profiles_load_dirs, Config.profile_load_dirs ;
+                  Engine.profiles_plugins, Config.profile_plugins ;
+                  Engine.profiles_profiles, Config.profile_profiles ;
+                  Engine.profiles_warnings, Config.profile_warnings ;
+                  Engine.profiles_errors, Config.profile_errors ;
+
+                ];
 
               iter ()
        in

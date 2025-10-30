@@ -50,11 +50,14 @@ let w_no_final_newline =
     ~tags:[ tag_line ; tag_autofix ]
     ~msg:"File does not end with a newline"
 
+(* Disabled under Windows *)
 let w_windows_newline =
   YALO.new_warning ns
     ~name:"windows-newline" 6
     ~tags:[ tag_line ]
     ~msg:"Line contains a \\r\\n instead of only \\n"
+
+let is_unix = Sys.os_type = "Unix"
 
 let () =
   OCAMLLANG.new_src_line_linter ns "ocp_check_line"
@@ -71,7 +74,7 @@ let () =
 
       begin
         let len = String.length sep in
-        if len > 1 && sep.[0] = '\r' then begin
+        if is_unix && len > 1 && sep.[0] = '\r' then begin
             let loc = { loc with loc_start = loc.loc_end } in
             YALO.warn loc ~file w_windows_newline;
           end;

@@ -4,7 +4,7 @@
   (public_name yalo)
   (package yalo)
   ; use field 'dune-libraries' to add libraries without opam deps
-  (libraries yalo_driver )
+  (libraries dune-site yalo_driver )
   (flags (:standard (:include linking.sexp) -linkall))
   ; use field 'dune-stanzas' to add more stanzas here
   
@@ -32,6 +32,11 @@
     (targets version.ml)
     (deps (:script version.mlt) package.toml)
     (action (with-stdout-to %{targets} (run %{ocaml} -I +unix unix.cma %{script}))))
+
+(generate_sites_module
+  (module sites)
+  (sites yalo))
+
 
 (documentation
   (package yalo))
