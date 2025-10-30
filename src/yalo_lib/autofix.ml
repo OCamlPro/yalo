@@ -17,10 +17,7 @@ open Yalo_misc.Ez_autofix.TYPES
 let apply ~inplace messages =
   let repls = ref [] in
   List.iter (fun m ->
-      match m.msg_autofix with
-      | None -> ()
-      | Some repl_text ->
-         let loc = m.msg_loc in
+      List.iter (fun ( loc, repl_text ) ->
          let start = loc.loc_start in
          let stop = loc.loc_end in
          let repl = {
@@ -30,6 +27,7 @@ let apply ~inplace messages =
              repl_text ;
            } in
          repls := repl :: !repls
+        ) m.msg_autofix
     ) messages ;
   let files = Yalo_misc.Ez_autofix.apply
                 ~destdir:(if inplace then "" else "_YALO")

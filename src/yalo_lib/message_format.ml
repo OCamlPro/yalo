@@ -54,15 +54,18 @@ let show_context loc =
     iter 0 lines
   with _ -> ()
 
+let short_location loc =
+  Printf.sprintf "%s:%d:%d[%d]"
+    loc.loc_start.pos_fname
+    loc.loc_start.pos_lnum
+    (loc.loc_start.pos_cnum - loc.loc_start.pos_bol + 1)
+    (loc.loc_end.pos_cnum - loc.loc_start.pos_cnum)
 
 let display_human ~format messages =
   List.iter (fun m ->
       match format with
       | Format_Human | Format_Context ->
          (* warning: src/main.rs:2:5: unnecessary repetition *)
-         (* Printf.eprintf "%d-%d\n%!"
-            m.msg_loc.loc_start.pos_cnum
-            m.msg_loc.loc_end.pos_cnum; *)
          Location.print_loc Format.str_formatter m.msg_loc;
          let loc = Format.flush_str_formatter () in
          Printf.eprintf "%s\n%!" loc;
@@ -75,10 +78,13 @@ let display_human ~format messages =
            m.msg_string;
          begin
            match m.msg_autofix with
-           | None -> ()
-           | Some text ->
-              Printf.eprintf "  Possible replacement (--autofix): %S\n"
-                text
+           | [] -> ()
+           | replacements ->
+              Printf.eprintf "  Possible replacements (--autofix):\n";
+              List.iter (fun (loc, text) ->
+                  Printf.eprintf "    %s: %S\n%!"
+                    (short_location loc) text
+                ) replacements
          end;
          if format = Format_Context then
            show_context m.msg_loc

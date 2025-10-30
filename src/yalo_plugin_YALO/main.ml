@@ -80,7 +80,7 @@ let () =
           end;
         if len = 0 && String.length line > 0  then begin
             let loc = { loc with loc_start = loc.loc_end } in
-            YALO.warn loc ~file w_no_final_newline ~autofix:"\n"
+            YALO.warn loc ~file w_no_final_newline ~autofix:[loc,"\n"]
           end
       end;
 
@@ -102,7 +102,7 @@ let () =
                                             + pos }}
               in
               let loc = iter (len-1) in
-              YALO.warn loc ~file w_spaces_at_end ~autofix:"";
+              YALO.warn loc ~file w_spaces_at_end ~autofix:[loc,""];
             end;
           let has_tab = ref false in
           let has_nonprintable = ref false in
