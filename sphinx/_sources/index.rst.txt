@@ -10,13 +10,13 @@ Welcome to yalo
    :maxdepth: 2
    :caption: Documentation
 
-   Home <https://lefessan.github.io/yalo>
+   Home <https://ocamlpro.github.io/yalo>
    about
    install
-   API doc <https://lefessan.github.io/yalo/doc>
+   API doc <https://ocamlpro.github.io/yalo/doc>
    license
 
-   Devel and Issues on Github <https://github.com/lefessan/yalo>
+   Devel and Issues on Github <https://github.com/ocamlpro/yalo>
 
 
 Indices and tables
