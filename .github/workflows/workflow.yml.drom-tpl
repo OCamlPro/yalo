@@ -18,6 +18,7 @@ jobs:
           - !{ci-systems}
         ocaml-compiler:
           - !{edition}
+!(github-workflow-ocaml-compiler)
         skip_test:
           - false
 ![if:min-edition]
@@ -36,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     # use fields.github-workflow-env to add something here
-!(github-worlflow-env)
+!(github-workflow-env)
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

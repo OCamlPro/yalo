@@ -16,10 +16,9 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
-          - windows-latest
         ocaml-compiler:
-          - 4.14.1
+          - 4.14.2
+
         skip_test:
           - false
 
@@ -103,10 +102,10 @@ jobs:
       - name: test source is well formatted
         run: make fmt
         continue-on-error: true
-        if: matrix.ocaml-compiler == '4.14.1' && matrix.os == 'ubuntu-latest'
+        if: matrix.ocaml-compiler == '4.14.2' && matrix.os == 'ubuntu-latest'
 
       - name: build-doc
-        if: github.ref == 'refs/heads/master' && matrix.ocaml-compiler == '4.14.1' && matrix.os == 'ubuntu-latest'
+        if: github.ref == 'refs/heads/master' && matrix.ocaml-compiler == '4.14.2' && matrix.os == 'ubuntu-latest'
         run: |
              sudo apt install -yqq python3-sphinx python3-sphinx-rtd-theme
              opam install -y dune odoc
@@ -117,7 +116,7 @@ jobs:
 
       - name: deploy-doc
         uses: JamesIves/github-pages-deploy-action@3.6.2
-        if: github.ref == 'refs/heads/master' && matrix.ocaml-compiler == '4.14.1' && matrix.os == 'ubuntu-latest'
+        if: github.ref == 'refs/heads/master' && matrix.ocaml-compiler == '4.14.2' && matrix.os == 'ubuntu-latest'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages

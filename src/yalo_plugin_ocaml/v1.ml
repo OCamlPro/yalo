@@ -12,43 +12,46 @@
 
 open Yalo.V1
 
-module OCAMLLANG = struct
+include Ast_traverse
+include Tast_traverse
+
+module OCAML_LANG = struct
 
   let ocaml = Engine.ocaml
 
-  let ml_file = YALOLANG.new_file_kind
+  let ml_file = YALO_LANG.new_file_kind
                   ~lang:ocaml
                   ~exts:[ "ml" ]
                   ~name:"OCaml Implementation Source File"
-                  ~validate:Engine.check_source
+                  ~validate:Engine.check_in_source_dir
                   ~lint:Engine.check_impl_source
                   ()
-  let mli_file = YALOLANG.new_file_kind
+  let mli_file = YALO_LANG.new_file_kind
                    ~lang:ocaml
                    ~exts:[ "mli" ]
                    ~name:"OCaml Interface Source File"
-                   ~validate:Engine.check_source
+                   ~validate:Engine.check_in_source_dir
                    ~lint:Engine.check_intf_source
                    ()
-  let cmi_file = YALOLANG.new_file_kind
+  let cmi_file = YALO_LANG.new_file_kind
                    ~lang:ocaml
                    ~exts:[ "cmi" ]
                    ~name:"OCaml Interface Compiled File"
-                   ~validate:Engine.check_artefact
+                   ~validate:Engine.check_in_artefact_dir
                    ~lint:Engine.check_cmi
                    ()
-  let cmti_file = YALOLANG.new_file_kind
+  let cmti_file = YALO_LANG.new_file_kind
                     ~lang:ocaml
                     ~exts:[ "cmti" ]
                     ~name:"OCaml Interface Typedtree File"
-                    ~validate:Engine.check_artefact
+                    ~validate:Engine.check_in_artefact_dir
                     ~lint:Engine.check_cmt
                     ()
-  let cmt_file = YALOLANG.new_file_kind
+  let cmt_file = YALO_LANG.new_file_kind
                    ~lang:ocaml
                    ~exts:[ "cmt" ]
                    ~name:"OCaml Implementation Typedtree File"
-                   ~validate:Engine.check_artefact
+                   ~validate:Engine.check_in_artefact_dir
                    ~lint:Engine.check_cmt
                    ()
 
@@ -64,6 +67,12 @@ module OCAMLLANG = struct
   let new_ast_impl_linter = Engine.new_ast_impl_linter
   let new_tast_intf_linter = Engine.new_tast_intf_linter
   let new_tast_impl_linter = Engine.new_tast_impl_linter
+
+  let new_ast_impl_traverse_linter = Engine.new_ast_impl_traverse_linter
+  let new_ast_intf_traverse_linter = Engine.new_ast_intf_traverse_linter
+
+  let new_tast_impl_traverse_linter = Engine.new_tast_impl_traverse_linter
+  let new_tast_intf_traverse_linter = Engine.new_tast_intf_traverse_linter
 
   let () =
     Yalo.Engine.add_folder_updater Engine.folder_updater

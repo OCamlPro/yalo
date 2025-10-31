@@ -54,4 +54,4 @@ let get t file =
   | None ->
      raise @@ No_data_in_store (file.file_name, t.store_plugin.plugin_name)
   | Some x -> x
-  
+

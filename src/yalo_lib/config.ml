@@ -137,7 +137,7 @@ module FILEATTR = struct
            | "tag", v ->
               Tag ( EZCONFIG.value_to_string v )
            | s, _ ->
-              Printf.kprintf failwith
+              Printf.ksprintf failwith
                 "Unknown fileattr name %S" s
          ) list
     | _ -> failwith "Parse error"

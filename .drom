@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-96f271023e01e66b812eeb6e9e1a6b09:.
+a56d12f9d1830c50b8fbf9d51851991f:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -16,7 +16,7 @@ c6d4181b84516f70c8b63d41cba322fb:.drom_ignore
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-1178b876ca1bd7a5731d6429f466b031:.github/workflows/workflow.yml
+44b5662b70cf4bd76518e2764ea1da3c:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -66,7 +66,7 @@ eb5dffdcdfe0cf7252a14f6332d1bf50:Makefile
 
 # begin context for Makefile.drom
 # file Makefile.drom
-9a381f4ba4239a1a5f62d587d2b9fbef:Makefile.drom
+daaf73ab176fce4a461223d04f186189:Makefile.drom
 # end context for Makefile.drom
 
 # begin context for README.md
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-1566c841ba73476accfc3a4e74920fb1:dune-project
+5bea683f0a561e9e0abf660a817dab40:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -126,8 +126,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for opam/yalo.opam
 # file opam/yalo.opam
-ce2f5260b8b9ccaa424988935a5b7f73:opam/yalo.opam
-1db3da0c7a1a8a11c7a3d49369b41199:opam/yalo.opam
+500285f1758b6886c1483d47b9ea2dec:opam/yalo.opam
 # end context for opam/yalo.opam
 
 # begin context for opam/yalo_config.opam
@@ -162,8 +161,7 @@ c0c8d275e351f7db0e838145e3e9d776:opam/yalo_lib.opam
 
 # begin context for opam/yalo_plugin_ocaml.opam
 # file opam/yalo_plugin_ocaml.opam
-352570ebc35685b796024388435f1464:opam/yalo_plugin_ocaml.opam
-9cf061664c9f5e2dc03f35c9292029a6:opam/yalo_plugin_ocaml.opam
+af01db63e66f48b34e0ab970a8df85bf:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
 
 # begin context for scripts/after.sh
@@ -288,7 +286,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_config/version.mlt
 
 # begin context for src/yalo_driver/dune
 # file src/yalo_driver/dune
-b2329a7c496cd5e056fb615c61b8b1a5:src/yalo_driver/dune
+395ebd7618d2a9ddd5687f90dc1329c5:src/yalo_driver/dune
 # end context for src/yalo_driver/dune
 
 # begin context for src/yalo_driver/index.mld
@@ -303,7 +301,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_driver/version.mlt
 
 # begin context for src/yalo_lib/dune
 # file src/yalo_lib/dune
-95f8c768de3878f6c2d70412c8cebd11:src/yalo_lib/dune
+9681f2378778ef66f241acf8f200f23f:src/yalo_lib/dune
 # end context for src/yalo_lib/dune
 
 # begin context for src/yalo_lib/index.mld
@@ -343,7 +341,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_misc/version.mlt
 
 # begin context for src/yalo_plugin_FIND/dune
 # file src/yalo_plugin_FIND/dune
-4fee4a183f3cfa5f0fa35d2d8ec8a068:src/yalo_plugin_FIND/dune
+2e68d7194c214c4747c179e287a63d1a:src/yalo_plugin_FIND/dune
 # end context for src/yalo_plugin_FIND/dune
 
 # begin context for src/yalo_plugin_FIND/index.mld
@@ -358,7 +356,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_FIND/version.mlt
 
 # begin context for src/yalo_plugin_YALO/dune
 # file src/yalo_plugin_YALO/dune
-5e8a641acb358d942a456f6ba43eee91:src/yalo_plugin_YALO/dune
+0b315669349d7a145f7ce5fd84162444:src/yalo_plugin_YALO/dune
 # end context for src/yalo_plugin_YALO/dune
 
 # begin context for src/yalo_plugin_YALO/index.mld
@@ -373,7 +371,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_YALO/version.mlt
 
 # begin context for src/yalo_plugin_ocaml/dune
 # file src/yalo_plugin_ocaml/dune
-413d641cff8e2c944184658d52000913:src/yalo_plugin_ocaml/dune
+b6e99df8013cd588412a9dc22d25f034:src/yalo_plugin_ocaml/dune
 # end context for src/yalo_plugin_ocaml/dune
 
 # begin context for src/yalo_plugin_ocaml/index.mld

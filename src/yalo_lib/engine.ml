@@ -254,21 +254,6 @@ let rec new_linter
                               linter_ns.ns_linters ;
     all_linters := l :: !all_linters
 
-(*
-let new_src_file_linter
-      plugin
-      name
-      ~warnings
-      ?on_begin ?on_end
-      f =
-  let linter_install l =
-    active_src_file_linters := (l, f) :: !active_src_file_linters;
-    active_linters := l :: !active_linters;
-  in
-  new_linter plugin name ~warnings ?on_begin ?on_end
-          linter_install ~level:Linter_src_file
- *)
-
 let new_gen_linter lang active_linters_ref =
   fun
     ns
@@ -374,7 +359,7 @@ let iter_linters_close ~file linters =
           file.file_name
     ) linters
 
-let rec filter_linters ~file linters = 
+let rec filter_linters ~file linters =
   match linters with
   | []  -> []
   | (l,f) :: linters ->

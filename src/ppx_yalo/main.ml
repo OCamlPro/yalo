@@ -45,26 +45,26 @@ let () =
   Driver.register_transformation
     "ppx_yalo"
     ~lint_intf:(fun sg ->
-      let file = new_dummy_file OCAMLLANG.mli_file in
+      let file = new_dummy_file OCAML_LANG.mli_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       let messages = Yalo.Engine.get_messages () in
       List.map lint_error messages)
     ~lint_impl:(fun st ->
-      let file = new_dummy_file OCAMLLANG.ml_file in
+      let file = new_dummy_file OCAML_LANG.ml_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       let messages = Yalo.Engine.get_messages () in
       List.map lint_error messages)
     ~intf:(fun sg ->
-      let file = new_dummy_file OCAMLLANG.mli_file in
+      let file = new_dummy_file OCAML_LANG.mli_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
       let messages = Yalo.Engine.get_messages () in
       Yalo.Message_format.display_messages messages ;
       sg)
     ~impl:(fun st ->
-      let file = new_dummy_file OCAMLLANG.ml_file in
+      let file = new_dummy_file OCAML_LANG.ml_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
       Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
       let messages = Yalo.Engine.get_messages () in

@@ -122,7 +122,7 @@ let update cache =
       in
       StringMap.iter (fun _ w ->
           try
-            let cached_w = StringMap.find w.w_idstr 
+            let cached_w = StringMap.find w.w_idstr
                              cached_file.cached_warnings in
             if w.w_plugin.plugin_version <>
                  cached_w.cached_plugin.cached_version then

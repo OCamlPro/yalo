@@ -65,7 +65,7 @@ let parse_config_file str =
     | Kwd "@" ->
       begin
         try Hashtbl.find once_values i with Not_found ->
-          Printf.kprintf failwith "once value @%d@ is unknown" i
+          Printf.ksprintf failwith "once value @%d@ is unknown" i
       end
     | Kwd "=" ->
       let v = parse_option () in
@@ -76,7 +76,7 @@ let parse_config_file str =
   and parse_list_semi end_kwd values =
     match Stream.peek str with
     | None ->
-      Printf.kprintf failwith "reached end of file before %s" end_kwd
+      Printf.ksprintf failwith "reached end of file before %s" end_kwd
     | Some (Kwd ( ";" | ".") ) ->
       Stream.junk str;
       parse_list_semi end_kwd values
@@ -100,7 +100,7 @@ let parse_config_file str =
   and parse_list_comma end_kwd values =
     match Stream.peek str with
     | None ->
-      Printf.kprintf failwith "reached end of file before %s" end_kwd
+      Printf.ksprintf failwith "reached end of file before %s" end_kwd
     | Some (Kwd ( "," ) ) ->
       Stream.junk str;
       parse_list_comma end_kwd values

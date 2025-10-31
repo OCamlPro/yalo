@@ -18,7 +18,8 @@ let eprint () =
 
   Printf.eprintf "Current configuration (from config + args):\n%!";
   Printf.eprintf "   --no-load-plugins: %b\n%!" !Args.arg_no_load_plugins ;
-  Printf.eprintf "   -C (--config-file): %s\n%!" (match !Args.arg_config_file with
+  Printf.eprintf
+    "   -C (--config-file): %s\n%!" (match !Args.arg_config_file with
     | None -> "none"
     | Some s -> Printf.sprintf "%S\n%!" s);
   Printf.eprintf "   -L (--load-plugin)\n%!";
@@ -56,10 +57,12 @@ let eprint () =
 
   (*
   Printf.eprintf "   --lint-ast-from-cmt: %b\n%!" !Args.arg_lint_ast_from_cmt ;
-  Printf.eprintf "   --no-lint-ast-from-src: %b\n%!" (not !Args.arg_lint_ast_from_src) ;
+  Printf.eprintf "   --no-lint-ast-from-src: %b\n%!"
+  (not !Args.arg_lint_ast_from_src) ;
    *)
-  
-  Printf.eprintf "   --skip-config-warnings: %b\n%!" !Args.arg_skip_config_warnings ;
+
+  Printf.eprintf
+    "   --skip-config-warnings: %b\n%!" !Args.arg_skip_config_warnings ;
 
   (* TODO: show plugins and language too *)
   Printf.eprintf "Namespaces:\n%!";
@@ -87,7 +90,7 @@ let eprint () =
         )
         (
           p.project_files
-        ) 
+        )
     ) Yalo.Engine.all_projects ;
 
-  ()  
+  ()

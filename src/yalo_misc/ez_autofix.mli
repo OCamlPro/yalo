@@ -28,4 +28,4 @@ val apply :
      TYPES.replacement list * (* applied *)
        TYPES.replacement list (* skipped *)
   ) list
-    
+

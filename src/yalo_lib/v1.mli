@@ -10,7 +10,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-module YALOTYPES : sig
+module YALO_TYPES : sig
 
   type plugin
   type namespace
@@ -24,7 +24,7 @@ module YALOTYPES : sig
   type linter
   type document
   type folder
-  
+
   type position = Lexing.position = {
       pos_fname : string;
       pos_lnum : int;
@@ -53,7 +53,7 @@ module YALOTYPES : sig
       content_string : string ;
     }
 
-  type 'linter_entry new_gen_linter =
+  type ('linter_input, 'linter_output) new_gen_linter =
     namespace ->
     string ->
     warnings:warning list ->
@@ -61,15 +61,18 @@ module YALOTYPES : sig
     ?on_open : (file:file -> unit) ->
     ?on_close : (file:file -> unit) ->
     ?on_end : (unit -> unit) ->
-    (file:file -> 'linter_entry -> unit) -> unit
+    (file:file -> 'linter_input -> 'linter_output) -> unit
+
+  type 'linter_input new_gen_unit_linter =
+    ('linter_input,unit) new_gen_linter
 
 end
 
-open YALOTYPES
+open YALO_TYPES
 
 module YALO : sig
 
-  val verbose : int -> bool 
+  val verbose : int -> bool
   val new_plugin : ?version:string ->
                    ?args:(string list * Ezcmd.V2.EZCMD.spec *
                             Ezcmd.V2.EZCMD.TYPES.info)
@@ -93,7 +96,7 @@ module YALO : sig
   val tag_danger : tag
 
   val warn : location -> file:file -> ?msg:string ->
-             ?autofix:(YALOTYPES.location * string) list ->
+             ?autofix:(YALO_TYPES.location * string) list ->
              warning -> unit
 
   val file_name : file:file -> string
@@ -127,7 +130,7 @@ module YALO : sig
   end
 end
 
-module YALOLANG : sig
+module YALO_LANG : sig
 
   val new_language : plugin -> string -> language
   val new_file_kind :
@@ -153,24 +156,24 @@ module YALOLANG : sig
   val new_gen_linter :
     language ->
     (linter * 'a) list ref ->
-    YALOTYPES.namespace ->
+    YALO_TYPES.namespace ->
     string ->
-    warnings:YALOTYPES.warning list ->
+    warnings:YALO_TYPES.warning list ->
     ?on_begin:(unit -> unit) ->
-    ?on_open:(file:YALOTYPES.file -> unit) ->
-    ?on_close:(file:YALOTYPES.file -> unit) ->
+    ?on_open:(file:YALO_TYPES.file -> unit) ->
+    ?on_close:(file:YALO_TYPES.file -> unit) ->
     ?on_end:(unit -> unit) -> 'a -> unit
 
-    val filter_linters :
-           file:file ->
-           (linter * 'a) list -> (linter * 'a) list
-    val lint_with_active_linters :
-      (linter * (file:file -> 'a -> unit)) list ref ->
-      file:file -> 'a -> unit
+  val filter_linters :
+    file:file ->
+    (linter * 'a) list -> (linter * 'a) list
+  val lint_with_active_linters :
+    (linter * (file:file -> 'a -> unit)) list ref ->
+    file:file -> 'a -> unit
      val iter_linters_open :
-       file:YALOTYPES.file -> (linter * 'a) list -> unit
+       file:YALO_TYPES.file -> (linter * 'a) list -> unit
      val iter_linters_close :
-       file:YALOTYPES.file -> (linter * 'a) list -> unit
+       file:YALO_TYPES.file -> (linter * 'a) list -> unit
     val iter_linters :
       file:file ->
       (linter * (file:file -> 'a -> unit)) list ->
@@ -199,11 +202,11 @@ module YALOLANG : sig
       val basename : t -> string
       val name : t -> string
       end
-      
+
      val add_file_classifier :
-       (file_doc:YALOTYPES.document -> YALOTYPES.file_kind option) ->
+       (file_doc:YALO_TYPES.document -> YALO_TYPES.file_kind option) ->
        unit
-     val add_folder_updater : (folder:YALOTYPES.folder -> unit) -> unit
+     val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
      *)
 
 
@@ -213,7 +216,7 @@ module YALO_INTERNAL : sig
 
   val add_file :
     file_doc:Types.document ->
-    ?file_kind:YALOTYPES.file_kind ->
+    ?file_kind:YALO_TYPES.file_kind ->
     unit ->
     unit
   val new_file :

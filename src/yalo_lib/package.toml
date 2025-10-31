@@ -43,7 +43,7 @@ pack = "Yalo"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 
-preprocess = "pps ppxlib.metaquot"
+# preprocess = "pps ppxlib.metaquot"
 
 # files to skip while updating at package level
 # skip = []
