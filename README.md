@@ -6,11 +6,7 @@
 
 ![Logo](./docs/logo.png)
 
-The drom tool is a wrapper over opam/dune in an attempt to provide a
-cargo-like user experience. It can be used to create full OCaml
-projects with sphinx and odoc documentation. It has specific knowledge
-of Github and will generate files for Github Actions CI and Github
-pages.
+Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.
 
 * Website: https://ocamlpro.github.io/yalo
 * General Documentation: https://OCamlPro.github.io/yalo/sphinx
