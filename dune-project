@@ -117,6 +117,7 @@
    (ocaml (>= 4.08.0))
    (dune-site ( >= 3.14.0 ))
    (yalo_lib (= :version))
+   ppx_optcomp
    ppx_inline_test
    ppx_expect
    odoc

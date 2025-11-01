@@ -12,7 +12,7 @@
 
 open Types
 
-module YALOTYPES = struct
+module YALO_TYPES = struct
 
   type plugin = Types.plugin
   type language = Types.language
@@ -26,7 +26,7 @@ module YALOTYPES = struct
   type file_kind = Types.file_kind
   type document = Types.document
   type folder = Types.folder
-  
+
   type position = Lexing.position = {
       pos_fname : string;
       pos_lnum : int;
@@ -40,15 +40,18 @@ module YALOTYPES = struct
       loc_ghost: bool;
     }
 
-  type 'linter_entry new_gen_linter =
+  type ('linter_input, 'linter_output) new_gen_linter =
     namespace ->
     string ->
     warnings:warning list ->
     ?on_begin : (unit -> unit) ->
-                ?on_open : (file:file -> unit) ->
-                           ?on_close : (file:file -> unit) ->
-                                       ?on_end : (unit -> unit) ->
-                                                 (file:file -> 'linter_entry -> unit) -> unit
+    ?on_open : (file:file -> unit) ->
+    ?on_close : (file:file -> unit) ->
+    ?on_end : (unit -> unit) ->
+    (file:file -> 'linter_input -> 'linter_output) -> unit
+
+  type 'linter_input new_gen_unit_linter =
+    ('linter_input,unit) new_gen_linter
 
   type src_line_input = Types.src_line_input = {
       line_loc : location ;
@@ -66,8 +69,6 @@ module YALOTYPES = struct
     }
 
 end
-
-(* open YALOTYPES *)
 
 module YALO = struct
 
@@ -96,7 +97,7 @@ module YALO = struct
   let verbose = Engine.verbose
 end
 
-module YALOLANG = struct
+module YALO_LANG = struct
 
     let new_language = Engine.new_language
     let new_file_kind = Engine.new_file_kind

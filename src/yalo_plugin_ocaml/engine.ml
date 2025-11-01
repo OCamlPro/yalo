@@ -11,10 +11,14 @@
 (**************************************************************************)
 
 open EzCompat
-open Yalo.V1.YALOTYPES
+open Yalo.V1.YALO_TYPES
 open Yalo.V1
 
+open Tast_traverse (* for OCAML_TAST* modules *)
+open Ast_traverse  (* for OCAML_AST* modules *)
+
 let plugin = YALO.new_plugin "yalo_ocaml_plugin" ~version:"0.1.0"
+let ocaml = YALO_LANG.new_language plugin "ocaml"
 
 let active_src_line_linters =
   ref
@@ -28,71 +32,96 @@ let active_src_content_linters =
 
 let active_ast_intf_linters =
   ref
-    ([] : (linter * (file:file -> Ppxlib.Parsetree.signature -> unit)) list )
+    ([] : (linter * (file:file -> OCAML_AST.signature -> unit)) list )
+
+let active_ast_intf_traverse_linters =
+  ref
+    ([] : (linter * (file:file -> OCAML_AST_TRAVERSE.t -> unit)) list )
 
 let active_ast_impl_linters =
   ref
-    ([] : (linter * (file:file -> Ppxlib.Parsetree.structure -> unit)) list )
+    ([] : (linter * (file:file -> OCAML_AST.structure -> unit)) list )
+
+let active_ast_impl_traverse_linters =
+  ref
+    ([] : (linter * (file:file -> OCAML_AST_TRAVERSE.t -> unit)) list )
 
 let active_tast_intf_linters =
   ref
     ([] : (linter * (file:file -> Typedtree.signature -> unit)) list )
 
+let active_tast_intf_traverse_linters =
+  ref
+    ([] : (linter * (file:file -> OCAML_TAST_TRAVERSE.t -> unit)) list )
+
 let active_tast_impl_linters =
   ref
     ([] : (linter * (file:file -> Typedtree.structure -> unit)) list )
+
+let active_tast_impl_traverse_linters =
+  ref
+    ([] : (linter * (file:file -> OCAML_TAST_TRAVERSE.t -> unit)) list )
 
 let active_sig_linters =
   ref
     ([] : (linter * (file:file -> Cmi_format.cmi_infos -> unit)) list )
 
-
-let ocaml = YALOLANG.new_language plugin "ocaml"
-
 let new_src_file_linter =
-  YALOLANG.new_gen_linter ocaml active_src_file_linters
+  YALO_LANG.new_gen_linter ocaml active_src_file_linters
 
 let new_src_line_linter =
-  YALOLANG.new_gen_linter ocaml active_src_line_linters
+  YALO_LANG.new_gen_linter ocaml active_src_line_linters
 
 let new_src_content_linter =
-  YALOLANG.new_gen_linter ocaml active_src_content_linters
+  YALO_LANG.new_gen_linter ocaml active_src_content_linters
 
 let new_ast_intf_linter =
-  YALOLANG.new_gen_linter ocaml active_ast_intf_linters
+  YALO_LANG.new_gen_linter ocaml active_ast_intf_linters
 
 let new_ast_impl_linter =
-  YALOLANG.new_gen_linter ocaml active_ast_impl_linters
+  YALO_LANG.new_gen_linter ocaml active_ast_impl_linters
 
 let new_tast_intf_linter =
-  YALOLANG.new_gen_linter ocaml active_tast_intf_linters
+  YALO_LANG.new_gen_linter ocaml active_tast_intf_linters
 
 let new_tast_impl_linter =
-  YALOLANG.new_gen_linter ocaml active_tast_impl_linters
+  YALO_LANG.new_gen_linter ocaml active_tast_impl_linters
 
 let new_sig_linter =
-  YALOLANG.new_gen_linter ocaml active_sig_linters
+  YALO_LANG.new_gen_linter ocaml active_sig_linters
+
+let new_ast_impl_traverse_linter =
+  YALO_LANG.new_gen_linter ocaml active_ast_impl_traverse_linters
+
+let new_ast_intf_traverse_linter =
+  YALO_LANG.new_gen_linter ocaml active_ast_intf_traverse_linters
+
+let new_tast_impl_traverse_linter =
+  YALO_LANG.new_gen_linter ocaml active_tast_impl_traverse_linters
+
+let new_tast_intf_traverse_linter =
+  YALO_LANG.new_gen_linter ocaml active_tast_intf_traverse_linters
 
 let lint_src_file ~file =
   let file_name = YALO.file_name ~file in
   let file_loc = YALO.mkloc ~bol:0 ~lnum:0 ~end_cnum:0 ~file () in
 
   let active_src_file_linters =
-    YALOLANG.filter_linters ~file !active_src_file_linters in
+    YALO_LANG.filter_linters ~file !active_src_file_linters in
   let active_src_line_linters =
-    YALOLANG.filter_linters ~file !active_src_line_linters in
+    YALO_LANG.filter_linters ~file !active_src_line_linters in
   let active_src_content_linters =
-    YALOLANG.filter_linters ~file !active_src_content_linters in
+    YALO_LANG.filter_linters ~file !active_src_content_linters in
 
-  YALOLANG.iter_linters_open ~file active_src_file_linters ;
-  YALOLANG.iter_linters_open ~file active_src_line_linters ;
-  YALOLANG.iter_linters_open ~file active_src_content_linters ;
+  YALO_LANG.iter_linters_open ~file active_src_file_linters ;
+  YALO_LANG.iter_linters_open ~file active_src_line_linters ;
+  YALO_LANG.iter_linters_open ~file active_src_content_linters ;
 
   begin
     match active_src_file_linters with
     | [] -> ()
     | linters ->
-       YALOLANG.iter_linters ~file linters  { file_loc }
+       YALO_LANG.iter_linters ~file linters  { file_loc }
   end;
 
   begin
@@ -105,7 +134,7 @@ let lint_src_file ~file =
           Printf.eprintf
             "Configuration error: could not read file %S, exception %s\n%!" file_name (Printexc.to_string exn)
        | s ->
-          YALOLANG.iter_linters ~file src_content_linters
+          YALO_LANG.iter_linters ~file src_content_linters
             { content_loc = file_loc ; content_string = s };
 
           let len = String.length s in
@@ -122,7 +151,7 @@ let lint_src_file ~file =
                let line_sep = String.sub s pos1 (pos2-pos1+1) in
                let line_loc =
                  YALO.mkloc ~bol:pos0 ~lnum ~end_cnum:pos1 ~file () in
-               YALOLANG.iter_linters ~file src_line_linters
+               YALO_LANG.iter_linters ~file src_line_linters
                  { line_loc ; line_line ; line_sep };
                iter (lnum+1) (pos2+1)
             | exception _ ->
@@ -131,31 +160,63 @@ let lint_src_file ~file =
                  let line_sep = "" in
                  let line_loc = YALO.mkloc ~bol:pos0 ~lnum
                                   ~end_cnum:len ~file () in
-                 YALOLANG.iter_linters ~file src_line_linters
+                 YALO_LANG.iter_linters ~file src_line_linters
                    { line_loc; line_line; line_sep; }
           in
           iter 1 0;
   end;
 
-  YALOLANG.iter_linters_close ~file active_src_content_linters ;
-  YALOLANG.iter_linters_close ~file active_src_line_linters ;
-  YALOLANG.iter_linters_close ~file active_src_file_linters ;
+  YALO_LANG.iter_linters_close ~file active_src_content_linters ;
+  YALO_LANG.iter_linters_close ~file active_src_line_linters ;
+  YALO_LANG.iter_linters_close ~file active_src_file_linters ;
   ()
 
-let lint_ast_intf =
-  YALOLANG.lint_with_active_linters active_ast_intf_linters
+let lint_tast
+      active_linters
+      active_traverse_linters
+      traverser
+  = fun ~file ast ->
+  let ast_linters = YALO_LANG.filter_linters ~file !active_linters in
+  let ast_traverse_linters =
+    YALO_LANG.filter_linters ~file !active_traverse_linters in
+  match ast_linters, ast_traverse_linters with
+  | [], [] -> ()
+  | _ ->
+     YALO_LANG.iter_linters_open ~file ast_linters ;
+     YALO_LANG.iter_linters_open ~file ast_traverse_linters ;
+     YALO_LANG.iter_linters ~file ast_linters ast ;
+     traverser ~file ast_traverse_linters ast ;
+     YALO_LANG.iter_linters_close ~file ast_traverse_linters ;
+     ()
+
+let lint_ast = lint_tast
 
 let lint_ast_impl =
-  YALOLANG.lint_with_active_linters active_ast_impl_linters
+  lint_ast
+    active_ast_impl_linters
+    active_ast_impl_traverse_linters 
+    OCAML_AST_INTERNAL.structure
 
-let lint_tast_intf =
-  YALOLANG.lint_with_active_linters active_tast_intf_linters
+let lint_ast_intf =
+  lint_ast
+    active_ast_intf_linters
+    active_ast_intf_traverse_linters 
+    OCAML_AST_INTERNAL.signature
 
 let lint_tast_impl =
-  YALOLANG.lint_with_active_linters active_tast_impl_linters
+  lint_tast
+    active_tast_impl_linters
+    active_tast_impl_traverse_linters
+    OCAML_TAST_INTERNAL.structure
+
+let lint_tast_intf =
+  lint_tast
+    active_tast_intf_linters
+    active_tast_intf_traverse_linters
+    OCAML_TAST_INTERNAL.signature
 
 let lint_sig =
-  YALOLANG.lint_with_active_linters active_sig_linters
+  YALO_LANG.lint_with_active_linters active_sig_linters
 
 
 
@@ -193,6 +254,37 @@ end = struct
 end
 
 
+(* From Zanuda:src/utils.ml *)
+[%%if ocaml_version < (5, 3, 0)]
+
+type intf_or_impl =
+  | Intf
+  | Impl
+
+let with_info _kind ~source_file f =
+  Compile_common.with_info
+    ~native:false
+    ~source_file
+    ~tool_name:"yalo"
+    ~output_prefix:"yalo"
+    ~dump_ext:"yalo"
+    f
+
+[%%else]
+
+type intf_or_impl = Unit_info.intf_or_impl
+
+let with_info kind ~source_file f =
+  Compile_common.with_info
+    ~native:false
+    ~tool_name:"yalo"
+    ~dump_ext:"yalo"
+    (Unit_info.make ~source_file kind "")
+    f
+
+[%%endif]
+
+
 let check_impl_source ~file =
   let file_ml = YALO.file_name ~file in
 
@@ -204,12 +296,8 @@ let check_impl_source ~file =
     if !arg_lint_ast_from_src then
       let st =
         try
-          Compile_common.with_info
-            ~native:false
-            ~tool_name:"yalo"
+          with_info Impl
             ~source_file:file_ml
-            ~output_prefix:"yalo"
-            ~dump_ext:"yalo"
             Compile_common.parse_impl
         with exn ->
           Location.report_exception Format.err_formatter exn;
@@ -230,12 +318,8 @@ let check_intf_source ~file =
     if !arg_lint_ast_from_src then
       let sg =
         try
-          Compile_common.with_info
-            ~native:false
-            ~tool_name:"yalo"
+          with_info Intf
             ~source_file:file_mli
-            ~output_prefix:"yalo"
-            ~dump_ext:"yalo"
             Compile_common.parse_intf
         with exn ->
           Location.report_exception Format.err_formatter exn;
@@ -288,13 +372,13 @@ let check_cmt ~file =
 let non_source_directories =
   StringSet.of_list [ "_build" ; "_opam" ; "_drom" ]
 
-let check_source ~file_doc =
+let check_in_source_dir ~file_doc =
   let file_name = YALO.doc_name ~file_doc in
   let path = String.split_on_char '/' file_name in
   List.for_all (fun component ->
       not @@ StringSet.mem component non_source_directories) path
 
-let check_artefact ~file_doc =
+let check_in_artefact_dir ~file_doc =
   let file_name = YALO.doc_name ~file_doc in
   let path = String.split_on_char '/' file_name in
   let rec iter path =
@@ -326,3 +410,6 @@ let folder_updater ~folder =
      in
      iter folder.folder_root.fs_folder path
   | _ -> ()
+
+
+

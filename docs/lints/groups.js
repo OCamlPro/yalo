@@ -13,5 +13,7 @@ var LEVEL_FILTERS_DEFAULT = {
 var GROUPS_FILTER_DEFAULT = {
     "autofix": true,
     "find": true,
-    "line": true
+    "line": true,
+    "typed": true,
+    "untyped": true
 };

@@ -5,12 +5,15 @@ share-version = "0.9.3"
 
 [project]
 authors = ["Fabrice Le Fessant <fabrice.le_fessant@ocamlpro.com>"]
-ci-systems = ["ubuntu-latest", "macos-latest", "windows-latest"]
+ci-systems = ["ubuntu-latest" ]
 copyright = "OCamlPro SAS"
-edition = "4.14.1"
+edition = "4.14.2"
 github-organization = "ocamlpro"
 license = "LGPL2"
+
+# dune-site does not support versions before 4.08
 min-edition = "4.08.0"
+
 name = "yalo"
 skeleton = "program"
 synopsis = "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages"

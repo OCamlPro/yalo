@@ -102,4 +102,4 @@ let rec safe_mkdir dir =
      match st.st_kind with
      | S_DIR -> ()
      | _ ->
-        Printf.kprintf failwith "Utils.safe_mkdir: %s is a special file" dir
+        Printf.ksprintf failwith "Utils.safe_mkdir: %s is a special file" dir

@@ -10,9 +10,19 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Yalo.V1.YALOTYPES
+open Yalo.V1.YALO_TYPES
 
-module OCAMLLANG : sig
+module OCAML_AST : (* = Ppxlib.Ast *)
+  module type of Ast_traverse.OCAML_AST
+module OCAML_AST_TRAVERSE :
+  module type of Ast_traverse.OCAML_AST_TRAVERSE
+
+module OCAML_TAST :
+  module type of Tast_traverse.OCAML_TAST
+module OCAML_TAST_TRAVERSE :
+  module type of Tast_traverse.OCAML_TAST_TRAVERSE
+
+module OCAML_LANG : sig
 
   val ocaml : language
 
@@ -30,13 +40,19 @@ module OCAMLLANG : sig
     ?on_end : (unit -> unit) ->
     (file:file -> src_file_input -> unit) -> unit
 
-  val new_src_content_linter : src_content_input new_gen_linter
-  val new_src_line_linter : src_line_input new_gen_linter
-  val new_sig_linter : Cmi_format.cmi_infos new_gen_linter
-  val new_ast_intf_linter :  Ppxlib.Parsetree.signature new_gen_linter
-  val new_ast_impl_linter :  Ppxlib.Parsetree.structure new_gen_linter
-  val new_tast_intf_linter : Typedtree.signature new_gen_linter
-  val new_tast_impl_linter : Typedtree.structure new_gen_linter
+  val new_src_content_linter : src_content_input new_gen_unit_linter
+  val new_src_line_linter : src_line_input new_gen_unit_linter
+  val new_sig_linter : Cmi_format.cmi_infos new_gen_unit_linter
+  val new_ast_intf_linter :  OCAML_AST.signature new_gen_unit_linter
+  val new_ast_impl_linter :  OCAML_AST.structure new_gen_unit_linter
+  val new_tast_intf_linter : OCAML_TAST.signature new_gen_unit_linter
+  val new_tast_impl_linter : OCAML_TAST.structure new_gen_unit_linter
+
+  val new_ast_impl_traverse_linter : OCAML_AST_TRAVERSE.t new_gen_unit_linter
+  val new_ast_intf_traverse_linter : OCAML_AST_TRAVERSE.t new_gen_unit_linter
+
+  val new_tast_impl_traverse_linter : OCAML_TAST_TRAVERSE.t new_gen_unit_linter
+  val new_tast_intf_traverse_linter : OCAML_TAST_TRAVERSE.t new_gen_unit_linter
 
 end
 

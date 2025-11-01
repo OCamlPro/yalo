@@ -32,7 +32,7 @@ let w_windows_newline =
     ~msg:"Line contains a \\r\\n instead of only \\n"
 
 let () =
-  OCAMLLANG.new_src_line_linter ns "ocp_check_line2"
+  OCAML_LANG.new_src_line_linter ns "ocp_check_line2"
     ~warnings:[w_no_final_newline ; w_windows_newline]
     (fun ~file { line_loc = loc;
                  line_line = line;

@@ -1,0 +1,76 @@
+name: Compatibility Workflow
+
+# use fields.git-main-branch to change from master
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        ocaml-compiler:
+#          - 4.08.0
+#          - 4.09.0
+#          - 4.10.0
+#          - 4.11.0
+#          - 4.12.0
+#          - 4.13.0
+          - 4.14.0
+#          - 4.14.1
+#          - 4.14.2
+# Does not yet exist on Github
+#          - 4.14.3
+          - 5.0.0
+#          - 5.1.0
+#          - 5.2.0
+#          - 5.3.0
+          - 5.4.0
+# Does not yet exist on Github
+#          - 5.5.0
+        skip_test:
+          - false
+        include:
+          - os: macos-latest
+            ocaml-compiler: 4.14.2
+          - os: windows-latest
+            ocaml-compiler: 4.14.2
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Retrieve opam cache
+        uses: actions/cache@v4
+        id: cache-opam
+        with:
+          path: ~/.opam
+          key: v4-${{ runner.os }}-yalo-${{ matrix.ocaml-compiler }}-${{ hashFiles('opam/*.opam') }}
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: avsm/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          opam-pin: false
+
+      - name: Set git user
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions-bot@users.noreply.github.com
+
+      # use fields.opam-repo = "git+https://" to add an 'extra' opam repository
+
+      - run: opam pin add . -y --no-action
+
+      - run: opam install -y ./opam/*.opam --deps-only --with-test
+
+      - run: make build
