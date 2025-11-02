@@ -10,6 +10,12 @@
 (*                                                                        *)
 (**************************************************************************)
 
+open EzCompat
+
+module YALO_OP : sig
+  val (//) : string -> string -> string
+end
+
 module YALO_TYPES : sig
 
   type plugin
@@ -24,6 +30,8 @@ module YALO_TYPES : sig
   type linter
   type document
   type folder
+  type filepath = string list
+  type fs
 
   type position = Lexing.position = {
       pos_fname : string;
@@ -53,18 +61,24 @@ module YALO_TYPES : sig
       content_string : string ;
     }
 
+  type ('linter_input, 'linter_output) linter_function =
+    file:file -> linter:linter -> 'linter_input -> 'linter_output
+
   type ('linter_input, 'linter_output) new_gen_linter =
     namespace ->
     string ->
     warnings:warning list ->
     ?on_begin : (unit -> unit) ->
-    ?on_open : (file:file -> unit) ->
-    ?on_close : (file:file -> unit) ->
+    ?on_open : (file:file -> linter:linter -> unit) ->
+    ?on_close : (file:file -> linter:linter -> unit) ->
     ?on_end : (unit -> unit) ->
-    (file:file -> 'linter_input -> 'linter_output) -> unit
+    (file:file -> linter:linter -> 'linter_input -> 'linter_output) -> unit
 
   type 'linter_input new_gen_unit_linter =
     ('linter_input,unit) new_gen_linter
+
+  type ('a,'b) active_linters =
+    ( linter * ('a, 'b) linter_function ) list
 
 end
 
@@ -95,7 +109,8 @@ module YALO : sig
     name:string -> msg:string -> int -> warning
   val tag_danger : tag
 
-  val warn : location -> file:file -> ?msg:string ->
+  val warn : location -> file:file -> linter:linter ->
+             ?msg:string ->
              ?autofix:(YALO_TYPES.location * string) list ->
              warning -> unit
 
@@ -130,6 +145,34 @@ module YALO : sig
   end
 end
 
+
+module YALO_FS : sig
+  (*      val get_folder : fs -> string -> folder *)
+  val folder : fs -> folder
+end
+
+module YALO_FOLDER : sig
+  val name : folder -> string
+  val fs : folder -> fs
+  val projects : folder -> project StringMap.t
+  val set_projects : folder -> project StringMap.t -> unit
+  val folders : folder -> folder StringMap.t
+(*
+  val parent : folder -> t option
+  val basename : folder -> string
+
+  val set_project : folder -> project -> unit
+ *)
+end
+
+module YALO_DOC : sig
+(*
+  val parent : document -> folder
+  val basename : document -> string
+  val name : document -> string
+ *)
+end
+
 module YALO_LANG : sig
 
   val new_language : plugin -> string -> language
@@ -148,8 +191,8 @@ module YALO_LANG : sig
     string ->
     warnings:warning list ->
     ?on_begin:(unit -> unit) ->
-    ?on_open:(file:file -> unit) ->
-    ?on_close:(file:file -> unit) ->
+    ?on_open:(file:file -> linter:linter -> unit) ->
+    ?on_close:(file:file -> linter:linter -> unit) ->
     ?on_end:(unit -> unit) ->
     (linter -> unit) -> unit
 
@@ -160,66 +203,35 @@ module YALO_LANG : sig
     string ->
     warnings:YALO_TYPES.warning list ->
     ?on_begin:(unit -> unit) ->
-    ?on_open:(file:YALO_TYPES.file -> unit) ->
-    ?on_close:(file:YALO_TYPES.file -> unit) ->
+    ?on_open:(file:YALO_TYPES.file -> linter:linter -> unit) ->
+    ?on_close:(file:YALO_TYPES.file -> linter:linter -> unit) ->
     ?on_end:(unit -> unit) -> 'a -> unit
 
   val filter_linters :
-    file:file ->
-    (linter * 'a) list -> (linter * 'a) list
+    file:file -> ('a,'b) active_linters -> ('a, 'b) active_linters
   val lint_with_active_linters :
-    (linter * (file:file -> 'a -> unit)) list ref ->
-    file:file -> 'a -> unit
-     val iter_linters_open :
-       file:YALO_TYPES.file -> (linter * 'a) list -> unit
-     val iter_linters_close :
-       file:YALO_TYPES.file -> (linter * 'a) list -> unit
-    val iter_linters :
-      file:file ->
-      (linter * (file:file -> 'a -> unit)) list ->
-      'a -> unit
+    ('a, unit) active_linters ref -> file:file -> 'a -> unit
+  val iter_linters_open :
+    file:YALO_TYPES.file -> ('a,'b) active_linters -> unit
+  val iter_linters_close :
+    file:YALO_TYPES.file -> ('a, 'b) active_linters -> unit
+  val iter_linters :
+    file:file -> ('a,unit) active_linters -> 'a -> unit
 
-    (*
-    module FS : sig
-      type t
-      val get_folder : t -> string -> folder
-    end
+  val add_file_classifier :
+    (file_doc:YALO_TYPES.document -> YALO_TYPES.file_kind option) ->
+    unit
+  val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
 
-    module FOLDER : sig
-      type t = folder
-      val root : t -> FS.t
-      val project : t -> project
-      val parent : t -> t option
-      val basename : t -> string
-      val name : t -> string
-
-      val set_project : t -> project -> unit
-    end
-
-    module DOCUMENT : sig
-      type t = document
-      val parent : t -> folder
-      val basename : t -> string
-      val name : t -> string
-      end
-
-     val add_file_classifier :
-       (file_doc:YALO_TYPES.document -> YALO_TYPES.file_kind option) ->
-       unit
-     val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
-     *)
-
-
+  val update_warnings : file:file -> loc:location -> string -> unit
 end
 
 module YALO_INTERNAL : sig
 
   val add_file :
     file_doc:Types.document ->
-    ?file_kind:YALO_TYPES.file_kind ->
-    unit ->
     unit
-  val new_file :
+  val new_file : (* used by ppx *)
     file_doc:Types.document ->
     file_kind:file_kind ->
     file_crc:Digest.t -> string -> file

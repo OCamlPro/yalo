@@ -58,6 +58,7 @@ yalo_lib = "version"
 # package tools dependencies
 [tools]
 ppx_optcomp = ""
+ppxlib = ">=0.35"
 
 # package fields (depends on package skeleton)
 #Examples:

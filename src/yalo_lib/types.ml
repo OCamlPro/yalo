@@ -12,6 +12,8 @@
 
 open EzCompat
 
+type filepath = string list
+
 type plugin = {
     plugin_name : string;
     plugin_version : string ;
@@ -32,6 +34,7 @@ and file_kind = {
     kind_language : language ;
     kind_name : string ;
     kind_exts : string list ;
+
     kind_validate : (file_doc:document -> bool) ;
     kind_lint : (file:file -> unit) ;
   }
@@ -54,6 +57,7 @@ and warning = {
     w_idstr : string ;
     w_name : string ;
     mutable w_tags : tag list ;
+    mutable w_linters : linter StringMap.t ;
     w_msg : string ;
     mutable w_level_warning : bool ;
     mutable w_level_error : bool ;
@@ -65,7 +69,7 @@ and project = {
     mutable project_files : file list ;
   }
 
-and fsroot = {
+and fs = {
     fs_root : string ;
     fs_folder : folder ;
     (* the path to the sub-folder where we started before chdir to .yaloconf  *)
@@ -74,7 +78,7 @@ and fsroot = {
   }
 
 and folder = {
-    folder_root : fsroot ;
+    folder_fs : fs ;
     folder_parent : folder ;
 
     folder_basename : string ;
@@ -134,6 +138,7 @@ and message = {
     msg_file : file ; (* Warning: this file may not be the file where
                          the error was spotted, for example a .cmt
                          file instead of the .ml in the location. *)
+    msg_linter: linter ;
     msg_idstr : string ;
     msg_loc : location ;
     msg_string : string ;
@@ -142,16 +147,17 @@ and message = {
 
 and linter = {
     linter_name : string ;
+    linter_idstr : string ;
     linter_lang : language ;
     linter_namespace : namespace ;
     (* TODO: check that all these warnings are defined in the same
        namespace *)
-    linter_warnings : warning list ;
+    linter_warnings : warning StringMap.t ;
     mutable linter_active : bool ;
     linter_begin : (unit -> unit);
-    linter_open : (file:file -> unit) ;
+    linter_open : (file:file -> linter:linter -> unit) ;
     linter_install : (linter -> unit) ;
-    linter_close : (file:file -> unit) ;
+    linter_close : (file:file -> linter:linter -> unit) ;
     linter_end : (unit -> unit);
   }
 

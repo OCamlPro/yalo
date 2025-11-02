@@ -12,6 +12,8 @@
 
 open Types
 
+module YALO_OP = Yalo_misc.Utils.OP
+
 module YALO_TYPES = struct
 
   type plugin = Types.plugin
@@ -26,6 +28,8 @@ module YALO_TYPES = struct
   type file_kind = Types.file_kind
   type document = Types.document
   type folder = Types.folder
+  type filepath = Types.filepath
+  type fs = Types.fs
 
   type position = Lexing.position = {
       pos_fname : string;
@@ -40,18 +44,25 @@ module YALO_TYPES = struct
       loc_ghost: bool;
     }
 
+  type ('linter_input, 'linter_output) linter_function =
+    file:file -> linter:linter -> 'linter_input -> 'linter_output
+
   type ('linter_input, 'linter_output) new_gen_linter =
     namespace ->
     string ->
     warnings:warning list ->
     ?on_begin : (unit -> unit) ->
-    ?on_open : (file:file -> unit) ->
-    ?on_close : (file:file -> unit) ->
+    ?on_open : (file:file -> linter:linter -> unit) ->
+    ?on_close : (file:file -> linter:linter -> unit) ->
     ?on_end : (unit -> unit) ->
-    (file:file -> 'linter_input -> 'linter_output) -> unit
+              ('linter_input, 'linter_output) linter_function ->
+              unit
 
   type 'linter_input new_gen_unit_linter =
     ('linter_input,unit) new_gen_linter
+
+  type ('a,'b) active_linters =
+    ( linter * ('a, 'b) linter_function ) list
 
   type src_line_input = Types.src_line_input = {
       line_loc : location ;
@@ -99,30 +110,51 @@ end
 
 module YALO_LANG = struct
 
-    let new_language = Engine.new_language
-    let new_file_kind = Engine.new_file_kind
-    let new_linter = Engine.new_linter
+  let new_language = Engine.new_language
+  let new_file_kind = Engine.new_file_kind
+  let new_linter = Engine.new_linter
 
-    (* utils *)
-    let new_gen_linter = Engine.new_gen_linter
-    let filter_linters = Engine.filter_linters
-    let lint_with_active_linters = Engine.lint_with_active_linters
-    let iter_linters_open = Engine.iter_linters_open
-    let iter_linters_close = Engine.iter_linters_close
-    let iter_linters = Engine.iter_linters
+  (* utils *)
+  let new_gen_linter = Engine.new_gen_linter
+  let filter_linters = Engine.filter_linters
+  let lint_with_active_linters = Engine.lint_with_active_linters
+  let iter_linters_open = Engine.iter_linters_open
+  let iter_linters_close = Engine.iter_linters_close
+  let iter_linters = Engine.iter_linters
 
-    (*
-    let add_file_classifier = Engine.add_file_classifier
-    let add_folder_updater = Engine.add_folder_updater
-     *)
+  let add_file_classifier = Engine.add_file_classifier
+  let add_folder_updater = Engine.add_folder_updater
 
+  let update_warnings = Engine.update_warnings
+end
+
+module YALO_FS = struct
+  (*      let get_folder : fs -> string -> folder *)
+  let folder fs = fs.fs_folder
+end
+
+module YALO_FOLDER = struct
+  let name folder = folder.folder_name
+  let fs folder = folder.folder_fs
+  let projects folder = folder.folder_projects
+  let folders folder = folder.folder_folders
+
+  (* modifier *)
+  let set_projects folder p = folder.folder_projects <- p
+end
+
+module YALO_DOC = struct
+(*
+  val parent : t -> folder
+  val basename : t -> string
+  val name : t -> string
+ *)
 end
 
 module YALO_INTERNAL = struct
-
-    let new_file = Engine.new_file (* don't use *)
-    let add_file = Engine.add_file
-    let get_document = Engine.get_document
+  let new_file = Engine.new_file (* don't use *)
+  let add_file = Engine.add_file
+  let get_document = Engine.get_document
 end
 
 let init () = ()

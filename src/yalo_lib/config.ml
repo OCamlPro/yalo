@@ -129,7 +129,7 @@ module FILEATTR = struct
     | Module list ->
        List.map (function
            | "project", StringValue v ->
-              Project ( EzString.split v ':' )
+              Project ( EzString.split v ',' )
            | "project", v ->
               Project ( EZCONFIG.value_to_list EZCONFIG.value_to_string v )
            | "skipdir", v ->

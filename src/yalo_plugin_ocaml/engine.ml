@@ -17,54 +17,33 @@ open Yalo.V1
 open Tast_traverse (* for OCAML_TAST* modules *)
 open Ast_traverse  (* for OCAML_AST* modules *)
 
+let active_src_line_linters =
+  ref ([] : (src_line_input, unit) active_linters )
+let active_src_file_linters =
+  ref ([] : (src_file_input, unit) active_linters )
+let active_src_content_linters =
+  ref ([] : (src_content_input, unit) active_linters )
+let active_ast_intf_linters =
+  ref ([] : (OCAML_AST.signature, unit) active_linters )
+let active_ast_intf_traverse_linters =
+  ref ([] : (OCAML_AST_TRAVERSE.t, unit) active_linters )
+let active_ast_impl_linters =
+  ref ([] : (OCAML_AST.structure, unit) active_linters )
+let active_ast_impl_traverse_linters =
+  ref ([] : (OCAML_AST_TRAVERSE.t, unit) active_linters )
+let active_tast_intf_linters =
+  ref ([] : (Typedtree.signature, unit) active_linters )
+let active_tast_intf_traverse_linters =
+  ref ([] : (OCAML_TAST_TRAVERSE.t, unit) active_linters )
+let active_tast_impl_linters =
+  ref ([] : (Typedtree.structure, unit) active_linters )
+let active_tast_impl_traverse_linters =
+  ref ([] : (OCAML_TAST_TRAVERSE.t, unit) active_linters )
+let active_sig_linters =
+  ref ([] : (Cmi_format.cmi_infos, unit) active_linters )
+
 let plugin = YALO.new_plugin "yalo_ocaml_plugin" ~version:"0.1.0"
 let ocaml = YALO_LANG.new_language plugin "ocaml"
-
-let active_src_line_linters =
-  ref
-    ([] : (linter * (file:file -> src_line_input -> unit)) list )
-let active_src_file_linters =
-  ref
-    ([] : (linter * (file:file -> src_file_input -> unit)) list )
-let active_src_content_linters =
-  ref
-    ([] : (linter * (file:file -> src_content_input -> unit)) list )
-
-let active_ast_intf_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_AST.signature -> unit)) list )
-
-let active_ast_intf_traverse_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_AST_TRAVERSE.t -> unit)) list )
-
-let active_ast_impl_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_AST.structure -> unit)) list )
-
-let active_ast_impl_traverse_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_AST_TRAVERSE.t -> unit)) list )
-
-let active_tast_intf_linters =
-  ref
-    ([] : (linter * (file:file -> Typedtree.signature -> unit)) list )
-
-let active_tast_intf_traverse_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_TAST_TRAVERSE.t -> unit)) list )
-
-let active_tast_impl_linters =
-  ref
-    ([] : (linter * (file:file -> Typedtree.structure -> unit)) list )
-
-let active_tast_impl_traverse_linters =
-  ref
-    ([] : (linter * (file:file -> OCAML_TAST_TRAVERSE.t -> unit)) list )
-
-let active_sig_linters =
-  ref
-    ([] : (linter * (file:file -> Cmi_format.cmi_infos -> unit)) list )
 
 let new_src_file_linter =
   YALO_LANG.new_gen_linter ocaml active_src_file_linters
@@ -179,15 +158,15 @@ let lint_tast
   let ast_linters = YALO_LANG.filter_linters ~file !active_linters in
   let ast_traverse_linters =
     YALO_LANG.filter_linters ~file !active_traverse_linters in
-  match ast_linters, ast_traverse_linters with
-  | [], [] -> ()
-  | _ ->
-     YALO_LANG.iter_linters_open ~file ast_linters ;
-     YALO_LANG.iter_linters_open ~file ast_traverse_linters ;
-     YALO_LANG.iter_linters ~file ast_linters ast ;
-     traverser ~file ast_traverse_linters ast ;
-     YALO_LANG.iter_linters_close ~file ast_traverse_linters ;
-     ()
+
+  (* We must do the next steps even without any active linters,
+     because we must collect [@@@yalo.warning "..."] attributes *)
+  YALO_LANG.iter_linters_open ~file ast_linters ;
+  YALO_LANG.iter_linters_open ~file ast_traverse_linters ;
+  YALO_LANG.iter_linters ~file ast_linters ast ;
+  traverser ~file ast_traverse_linters ast ;
+  YALO_LANG.iter_linters_close ~file ast_traverse_linters ;
+  ()
 
 let lint_ast = lint_tast
 
@@ -393,22 +372,22 @@ let check_in_artefact_dir ~file_doc =
 (* This function will propagate projects from the source tree
    to the _build/default artefact tree *)
 let folder_updater ~folder =
-  let open Yalo.Types in
-  let name = folder.folder_name in
+  let name = YALO_FOLDER.name folder in
   let path = String.split_on_char '/' name in
   match path with
   | "_build" :: "default" :: path ->
      let rec iter folder2 path =
        match path with
        | [] ->
-          folder.folder_projects <- folder2.folder_projects
+          YALO_FOLDER.set_projects folder
+            (YALO_FOLDER.projects folder2)
        | basename :: path ->
-          match StringMap.find basename folder2.folder_folders with
+          match StringMap.find basename (YALO_FOLDER.folders folder2) with
           | exception Not_found -> () (* weird *)
           | folder2 ->
              iter folder2 path
      in
-     iter folder.folder_root.fs_folder path
+     iter (YALO_FOLDER.fs folder |> YALO_FS.folder) path
   | _ -> ()
 
 

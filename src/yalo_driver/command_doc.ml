@@ -21,20 +21,19 @@ let arg_output_dir = ref "."
 
 let arg_specs = Args.[
 
-    [ "profile" ], EZCMD.String (fun s -> arg_profile := Some s),
-    EZCMD.info ~docv:"FILE" "Read warnings+errors profile from FILE";
+      [ "w" ; "warnings" ],
+      EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
+      EZCMD.info ~docv:"SPEC"
+        "Set warnings according to SPEC-ification";
 
-    [ "w" ; "warnings" ], EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
-    EZCMD.info ~docv:"SPEC"
-      "Set warnings according to SPEC-ification";
+      [ "e" ; "errors" ],
+      EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
+      EZCMD.info ~docv:"SPEC"
+        "Set errors according to SPEC-ification";
 
-    [ "e" ; "errors" ], EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
-    EZCMD.info ~docv:"SPEC"
-      "Set errors according to SPEC-ification";
-
-    [ "dir" ], EZCMD.String (fun s -> arg_output_dir := s),
-    EZCMD.info ~docv:"DIRECTORY" "Target directory for output";
-  ]
+      [ "dir" ], EZCMD.String (fun s -> arg_output_dir := s),
+      EZCMD.info ~docv:"DIRECTORY" "Target directory for output";
+                ]
 
 
 
@@ -87,7 +86,7 @@ let clippy_gen dir =
     ) (List.rev !Yalo.Engine.all_warnings)
   in
 
-  let json_file = dir /// "lints.json" in
+  let json_file = dir // "lints.json" in
   EzFile.write_file json_file ( Yalo_misc.Clippy.json_of_rules rules );
   Printf.eprintf "File %s created\n%!" json_file;
 
@@ -112,7 +111,7 @@ var GROUPS_FILTER_DEFAULT = {
       (String.concat "\": true,\n    \"" (StringSet.to_list !groups))
   in
 
-  let js_file = dir /// "groups.js" in
+  let js_file = dir // "groups.js" in
   EzFile.write_file js_file js_content ;
   Printf.eprintf "File %s created\n%!" js_file;
 
@@ -142,7 +141,6 @@ let cmd command_name =
     (fun () ->
 
       Yalo.Lint_project.activate_warnings_and_linters
-        ?profile:!Args.arg_profile
         ~skip_config_warnings: !Args.arg_skip_config_warnings
         (!Args.arg_warnings, !Args.arg_errors);
 

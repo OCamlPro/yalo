@@ -16,9 +16,9 @@ module OCAML_AST = Ppxlib.Ast
 
 module OCAML_AST_TRAVERSE = struct
 
-  type 'a ast_lint_list = (file:YALO_TYPES.file -> 'a -> unit) list
+  type 'a ast_lint_list = ('a, unit) YALO_TYPES.active_linters
   type 'a ast_lint_list_with_loc =
-    (file:YALO_TYPES.file -> loc:YALO_TYPES.location -> 'a -> unit) list
+    (YALO_TYPES.location * 'a, unit) YALO_TYPES.active_linters
 
   type t = {
       file : YALO_TYPES.file ;
@@ -126,15 +126,15 @@ module OCAML_AST_INTERNAL = struct
     }
 
   let apply_lints_with_loc ctx ~lints x ~loc =
-    List.iter (fun f ->
-        f ~file:ctx.file ~loc x
+    List.iter (fun (linter,f) ->
+        f ~file:ctx.file ~linter (loc, x)
       )
       lints ;
     ctx
 
   let apply_lints ctx ~lints x =
-    List.iter (fun f ->
-        f ~file:ctx.file x
+    List.iter (fun (linter,f) ->
+        f ~file:ctx.file ~linter x
       )
       lints ;
     ctx
@@ -323,18 +323,78 @@ module OCAML_AST_INTERNAL = struct
 
   let ast_folder = new ast_folder
 
-let make_iterator ~file ast_traverse_linters =
-  let traverse = empty ~file in
-  List.iter (fun (_l,f) ->
-      f ~file traverse) ast_traverse_linters ;
-  traverse
+  let make_iterator ~file ast_traverse_linters =
+    let traverse = empty ~file in
+    List.iter (fun (linter,f) ->
+        f ~file ~linter traverse) ast_traverse_linters ;
+    traverse
 
-let signature ~file ast_traverse_linters ast =
-  let traverse = make_iterator ~file ast_traverse_linters in
+
+  let config = Ppxlib.Pp_ast.Config.make ~show_attrs:true ()
+  let format_to_string pp x =
+    Buffer.clear Format.stdbuf;
+    Format.fprintf Format.str_formatter "%a@."
+      pp x;
+    Format.flush_str_formatter ()
+
+  (* Print the AST to ease pattern-matching on it *)
+  let ast_of_structure =
+    format_to_string (Ppxlib.Pp_ast.structure ~config)
+  let ast_of_signature =
+    format_to_string (Ppxlib.Pp_ast.signature ~config)
+  let ast_of_expression =
+    format_to_string (Ppxlib.Pp_ast.expression ~config)
+  let ast_of_pattern =
+    format_to_string (Ppxlib.Pp_ast.pattern ~config)
+
+  let config = Ppxlib.Pp_ast.Config.make ~show_attrs:true ()
+  let eprint_structure str =
+    Printf.eprintf "structure: %s\n%!"
+      (ast_of_structure str)
+
+  let check_attribute ~file attr =
+    match attr with
+      OCAML_AST.{
+        attr_name = { txt = "yalo.warning" ; _ } ;
+        attr_loc = loc ;
+        attr_payload =
+          PStr
+            [ { pstr_desc =
+                  Pstr_eval
+                    ({ pexp_desc =
+                         Pexp_constant
+                           (Pconst_string (yalo_spec, _loc, None));
+                       _ },
+                     []);
+                _
+              }
+            ]
+        ;
+          _
+      } ->
+       YALO_LANG.update_warnings ~file ~loc yalo_spec ;
+       ()
+    | _ -> ()
+
+  let signature ~file ast_traverse_linters ast =
+    List.iter OCAML_AST.(fun pstr ->
+      match pstr.psig_desc with
+      | Psig_attribute attr ->
+         check_attribute ~file attr
+      | _ -> ()
+    ) ast ;
+
+    let traverse = make_iterator ~file ast_traverse_linters in
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#signature ast traverse in
     ()
 
   let structure ~file ast_traverse_linters ast =
+    List.iter OCAML_AST.(fun pstr ->
+        match pstr.pstr_desc with
+        | Pstr_attribute attr ->
+           check_attribute ~file attr
+        | _ -> ()
+      ) ast ;
     let traverse = make_iterator ~file ast_traverse_linters in
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#structure ast traverse in
     ()

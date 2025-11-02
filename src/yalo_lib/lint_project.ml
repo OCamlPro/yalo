@@ -61,40 +61,53 @@ let scan_projects
     | [] ->
        fs.fs_folder.folder_scan <- Scan_forced
     | paths ->
+       let q = Queue.create () in
+       (* We would like to extend the list of paths for siblings
+          (.ml -> .cmt/.cmi) but 'dune' breaks the relationship
+          between source files and corresponding artefacts, so
+          we cannot do that. *)
        List.iter (fun filepath ->
-           let fullname = String.concat "/" filepath in
-           if Engine.verbose 2 then
-             Printf.eprintf "add scanning root %s\n%!" fullname ;
-           let rec iter folder path =
-             match path with
-             | [] ->
-                folder.folder_scan <- Scan_forced
-             | basename :: path ->
-                let file_name = folder.folder_name /// basename in
-                match file_kind file_name with
-                | OTHER ->
-                   Printf.eprintf
-                     "Configuration error: while scanning %s, cannot cross links and other special files\n%!"
-                     (Yalo_misc.Utils.filename_of_path filepath);
-                   exit 2;
-                | FOLDER ->
-                   let folder = Engine.get_folder folder basename in
-                   iter folder path
-                | INEXISTENT ->
-                   Printf.eprintf "File argument %S does not exist\n%!"
-                     fullname;
-                   exit 2
-                | DOCUMENT ->
-                   match path with
-                   | _ :: _ ->
-                      Printf.eprintf "Configuration error: path %S is not a folder\n%!" basename;
-                      exit 2
-                   | [] ->
-                      let _doc = Engine.get_document folder  basename in
-                      ()
-           in
-           iter fs.fs_folder filepath
-         ) paths
+           Queue.add filepath q;
+         ) paths ;
+
+       while not ( Queue.is_empty q ) do
+         let filepath = Queue.take q in
+         let fullname = String.concat "/" filepath in
+         if Engine.verbose 2 then
+           Printf.eprintf "add scanning root %s\n%!" fullname ;
+         let rec iter folder path =
+           match path with
+           | [] ->
+              folder.folder_scan <- Scan_forced
+           | basename :: path ->
+              let file_name = folder.folder_name // basename in
+              match file_kind file_name with
+              | OTHER ->
+                 Printf.eprintf
+                   "Configuration error: while scanning %s, %s\n%!"
+                   (Yalo_misc.Utils.filename_of_path filepath)
+                   "cannot cross links and other special files";
+                 exit 2;
+              | FOLDER ->
+                 let folder = Engine.get_folder folder basename in
+                 iter folder path
+              | INEXISTENT ->
+                 Printf.eprintf "File argument %S does not exist\n%!"
+                   fullname;
+                 exit 2
+              | DOCUMENT ->
+                 match path with
+                 | _ :: _ ->
+                    Printf.eprintf
+                      "Configuration error: path %S is not a folder\n%!"
+                      basename;
+                    exit 2
+                 | [] ->
+                    let _doc = Engine.get_document folder  basename in
+                    ()
+         in
+         iter fs.fs_folder filepath
+       done
   end;
 
 
@@ -147,7 +160,7 @@ let scan_projects
                               Engine.project_map_add
                                 (Engine.new_project project_name)
                                 ~map:folder.folder_projects)
-                            projects
+                          projects
                      | Skipdir skipdir ->
                         if Engine.verbose 2 then
                           Printf.eprintf "   Skipdir %b\n%!" skipdir ;
@@ -178,7 +191,7 @@ let scan_projects
     in
 
     StringSet.iter (fun basename ->
-        let file_name = folder.folder_name /// basename in
+        let file_name = folder.folder_name // basename in
         match file_kind file_name with
         | FOLDER ->
            let subfolder = Engine.get_folder folder basename in
@@ -221,7 +234,7 @@ let scan_projects
                     file_doc.doc_tags <- StringSet.add tagname file_doc.doc_tags
                ) attrs ;
           ) attrs ;
-        Engine.add_file ~file_doc ()
+        Engine.add_file ~file_doc
 
       ) folder.folder_docs ;
 
@@ -247,17 +260,22 @@ let scan_projects
 
 let lint_projects
       ~fs
+      ~paths
       ~projects
       ()=
 
   let projects_to_lint =
     match projects with
     | [] -> begin
-        match !!Config.default_target with
-        | None ->
-           StringMap.to_list fs.fs_folder.folder_projects |>
-             List.map snd
-        | Some name -> [ Engine.new_project name ]
+        match paths with
+        | _ :: _ ->
+           [ fs.fs_project ]
+        | [] ->
+           match !!Config.default_target with
+           | None ->
+              StringMap.to_list fs.fs_folder.folder_projects |>
+                List.map snd
+           | Some name -> [ Engine.new_project name ]
       end
     | list ->
        List.map (fun name ->
@@ -316,6 +334,7 @@ let main
 
   lint_projects
     ~fs
+    ~paths
     ~projects
     ();
 
@@ -334,7 +353,6 @@ let activate_warnings_and_linters
       ?profile
       ?(skip_config_warnings=false)
       (arg_warnings, arg_errors) =
-
 
   begin
     match profile with
@@ -362,3 +380,11 @@ let activate_warnings_and_linters
 
   Engine.activate_linters ();
 
+  if List.length !Engine.active_linters = 0 then begin
+      Printf.eprintf "Configuration error: no active linters\n%!";
+      Engine.eprint_config ();
+      exit 2
+    end;
+  if Engine.verbose 1 then begin
+      Engine.eprint_config ();
+    end

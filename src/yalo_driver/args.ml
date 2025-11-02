@@ -33,7 +33,7 @@ let arg_skip_config_warnings = ref false
 let arg_map_src_projects = ref true
 
 let arg_save_config = ref (None : string option)
-let arg_profile = ref (None : string option)
+let arg_profiles = ref ([] : string list)
 
 let arg_message_format = ref Yalo.Types.Format_Context
 let arg_autofix_inplace = ref (None : bool option)
@@ -56,6 +56,9 @@ let parse_initial_args args =
        end;
     | ("-L"|"--load-plugin") :: file :: args ->
        arg_load_plugins := !arg_load_plugins @ [ file ];
+       iter args
+    | ("-P"|"--profile") :: file :: args ->
+       arg_profiles := !arg_profiles @ [ file ];
        iter args
     | ("-I"|"--include-dir") :: dir :: args ->
        arg_load_dirs := dir :: !arg_load_dirs;
@@ -90,6 +93,13 @@ let initial_arg_specs = [
       ~docs:"INITIAL ARGUMENTS"
       ~docv:"PLUGIN"
       "Load plugin PLUGIN (a .cmxs or a .ml file)";
+
+    [ "P" ; "profile" ], EZCMD.String (fun _s ->
+                             initial_arg_too_late "-P"),
+    EZCMD.info
+      ~docs:"INITIAL ARGUMENTS"
+      ~docv:"PROFILE"
+      "Specify profile to load (a yalo-<PROFILE>.conf file)";
 
 
     [ "I" ; "include-dir" ], EZCMD.String (fun _s ->
