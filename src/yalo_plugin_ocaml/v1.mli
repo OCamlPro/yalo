@@ -38,7 +38,7 @@ module OCAML_LANG : sig
     warnings:warning list ->
     ?on_begin : (unit -> unit) ->
     ?on_end : (unit -> unit) ->
-    (file:file -> src_file_input -> unit) -> unit
+    (src_file_input, unit) linter_function -> unit
 
   val new_src_content_linter : src_content_input new_gen_unit_linter
   val new_src_line_linter : src_line_input new_gen_unit_linter

@@ -23,6 +23,7 @@ let get_fs ?(needs_to_load_plugins=true) () =
                 ?config_file: !Args.arg_config_file
                 ~load_dirs: !Args.arg_load_dirs
                 ~plugins: !Args.arg_load_plugins
+                ~profiles: !Args.arg_profiles
                 ~can_load_plugins
                 ()
      in

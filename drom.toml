@@ -12,6 +12,7 @@ github-organization = "ocamlpro"
 license = "LGPL2"
 
 # dune-site does not support versions before 4.08
+# ppx-expect conflicts with ppxlib before 4.10
 min-edition = "4.08.0"
 
 name = "yalo"

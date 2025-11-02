@@ -19,9 +19,9 @@ end
 
 module OCAML_TAST_TRAVERSE = struct
 
-  type 'a ast_lint_list = (file:YALO_TYPES.file -> 'a -> unit) list
+  type 'a ast_lint_list = ('a, unit) YALO_TYPES.active_linters
   type 'a ast_lint_list_with_loc =
-    (file:YALO_TYPES.file -> loc:YALO_TYPES.location -> 'a -> unit) list
+    (YALO_TYPES.location * 'a, unit) YALO_TYPES.active_linters
 
   [%%if ocaml_version < (4, 11, 0)]
   type case_by_version = { mutable version_case : OCAML_TAST.case ast_lint_list }
@@ -137,8 +137,8 @@ module OCAML_TAST_INTERNAL = struct
   open Tast_mapper
   let default = Tast_mapper.default
   let apply_lints default traverse ~file sub x =
-    List.iter (fun f ->
-        f ~file x
+    List.iter (fun (linter, f) ->
+        f ~file ~linter x
       )
       traverse;
     default sub x
@@ -147,8 +147,8 @@ module OCAML_TAST_INTERNAL = struct
   open Tast_iterator
   let default = Tast_iterator.default_iterator
   let apply_lints default traverse ~file sub x =
-    List.iter (fun f ->
-        f ~file x
+    List.iter (fun (linter, f) ->
+        f ~file ~linter x
       )
       traverse;
     default sub x
@@ -159,55 +159,66 @@ let to_iterator ~file ( traverse : t) =
         default with
         binding_op =
           apply_lints default.binding_op traverse.binding_op ~file;
+
         case  = (fun sub x ->
-          List.iter (fun f ->
-              f ~file x
+          List.iter (fun (linter, f) ->
+              f ~file ~linter x
             )
             traverse.case.version_case;
           default.case sub x
         );
         class_declaration  =
-          apply_lints default.class_declaration traverse.class_declaration ~file;
+          apply_lints default.class_declaration traverse.class_declaration
+            ~file;
         class_description  =
-          apply_lints default.class_description traverse.class_description ~file;
+          apply_lints default.class_description traverse.class_description
+            ~file;
         class_expr  =
           apply_lints default.class_expr traverse.class_expr ~file;
         class_field  =
           apply_lints default.class_field traverse.class_field ~file;
         class_signature  =
-          apply_lints default.class_signature traverse.class_signature ~file;
+          apply_lints default.class_signature traverse.class_signature
+            ~file;
         class_structure  =
-          apply_lints default.class_structure traverse.class_structure ~file;
+          apply_lints default.class_structure traverse.class_structure
+            ~file;
         class_type  =
           apply_lints default.class_type traverse.class_type ~file;
         class_type_declaration  =
-          apply_lints default.class_type_declaration traverse.class_type_declaration ~file;
+          apply_lints default.class_type_declaration
+            traverse.class_type_declaration ~file;
         class_type_field  =
-          apply_lints default.class_type_field traverse.class_type_field ~file;
+          apply_lints default.class_type_field traverse.class_type_field
+            ~file;
         expr  =
           apply_lints default.expr traverse.expr ~file;
         extension_constructor  =
-          apply_lints default.extension_constructor traverse.extension_constructor ~file;
+          apply_lints default.extension_constructor
+            traverse.extension_constructor ~file;
         module_binding  =
           apply_lints default.module_binding traverse.module_binding ~file;
         module_coercion  =
           apply_lints default.module_coercion traverse.module_coercion ~file;
         module_declaration  =
-          apply_lints default.module_declaration traverse.module_declaration ~file;
+          apply_lints default.module_declaration traverse.module_declaration
+            ~file;
         module_substitution  =
-          apply_lints default.module_substitution traverse.module_substitution ~file;
+          apply_lints default.module_substitution
+            traverse.module_substitution ~file;
         module_expr  =
           apply_lints default.module_expr traverse.module_expr ~file;
         module_type  =
           apply_lints default.module_type traverse.module_type ~file;
         module_type_declaration  =
-          apply_lints default.module_type_declaration traverse.module_type_declaration ~file;
+          apply_lints default.module_type_declaration
+            traverse.module_type_declaration ~file;
         package_type   =
           apply_lints default.package_type traverse.package_type ~file;
 
         pat  = (fun sub x ->
-          List.iter (fun f ->
-              f ~file x
+          List.iter (fun (linter, f) ->
+              f ~file ~linter x
             )
             traverse.pat.version_pat;
           default.pat sub x
@@ -218,9 +229,11 @@ let to_iterator ~file ( traverse : t) =
         object_field  =
           apply_lints default.object_field traverse.object_field ~file;
         open_declaration  =
-          apply_lints default.open_declaration traverse.open_declaration ~file;
+          apply_lints default.open_declaration traverse.open_declaration
+            ~file;
         open_description  =
-          apply_lints default.open_description traverse.open_description ~file;
+          apply_lints default.open_description traverse.open_description
+            ~file;
         signature  =
           apply_lints default.signature traverse.signature ~file;
         signature_item  =
@@ -232,9 +245,11 @@ let to_iterator ~file ( traverse : t) =
         typ  =
           apply_lints default.typ traverse.typ ~file;
         type_declaration  =
-          apply_lints default.type_declaration traverse.type_declaration ~file;
+          apply_lints default.type_declaration traverse.type_declaration
+            ~file;
         type_declarations  =
-          apply_lints default.type_declarations traverse.type_declarations ~file;
+          apply_lints default.type_declarations traverse.type_declarations
+            ~file;
         type_extension  =
           apply_lints default.type_extension traverse.type_extension ~file;
         type_exception  =
@@ -246,24 +261,90 @@ let to_iterator ~file ( traverse : t) =
         value_bindings  =
           apply_lints default.value_bindings traverse.value_bindings ~file;
         value_description  =
-          apply_lints default.value_description traverse.value_description ~file;
+          apply_lints default.value_description traverse.value_description
+            ~file;
         with_constraint  =
-          apply_lints default.with_constraint traverse.with_constraint ~file;
+          apply_lints default.with_constraint traverse.with_constraint
+            ~file;
     }
 
-let make_iterator ~file ast_traverse_linters =
-  let traverse = empty ~file in
-  List.iter (fun (_l,f) ->
-      f ~file traverse) ast_traverse_linters ;
-  to_iterator ~file traverse 
+  let make_iterator ~file ast_traverse_linters =
+    let traverse = empty ~file in
+    List.iter (fun (linter,f) ->
+        f ~file ~linter traverse) ast_traverse_linters ;
+    to_iterator ~file traverse
 
-let structure ~file ast_traverse_linters ast =
-  let iterator = make_iterator ~file ast_traverse_linters in
-  let _ = iterator.structure iterator ast in
-  ()
+  [%%if ocaml_version < (4, 11, 0)]
+  let check_attribute_constant = function
+    | Parsetree.Pconst_string (yalo_spec, None) ->
+       Some yalo_spec
+    | _ -> None
+  [%%elif ocaml_version < (5, 3, 0)]
+  let check_attribute_constant = function
+    | Parsetree.Pconst_string (yalo_spec, _loc, None) ->
+       Some yalo_spec
+    | _ -> None
+  [%%else]
+  let check_attribute_constant = function
+    | Parsetree.{ pconst_desc =
+          Pconst_string (yalo_spec, _loc, None);
+        _ } -> Some yalo_spec
+    | _ -> None
+  [%%endif]
+
+  let check_attribute ~file attr =
+    match attr with
+      Parsetree.{
+        attr_name = { txt = "yalo.warning" ; _ } ;
+        attr_loc = loc ;
+        attr_payload =
+          PStr
+            [ { pstr_desc =
+                  Pstr_eval
+                    ({ pexp_desc = Pexp_constant cst ;
+                       _ },
+                     []);
+                _
+              }
+            ]
+        ;
+          _
+      } ->
+      begin
+        match check_attribute_constant cst with
+        | None -> ()
+        | Some yalo_spec ->
+           YALO_LANG.update_warnings ~file ~loc yalo_spec ;
+      end
+    | _ -> ()
+
+  let structure ~file ast_traverse_linters ast =
+    OCAML_TAST.(
+
+      List.iter (fun pstr ->
+          match pstr.str_desc with
+          | Tstr_attribute attr ->
+             check_attribute ~file attr
+          | _ -> ()
+        ) ast.str_items ;
+
+    );
+    let iterator = make_iterator ~file ast_traverse_linters in
+    let _ = iterator.structure iterator ast in
+    ()
 
   let signature ~file ast_traverse_linters ast =
-  let iterator = make_iterator ~file ast_traverse_linters in
+    OCAML_TAST.(
+
+      List.iter (fun pstr ->
+          match pstr.sig_desc with
+          | Tsig_attribute attr ->
+             check_attribute ~file attr
+          | _ -> ()
+        ) ast.sig_items ;
+
+    );
+    let iterator = make_iterator ~file ast_traverse_linters in
     let _ = iterator.signature iterator ast in
     ()
 

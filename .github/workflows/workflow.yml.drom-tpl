@@ -24,7 +24,7 @@ jobs:
 ![if:min-edition]
         include:
           - os: !{ci-first-system}
-            ocaml-compiler: !{min-edition}
+            ocaml-compiler: 4.10.0
             skip_test: true
 ![fi]
 

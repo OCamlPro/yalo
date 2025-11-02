@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-a56d12f9d1830c50b8fbf9d51851991f:.
+717e4943ac6b6205828e89e2aa8eff9c:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -16,7 +16,7 @@ c6d4181b84516f70c8b63d41cba322fb:.drom_ignore
 
 # begin context for .github/workflows/workflow.yml
 # file .github/workflows/workflow.yml
-44b5662b70cf4bd76518e2764ea1da3c:.github/workflows/workflow.yml
+1c2fb7a6d9b60b2c62354cf7d1e950fa:.github/workflows/workflow.yml
 # end context for .github/workflows/workflow.yml
 
 # begin context for .gitignore
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-5bea683f0a561e9e0abf660a817dab40:dune-project
+9dfb67aa42dec4f9939d9b3cfd46b7ca:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -161,7 +161,7 @@ c0c8d275e351f7db0e838145e3e9d776:opam/yalo_lib.opam
 
 # begin context for opam/yalo_plugin_ocaml.opam
 # file opam/yalo_plugin_ocaml.opam
-af01db63e66f48b34e0ab970a8df85bf:opam/yalo_plugin_ocaml.opam
+f50f49487251933ca9250f7f3d26042b:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
 
 # begin context for scripts/after.sh
@@ -391,7 +391,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_ocaml/version.mlt
 
 # begin context for test/expect-tests/dune
 # file test/expect-tests/dune
-ce2a5b3302f28ddf68b3080f35144b7f:test/expect-tests/dune
+e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 # end context for test/expect-tests/dune
 
 # begin context for test/expect-tests/dune.drom

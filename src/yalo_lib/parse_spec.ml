@@ -68,7 +68,7 @@ let parse_spec spec set_function =
       | '-' -> iter1 (i+1) ~set:false
       | 'a'..'z' -> iter_tag ~set:true i (i+1)
       | 'A'..'Z' -> iter_ns i (i+1)
-      | ':' -> iter0 (i+1)
+      | ',' -> iter0 (i+1)
       | _c -> unexpected_char spec i
 
   and iter1 ~set i =
@@ -78,7 +78,7 @@ let parse_spec spec set_function =
     else
       match spec.[i] with
       | ' ' -> iter1 ~set (i+1)
-      | ':' ->
+      | ',' ->
          List.iter (set_function set) !Engine.all_warnings;
          iter0 (i+1)
       | 'a'..'z' -> iter_tag i (i+1) ~set
@@ -91,7 +91,7 @@ let parse_spec spec set_function =
       set_tag ~set pos0 i
     else
       match spec.[i] with
-      | ':' ->
+      | ',' ->
          set_tag ~set pos0 i;
          iter0 (i+1)
       | 'a'..'z' | '0'..'9' | '_' -> iter_tag ~set pos0 (i+1)
@@ -108,7 +108,7 @@ let parse_spec spec set_function =
       match spec.[i] with
       | 'A'..'Z' | '0'..'9' | '_' -> iter_ns ?set pos0 (i+1)
       | ' ' -> iter_plugin_space ?set pos0 i (i+1)
-      | ':' ->
+      | ',' ->
          set_ns ?set pos0 i;
          iter0 (i+1)
       | '+' ->
@@ -126,7 +126,7 @@ let parse_spec spec set_function =
     else
       match spec.[i] with
       | ' ' -> iter_plugin_space ?set pos0 pos1 (i+1)
-      | ':' ->
+      | ',' ->
          set_ns ?set pos0 pos1;
          iter0 (i+1)
       | '+' ->
@@ -142,7 +142,7 @@ let parse_spec spec set_function =
     if i < len then
       match spec.[i] with
       | ' ' -> iter_ns0 ns (i+1)
-      | ':' -> iter0 (i+1)
+      | ',' -> iter0 (i+1)
       | '+' -> iter_ns1 ns ~set:true (i+1)
       | '-' -> iter_ns1 ns ~set:false (i+1)
       | _ -> unexpected_char spec i
@@ -153,7 +153,7 @@ let parse_spec spec set_function =
       unexpected_end spec i
     else
       match spec.[i] with
-      | ':' -> unexpected_end spec i
+      | ',' -> unexpected_end spec i
       | ' ' -> iter_ns1 ns ~set (i+1)
       | 'a'..'z' -> iter_plugin_tag ns ~set i (i+1)
       | '0'..'9' -> iter_plugin_num ns ~set i (i+1)
@@ -168,7 +168,7 @@ let parse_spec spec set_function =
       | ' ' ->
          set_plugin_tag ns ~set pos0 i;
          iter_ns0 ns (i+1)
-      | ':' ->
+      | ',' ->
          set_plugin_tag ns ~set pos0 i;
          iter0 (i+1)
       | 'a'..'z' | '0'..'9' | '_' -> iter_plugin_tag ns ~set pos0 (i+1)
@@ -189,7 +189,7 @@ let parse_spec spec set_function =
       | ' ' ->
          set_plugin_num ns ~set pos0 i;
          iter_ns0 ns (i+1)
-      | ':' ->
+      | ',' ->
          set_plugin_num ns ~set pos0 i;
          iter0 (i+1)
       | '0'..'9' -> iter_plugin_num ns ~set pos0 (i+1)

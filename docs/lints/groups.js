@@ -14,6 +14,5 @@ var GROUPS_FILTER_DEFAULT = {
     "autofix": true,
     "find": true,
     "line": true,
-    "typed": true,
     "untyped": true
 };

@@ -78,7 +78,7 @@ let apply ?(destdir="") ?(suffix=".autofix") repls =
 
       let str = Buffer.contents b in
       (* Printf.eprintf "AFTER FILE %S\n%!" str ; *)
-      let dest_name = destdir /// file_name ^ suffix in
+      let dest_name = destdir // file_name ^ suffix in
       if !applied <> [] then begin
           Utils.safe_mkdir (Filename.dirname dest_name);
           EzFile.write_file dest_name str ;

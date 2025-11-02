@@ -91,7 +91,8 @@ let new_language plugin lang_name =
   lang
 
 let new_file_kind ~lang ?(exts=[]) ~name
-      ?(validate=fun ~file_doc:_ -> true) ~lint () =
+      ?(validate= fun ~file_doc:_ -> true)
+      ~lint () =
   let kind_uid = !file_kind_uids in
   incr file_kind_uids ;
   (* TODO check uniqueness *)
@@ -189,6 +190,7 @@ let new_warning
       w_idstr ;
       w_name ;
       w_tags = [] ;
+      w_linters = StringMap.empty ;
       w_msg ;
       w_level_warning = false ;
       w_level_error = false ;
@@ -212,47 +214,54 @@ let new_warning
 
 let rec new_linter
           linter_lang
-          linter_ns
+          ns
           linter_name
-          (*          ~level:linter_level *)
-          ~warnings: linter_warnings
+          ~warnings
           ?(on_begin = fun _ -> ())
-          ?(on_open =  fun ~file:_ -> ())
-          ?(on_close = fun ~file:_ -> ())
+          ?(on_open =  fun ~file:_ ~linter:_ -> ())
+          ?(on_close = fun ~file:_ ~linter:_ -> ())
           ?(on_end = fun _ -> ())
           linter_install =
   (* TODO: check uniqueness of linter_name *)
-  if StringMap.mem linter_name linter_ns.ns_linters then begin
-      Printf.eprintf "Configuration warning: plugin %S defines linter %S twice. Renaming it.\n%!"
-        linter_ns.ns_name
+  if StringMap.mem linter_name ns.ns_linters then begin
+      Printf.eprintf
+        "Developer warning: plugin %S defines linter %S twice. Renaming it.\n%!"
+        ns.ns_name
         linter_name ;
       new_linter
         linter_lang
-        linter_ns
+        ns
         (linter_name ^ "X")
-        (*        ~level:linter_level *)
-        ~warnings:linter_warnings
+        ~warnings
         ~on_begin ~on_open ~on_close ~on_end
         linter_install
     end
   else
+    let linter_warnings =
+      StringMap.of_list (List.map (fun w -> (w.w_idstr, w)) warnings)
+    in
     let l = {
         linter_lang ;
-        linter_namespace = linter_ns ;
+        linter_namespace = ns ;
+        linter_idstr =
+          Printf.sprintf "%s:%s" ns.ns_name linter_name ;
         linter_name ;
         linter_warnings ;
         linter_install ;
-        (*        linter_level ; *)
         linter_active = false ;
         linter_begin = on_begin ;
         linter_open = on_open ;
         linter_close = on_close ;
         linter_end = on_end ;
       } in
-    linter_ns.ns_linters <- StringMap.add
-                              linter_name l
-                              linter_ns.ns_linters ;
-    all_linters := l :: !all_linters
+    ns.ns_linters <- StringMap.add
+                       linter_name l
+                       ns.ns_linters ;
+    all_linters := l :: !all_linters ;
+    List.iter (fun w ->
+        w.w_linters <-
+          StringMap.add l.linter_idstr l w.w_linters)
+      warnings
 
 let new_gen_linter lang active_linters_ref =
   fun
@@ -267,14 +276,26 @@ let new_gen_linter lang active_linters_ref =
   new_linter lang ns name ~warnings ?on_begin ?on_open ?on_close ?on_end
     linter_install
 
+exception LocalExit
+let local_exit = LocalExit
+let stringMap_exists p map =
+  try
+    StringMap.iter (fun _ x -> if p x then raise local_exit) map;
+    false
+  with LocalExit -> true
+
 (* We suppose that all warnings are now correctly set. *)
 let activate_linters () =
   List.iter (fun w ->
+      if StringMap.is_empty w.w_linters then
+        Printf.eprintf
+          "Developer warning: warning %s has no associated linter\n%!"
+             w.w_idstr;
       if w.w_level_warning || w.w_level_error then
         active_warnings := StringMap.add w.w_idstr w !active_warnings
     ) !all_warnings ;
   List.iter (fun l ->
-      if List.exists (fun w ->
+      if stringMap_exists (fun w ->
              w.w_level_warning || w.w_level_error)
            l.linter_warnings then begin
           l.linter_active <- true;
@@ -283,7 +304,14 @@ let activate_linters () =
         end
     ) !all_linters
 
-let warn msg_loc ~file ?msg ?(autofix=[]) w =
+let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
+
+  if not ( StringMap.mem w.w_idstr linter.linter_warnings ) then begin
+      Printf.eprintf
+        "Developer warning: warning %S is not declared for linter %S\n%!"
+        w.w_idstr linter.linter_name;
+    end;
+
   if w.w_level_error || w.w_level_warning then
     let msg_string =
       match msg with
@@ -301,6 +329,7 @@ let warn msg_loc ~file ?msg ?(autofix=[]) w =
         msg_string ;
         msg_warning = w;
         msg_file = file ;
+        msg_linter = linter ;
         msg_idstr ;
         msg_autofix = autofix ;
       } in
@@ -328,33 +357,33 @@ let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
   }
 
 let iter_linters ~file linters x =
-  List.iter (fun (l, f) ->
-      try f ~file x with
+  List.iter (fun (linter, f) ->
+      try f ~file ~linter x with
       | exn ->
          Printf.eprintf "Configuration warning: linter %S raised exception %S while linting file %S\n%!"
-           l.linter_name
+           linter.linter_name
            (Printexc.to_string exn)
            file.file_name
     ) linters
 
 let iter_linters_open ~file linters =
-  List.iter (fun (l,_) ->
+  List.iter (fun (linter,_) ->
       try
-        l.linter_open ~file
+        linter.linter_open ~file ~linter
       with exn ->
         Printf.eprintf "Configuration warning: linter %S raised exception %S while opening file %S\n%!"
-          l.linter_name
+          linter.linter_name
           (Printexc.to_string exn)
           file.file_name
     ) linters
 
 let iter_linters_close ~file linters =
-  List.iter (fun (l,_) ->
+  List.iter (fun (linter,_) ->
       try
-        l.linter_close ~file
+        linter.linter_close ~file ~linter
       with exn ->
         Printf.eprintf "Configuration warning: linter %S raised exception %S while closing file %S\n%!"
-          l.linter_name
+          linter.linter_name
           (Printexc.to_string exn)
           file.file_name
     ) linters
@@ -363,7 +392,7 @@ let rec filter_linters ~file linters =
   match linters with
   | []  -> []
   | (l,f) :: linters ->
-     if List.exists (fun w ->
+     if stringMap_exists (fun w ->
             (w.w_level_warning || w.w_level_error) &&
               not (StringSet.mem w.w_idstr file.file_warnings_done)
           ) l.linter_warnings then
@@ -417,34 +446,37 @@ let add_file ~file_doc ~file_kind =
        file_doc.doc_file <- Some file ;
        ()
 
-let add_file ~file_doc ?file_kind () =
-  match file_kind with
-  | Some file_kind ->
-     add_file ~file_doc ~file_kind
+let doc_kind ~file_doc =
+  let file_name = file_doc.doc_name in
+  let basename = Filename.basename file_name in
+  let _basename, extensions = EzString.cut_at basename '.' in
+  let extensions = String.lowercase extensions in
+
+  let rec iter_ext ext =
+    if ext <> "" then
+      match Hashtbl.find all_extensions ext with
+      | exception Not_found ->
+         let _, ext = EzString.cut_at ext '.' in
+         iter_ext ext
+      | file_kind ->
+         Some file_kind
+    else
+      match !file_classifier ~file_doc with
+      | None ->
+         None
+      | Some file_kind ->
+         Some file_kind
+  in
+  iter_ext extensions
+
+let add_file ~file_doc =
+  match doc_kind ~file_doc with
   | None ->
      let file_name = file_doc.doc_name in
-     let basename = Filename.basename file_name in
-     let _basename, extensions = EzString.cut_at basename '.' in
-     let extensions = String.lowercase extensions in
-
-     let rec iter_ext ext =
-       if ext <> "" then
-         match Hashtbl.find all_extensions ext with
-         | exception Not_found ->
-            let _, ext = EzString.cut_at ext '.' in
-            iter_ext ext
-         | file_kind ->
-            add_file ~file_doc ~file_kind
-       else
-         match !file_classifier ~file_doc with
-         | None ->
-            if verbose 2 then
-              Printf.eprintf "Skipping file %S\n%!" file_name
-         | Some file_kind ->
-            add_file ~file_doc ~file_kind
-     in
-     iter_ext extensions
-
+     if verbose 2 then
+       Printf.eprintf "Skipping file %S\n%!" file_name
+  | Some file_kind ->
+     add_file ~file_doc ~file_kind
 
 let add_plugin_args plugin specs =
   plugin.plugin_args <- plugin.plugin_args @ specs ;
@@ -470,7 +502,7 @@ let new_fs ~fs_root ~fs_subpath =
   let project_all = new_project "_" in
   let project_default = new_project "default" in
   let rec fs_folder = {
-      folder_root ;
+      folder_fs = fs ;
       folder_parent = fs_folder ;
       folder_basename = "";
       folder_name = "";
@@ -480,7 +512,7 @@ let new_fs ~fs_root ~fs_subpath =
       folder_projects = project_map_add project_default ;
       folder_scan = Scan_disabled ;
     }
-  and folder_root =
+  and fs =
   {
     fs_root ;
     fs_project = project_all ;
@@ -488,17 +520,17 @@ let new_fs ~fs_root ~fs_subpath =
     fs_subpath ;
   }
   in
-  folder_root
+  fs
 
 let get_folder folder_parent basename =
   match StringMap.find basename folder_parent.folder_folders with
   | folder -> folder
   | exception Not_found ->
      let folder = {
-         folder_root = folder_parent.folder_root ;
+         folder_fs = folder_parent.folder_fs ;
          folder_parent ;
          folder_basename = basename ;
-         folder_name = folder_parent.folder_name /// basename ;
+         folder_name = folder_parent.folder_name // basename ;
          folder_tags = StringSet.empty ;
          folder_docs = StringMap.empty ;
          folder_folders = StringMap.empty ;
@@ -514,18 +546,17 @@ let get_document doc_parent basename =
   match StringMap.find basename doc_parent.folder_docs with
   | doc -> doc
   | exception Not_found ->
-     let doc = {
+     let file_doc = {
          doc_parent ;
          doc_basename = basename ;
-         doc_name = doc_parent.folder_name /// basename;
+         doc_name = doc_parent.folder_name // basename;
          doc_tags = StringSet.empty ;
          doc_file = None ;
        } in
      doc_parent.folder_docs <-
-       StringMap.add basename doc
+       StringMap.add basename file_doc
          doc_parent.folder_docs;
-     doc
-
+     file_doc
 
 let add_file_classifier f =
   let old_f = !file_classifier in
@@ -534,12 +565,24 @@ let add_file_classifier f =
     | Some file_kind -> Some file_kind
     | None -> old_f ~file_doc)
 
+let profile_append ( profile_var, profile_option ) =
+  profile_var := !profile_var @ !!profile_option ;
+  profile_option =:= []
+
+let eprint_config () =
+  Printf.eprintf "Engine.config:\n%!";
+  Printf.eprintf "  * Active warnings: %d\n%!"
+    (StringMap.cardinal !active_warnings);
+  Printf.eprintf "  * Active linters: %d\n%!" (List.length !active_linters);
+  ()
+
+
 let add_folder_updater f =
   let old_f = !folder_updater in
   folder_updater := (fun ~folder ->
     old_f ~folder ;
     f ~folder)
 
-let profile_append ( profile_var, profile_option ) =
-  profile_var := !profile_var @ !!profile_option ;
-  profile_option =:= []
+let update_warnings ~file ~loc spec =
+  ignore (file, loc, spec);
+  ()

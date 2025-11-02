@@ -17,14 +17,16 @@ jobs:
         os:
           - ubuntu-latest
         ocaml-compiler:
-#          - 4.08.0
+          - 4.08.0
 #          - 4.09.0
+# 4.10.0 is ran by workflow.yml
 #          - 4.10.0
 #          - 4.11.0
 #          - 4.12.0
 #          - 4.13.0
           - 4.14.0
 #          - 4.14.1
+# 4.14.2 is ran by workflow.yml
 #          - 4.14.2
 # Does not yet exist on Github
 #          - 4.14.3
@@ -71,6 +73,6 @@ jobs:
 
       - run: opam pin add . -y --no-action
 
-      - run: opam install -y ./opam/*.opam --deps-only --with-test
+      - run: opam install -y ./opam/*.opam --deps-only
 
       - run: make build

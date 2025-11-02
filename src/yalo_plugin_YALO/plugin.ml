@@ -10,5 +10,13 @@
 (*                                                                        *)
 (**************************************************************************)
 
-val get_fs :
-  ?needs_to_load_plugins:bool -> unit -> Yalo.Types.fs
+open Yalo.V1
+
+let plugin = YALO.new_plugin "yalo_plugin_YALO" ~version:"0.1.0"
+
+let ns = YALO.new_namespace plugin "YALO"
+
+let tag_line = YALO.new_tag "line"
+let tag_autofix = YALO.new_tag "autofix"
+let tag_untyped = YALO.new_tag "untyped"
+let tag_typed = YALO.new_tag "typed"

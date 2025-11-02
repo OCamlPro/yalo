@@ -59,7 +59,6 @@ module OCAML_LANG = struct
         ?on_begin ?on_end f =
     Engine.new_src_file_linter ns name ~warnings ?on_begin ?on_end f
 
-
   let new_src_content_linter = Engine.new_src_content_linter
   let new_src_line_linter = Engine.new_src_line_linter
   let new_sig_linter = Engine.new_sig_linter
@@ -75,5 +74,6 @@ module OCAML_LANG = struct
   let new_tast_intf_traverse_linter = Engine.new_tast_intf_traverse_linter
 
   let () =
-    Yalo.Engine.add_folder_updater Engine.folder_updater
+    YALO_LANG.add_folder_updater Engine.folder_updater ;
+    ()
 end
