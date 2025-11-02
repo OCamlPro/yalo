@@ -1,208 +1,261 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Engine (yalo_plugin_ocaml.Yalo_plugin_ocaml.Engine)</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../odoc.support/odoc.css"/><meta name="generator" content="odoc 3.1.0"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../../../odoc.support/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body class="odoc"><nav class="odoc-nav"><a href="../index.html">Up</a> – <a href="../../../index.html">Index</a> &#x00BB; <a href="../../index.html">yalo_plugin_ocaml</a> &#x00BB; <a href="../index.html">Yalo_plugin_ocaml</a> &#x00BB; Engine</nav><header class="odoc-preamble"><h1>Module <code><span>Yalo_plugin_ocaml.Engine</span></code></h1></header><div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-plugin"><a href="#val-plugin" class="anchor"></a><code><span><span class="keyword">val</span> plugin : <span class="xref-unresolved">Yalo__V1.YALO_TYPES.plugin</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-ocaml"><a href="#val-ocaml" class="anchor"></a><code><span><span class="keyword">val</span> ocaml : <span class="xref-unresolved">Yalo__V1.YALO_TYPES.language</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_src_line_linters"><a href="#val-active_src_line_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_src_line_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_line_input">Yalo.V1.YALO_TYPES.src_line_input</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Engine (yalo_plugin_ocaml.Yalo_plugin_ocaml.Engine)</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../odoc.support/odoc.css"/><meta name="generator" content="odoc 3.1.0"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../../../odoc.support/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body class="odoc"><nav class="odoc-nav"><a href="../index.html">Up</a> – <a href="../../../index.html">Index</a> &#x00BB; <a href="../../index.html">yalo_plugin_ocaml</a> &#x00BB; <a href="../index.html">Yalo_plugin_ocaml</a> &#x00BB; Engine</nav><header class="odoc-preamble"><h1>Module <code><span>Yalo_plugin_ocaml.Engine</span></code></h1></header><div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-active_src_line_linters"><a href="#val-active_src_line_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_src_line_linters : 
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_line_input">Yalo.V1.YALO_TYPES.src_line_input</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_src_file_linters"><a href="#val-active_src_file_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_src_file_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_file_input">Yalo.V1.YALO_TYPES.src_file_input</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_file_input">Yalo.V1.YALO_TYPES.src_file_input</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_src_content_linters"><a href="#val-active_src_content_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_src_content_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_content_input">Yalo.V1.YALO_TYPES.src_content_input</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_content_input">Yalo.V1.YALO_TYPES.src_content_input</a>, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_ast_intf_linters"><a href="#val-active_ast_intf_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_ast_intf_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.signature <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.signature, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_ast_intf_traverse_linters"><a href="#val-active_ast_intf_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_ast_intf_traverse_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_ast_impl_linters"><a href="#val-active_ast_impl_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_ast_impl_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.structure <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.structure, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_ast_impl_traverse_linters"><a href="#val-active_ast_impl_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_ast_impl_traverse_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_intf_linters"><a href="#val-active_tast_intf_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_intf_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><span class="xref-unresolved">Typedtree</span>.signature <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
-    <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_intf_traverse_linters"><a href="#val-active_tast_intf_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_intf_traverse_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<span class="xref-unresolved">Typedtree</span>.signature, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span> <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_intf_traverse_linters"><a href="#val-active_tast_intf_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_intf_traverse_linters : 
+  <span><span><span>(<a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_impl_linters"><a href="#val-active_tast_impl_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_impl_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><span class="xref-unresolved">Typedtree</span>.structure <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
-    <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_impl_traverse_linters"><a href="#val-active_tast_impl_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_impl_traverse_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
+  <span><span><span>(<span class="xref-unresolved">Typedtree</span>.structure, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span> <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_tast_impl_traverse_linters"><a href="#val-active_tast_impl_traverse_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_tast_impl_traverse_linters : 
+  <span><span><span>(<a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span>
     <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-active_sig_linters"><a href="#val-active_sig_linters" class="anchor"></a><code><span><span class="keyword">val</span> active_sig_linters : 
-  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter">Yalo.V1.YALO_TYPES.linter</a>
-   * <span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-   <span><span class="xref-unresolved">Cmi_format</span>.cmi_infos <span class="arrow">&#45;&gt;</span></span>
-   unit)</span>)</span>
-    list</span>
-    <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_file_linter"><a href="#val-new_src_file_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_file_linter : 
+  <span><span><span>(<span class="xref-unresolved">Cmi_format</span>.cmi_infos, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-active_linters">Yalo.V1.YALO_TYPES.active_linters</a></span> <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-plugin"><a href="#val-plugin" class="anchor"></a><code><span><span class="keyword">val</span> plugin : <span class="xref-unresolved">Yalo__V1.YALO_TYPES.plugin</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-ocaml"><a href="#val-ocaml" class="anchor"></a><code><span><span class="keyword">val</span> ocaml : <span class="xref-unresolved">Yalo__V1.YALO_TYPES.language</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_file_linter"><a href="#val-new_src_file_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_file_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_file_input">Yalo.V1.YALO_TYPES.src_file_input</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_file_input">Yalo.V1.YALO_TYPES.src_file_input</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_line_linter"><a href="#val-new_src_line_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_line_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_line_input">Yalo.V1.YALO_TYPES.src_line_input</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_line_input">Yalo.V1.YALO_TYPES.src_line_input</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_content_linter"><a href="#val-new_src_content_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_content_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-    <span><a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_content_input">Yalo.V1.YALO_TYPES.src_content_input</a> <span class="arrow">&#45;&gt;</span></span>
-    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-src_content_input">Yalo.V1.YALO_TYPES.src_content_input</a>, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_ast_intf_linter"><a href="#val-new_ast_intf_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_ast_intf_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-    <span><span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.signature <span class="arrow">&#45;&gt;</span></span>
-    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.signature, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_ast_impl_linter"><a href="#val-new_ast_impl_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_ast_impl_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
-    <span><span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.structure <span class="arrow">&#45;&gt;</span></span>
-    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<span class="xref-unresolved">Yalo_plugin_ocaml</span>.Ast_traverse.OCAML_AST.structure, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_tast_intf_linter"><a href="#val-new_tast_intf_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_tast_intf_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="xref-unresolved">Typedtree</span>.signature <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<span class="xref-unresolved">Typedtree</span>.signature, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_tast_impl_linter"><a href="#val-new_tast_impl_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_tast_impl_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="xref-unresolved">Typedtree</span>.structure <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<span class="xref-unresolved">Typedtree</span>.structure, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_sig_linter"><a href="#val-new_sig_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_sig_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="xref-unresolved">Cmi_format</span>.cmi_infos <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<span class="xref-unresolved">Cmi_format</span>.cmi_infos, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_ast_impl_traverse_linter"><a href="#val-new_ast_impl_traverse_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_ast_impl_traverse_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_ast_intf_traverse_linter"><a href="#val-new_ast_intf_traverse_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_ast_intf_traverse_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../Ast_traverse/OCAML_AST_TRAVERSE/index.html#type-t">Ast_traverse.OCAML_AST_TRAVERSE.t</a>, unit)</span> <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_tast_impl_traverse_linter"><a href="#val-new_tast_impl_traverse_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_tast_impl_traverse_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a>, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_tast_intf_traverse_linter"><a href="#val-new_tast_intf_traverse_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_tast_intf_traverse_linter : 
   <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_open</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span class="optlabel">?on_close</span>:<span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span>(<span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a> <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span>(<a href="../Tast_traverse/OCAML_TAST_TRAVERSE/index.html#type-t">Tast_traverse.OCAML_TAST_TRAVERSE.t</a>, unit)</span>
+    <a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-linter_function">Yalo.V1.YALO_TYPES.linter_function</a></span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_src_file"><a href="#val-lint_src_file" class="anchor"></a><code><span><span class="keyword">val</span> lint_src_file : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_tast"><a href="#val-lint_tast" class="anchor"></a><code><span><span class="keyword">val</span> lint_tast : 
-  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> unit)</span>)</span>
+  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+   * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
+   unit)</span>)</span>
     list</span>
     <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span class="type-var">'b</span>)</span> list</span> <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+   * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span>
+   <span class="type-var">'c</span>)</span>)</span>
+    list</span>
+    <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
-    <span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span class="type-var">'b</span>)</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+     * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+     <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+     <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span>
+     <span class="type-var">'c</span>)</span>)</span>
+      list</span> <span class="arrow">&#45;&gt;</span></span>
     <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
     unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_ast"><a href="#val-lint_ast" class="anchor"></a><code><span><span class="keyword">val</span> lint_ast : 
-  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> unit)</span>)</span>
+  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+   * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
+   unit)</span>)</span>
     list</span>
     <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span class="type-var">'b</span>)</span> list</span> <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+   * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+   <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span>
+   <span class="type-var">'c</span>)</span>)</span>
+    list</span>
+    <span class="xref-unresolved">Stdlib</span>.ref</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
-    <span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> * <span class="type-var">'b</span>)</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span><span>(<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span>
+     * <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+     <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+     <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span>
+     <span class="type-var">'c</span>)</span>)</span>
+      list</span> <span class="arrow">&#45;&gt;</span></span>
     <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
     unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
@@ -219,4 +272,4 @@
   unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_tast_intf"><a href="#val-lint_tast_intf" class="anchor"></a><code><span><span class="keyword">val</span> lint_tast_intf : 
   <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="xref-unresolved">Typedtree</span>.signature <span class="arrow">&#45;&gt;</span></span>
-  unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_sig"><a href="#val-lint_sig" class="anchor"></a><code><span><span class="keyword">val</span> lint_sig : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="xref-unresolved">Cmi_format</span>.cmi_infos <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-arg_lint_ast_from_cmt"><a href="#val-arg_lint_ast_from_cmt" class="anchor"></a><code><span><span class="keyword">val</span> arg_lint_ast_from_cmt : <span>bool <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-arg_lint_ast_from_src"><a href="#val-arg_lint_ast_from_src" class="anchor"></a><code><span><span class="keyword">val</span> arg_lint_ast_from_src : <span>bool <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-TO_PPXLIB"><a href="#module-TO_PPXLIB" class="anchor"></a><code><span><span class="keyword">module</span> <a href="TO_PPXLIB/index.html">TO_PPXLIB</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-intf_or_impl"><a href="#type-intf_or_impl" class="anchor"></a><code><span><span class="keyword">type</span> intf_or_impl</span><span> = </span></code><ol><li id="type-intf_or_impl.Intf" class="def variant constructor anchored"><a href="#type-intf_or_impl.Intf" class="anchor"></a><code><span>| </span><span><span class="constructor">Intf</span></span></code></li><li id="type-intf_or_impl.Impl" class="def variant constructor anchored"><a href="#type-intf_or_impl.Impl" class="anchor"></a><code><span>| </span><span><span class="constructor">Impl</span></span></code></li></ol></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-with_info"><a href="#val-with_info" class="anchor"></a><code><span><span class="keyword">val</span> with_info : <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">source_file</span>:string <span class="arrow">&#45;&gt;</span></span> <span><span>(<span><span class="xref-unresolved">Compile_common</span>.info <span class="arrow">&#45;&gt;</span></span> <span class="type-var">'b</span>)</span> <span class="arrow">&#45;&gt;</span></span> <span class="type-var">'b</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_impl_source"><a href="#val-check_impl_source" class="anchor"></a><code><span><span class="keyword">val</span> check_impl_source : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_intf_source"><a href="#val-check_intf_source" class="anchor"></a><code><span><span class="keyword">val</span> check_intf_source : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_cmi"><a href="#val-check_cmi" class="anchor"></a><code><span><span class="keyword">val</span> check_cmi : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_cmt"><a href="#val-check_cmt" class="anchor"></a><code><span><span class="keyword">val</span> check_cmt : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-non_source_directories"><a href="#val-non_source_directories" class="anchor"></a><code><span><span class="keyword">val</span> non_source_directories : <span class="xref-unresolved">EzCompat</span>.StringSet.t</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_in_source_dir"><a href="#val-check_in_source_dir" class="anchor"></a><code><span><span class="keyword">val</span> check_in_source_dir : <span><span class="label">file_doc</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.document</span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_in_artefact_dir"><a href="#val-check_in_artefact_dir" class="anchor"></a><code><span><span class="keyword">val</span> check_in_artefact_dir : <span><span class="label">file_doc</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.document</span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-folder_updater"><a href="#val-folder_updater" class="anchor"></a><code><span><span class="keyword">val</span> folder_updater : <span><span class="label">folder</span>:<a href="../../../yalo_lib/Yalo/Types/index.html#type-folder">Yalo.Types.folder</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div></div></body></html>
+  unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lint_sig"><a href="#val-lint_sig" class="anchor"></a><code><span><span class="keyword">val</span> lint_sig : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="xref-unresolved">Cmi_format</span>.cmi_infos <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-arg_lint_ast_from_cmt"><a href="#val-arg_lint_ast_from_cmt" class="anchor"></a><code><span><span class="keyword">val</span> arg_lint_ast_from_cmt : <span>bool <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-arg_lint_ast_from_src"><a href="#val-arg_lint_ast_from_src" class="anchor"></a><code><span><span class="keyword">val</span> arg_lint_ast_from_src : <span>bool <span class="xref-unresolved">Stdlib</span>.ref</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-TO_PPXLIB"><a href="#module-TO_PPXLIB" class="anchor"></a><code><span><span class="keyword">module</span> <a href="TO_PPXLIB/index.html">TO_PPXLIB</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-intf_or_impl"><a href="#type-intf_or_impl" class="anchor"></a><code><span><span class="keyword">type</span> intf_or_impl</span><span> = </span></code><ol><li id="type-intf_or_impl.Intf" class="def variant constructor anchored"><a href="#type-intf_or_impl.Intf" class="anchor"></a><code><span>| </span><span><span class="constructor">Intf</span></span></code></li><li id="type-intf_or_impl.Impl" class="def variant constructor anchored"><a href="#type-intf_or_impl.Impl" class="anchor"></a><code><span>| </span><span><span class="constructor">Impl</span></span></code></li></ol></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-with_info"><a href="#val-with_info" class="anchor"></a><code><span><span class="keyword">val</span> with_info : <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">source_file</span>:string <span class="arrow">&#45;&gt;</span></span> <span><span>(<span><span class="xref-unresolved">Compile_common</span>.info <span class="arrow">&#45;&gt;</span></span> <span class="type-var">'b</span>)</span> <span class="arrow">&#45;&gt;</span></span> <span class="type-var">'b</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_impl_source"><a href="#val-check_impl_source" class="anchor"></a><code><span><span class="keyword">val</span> check_impl_source : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_intf_source"><a href="#val-check_intf_source" class="anchor"></a><code><span><span class="keyword">val</span> check_intf_source : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_cmi"><a href="#val-check_cmi" class="anchor"></a><code><span><span class="keyword">val</span> check_cmi : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_cmt"><a href="#val-check_cmt" class="anchor"></a><code><span><span class="keyword">val</span> check_cmt : <span><span class="label">file</span>:<a href="../../../yalo_lib/Yalo/V1/YALO_TYPES/index.html#type-file">Yalo.V1.YALO_TYPES.file</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-non_source_directories"><a href="#val-non_source_directories" class="anchor"></a><code><span><span class="keyword">val</span> non_source_directories : <span class="xref-unresolved">EzCompat</span>.StringSet.t</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_in_source_dir"><a href="#val-check_in_source_dir" class="anchor"></a><code><span><span class="keyword">val</span> check_in_source_dir : <span><span class="label">file_doc</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.document</span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-check_in_artefact_dir"><a href="#val-check_in_artefact_dir" class="anchor"></a><code><span><span class="keyword">val</span> check_in_artefact_dir : <span><span class="label">file_doc</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.document</span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-folder_updater"><a href="#val-folder_updater" class="anchor"></a><code><span><span class="keyword">val</span> folder_updater : <span><span class="label">folder</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.folder</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div></div></body></html>
