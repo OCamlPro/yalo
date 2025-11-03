@@ -70,7 +70,7 @@ let display_human ~format messages =
          let loc = Format.flush_str_formatter () in
          Printf.eprintf "%s\n%!" loc;
          Printf.eprintf "%s (%s): %s\n%!"
-           (if m.msg_warning.w_level_error then
+           (if m.msg_warning.w_level_error > 1 then
              "Error"
            else
              "Warning")
@@ -92,7 +92,7 @@ let display_human ~format messages =
       | Format_Short ->
          let pos = m.msg_loc.loc_start in
          Printf.eprintf "%s: %s:%d:%d: %s %s\n%!"
-           (if m.msg_warning.w_level_error then
+           (if m.msg_warning.w_level_error > 1 then
              "error"
            else
              "warning")
@@ -161,7 +161,7 @@ let display_sarif ?output messages =
         in
         let fields = [
             "ruleId", STRING m.msg_warning.w_idstr ;
-            "level", STRING (if m.msg_warning.w_level_error then
+            "level", STRING (if m.msg_warning.w_level_error > 1 then
                          "error"
                        else
                          "warning");
@@ -227,7 +227,7 @@ let display_messages ?(format=Format_Human) ?output messages =
   let nwarnings = ref 0 in
   let nerrors = ref 0 in
   List.iter (fun m ->
-      if m.msg_warning.w_level_error then
+      if m.msg_warning.w_level_error > 1 then
         incr nerrors
       else
         incr nwarnings ;

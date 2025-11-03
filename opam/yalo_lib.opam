@@ -41,9 +41,6 @@ depends: [
   "yalo_misc" {= version}
   "yalo_config" {= version}
   "re" {}
-  "ppxlib" {}
-  "odoc-parser" {}
-  "ocaml-compiler-libs" {}
   "ez_file" {>= "0.3.0" & < "1.0.0"}
   "ez_cmdliner" {>= "0.2.0" & < "1.0.0"}
   "directories" {= "0.2"}

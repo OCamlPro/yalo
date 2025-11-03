@@ -41,10 +41,7 @@
    yojson
    (yalo_config (= :version))
    re
-   ppxlib
    ppx_deriving_yojson
-   odoc-parser
-   ocaml-compiler-libs
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
    (directories ( = 0.2 ))
@@ -70,9 +67,6 @@
    (yalo_misc (= :version))
    (yalo_config (= :version))
    re
-   ppxlib
-   odoc-parser
-   ocaml-compiler-libs
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
    (directories ( = 0.2 ))
@@ -178,9 +172,6 @@
  (depends
    (ocaml (>= 4.08.0))
    (yalo_lib (= :version))
-   ppxlib
-   odoc-parser
-   ocaml-compiler-libs
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
    (directories ( = 0.2 ))

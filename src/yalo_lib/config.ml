@@ -83,6 +83,12 @@ let save filename =
 let append filename =
   EZCONFIG.append config_file filename
 
+let get_simple_option option =
+  EZCONFIG.get_simple_option config_file option
+
+let set_simple_option option v =
+  EZCONFIG.set_simple_option config_file option v
+
 let create_config_section plugin ~short_help =
   EZCONFIG.create_config_section config_file
     [ plugin.plugin_name ] short_help

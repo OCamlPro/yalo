@@ -40,7 +40,7 @@ let yalo_profiles_dir = yalo_share_dir // "profiles"
 let load_plugins ~plugins () =
   Clflags.error_style := Some Misc.Error_style.Contextual;
   Clflags.include_dirs :=
-    !Engine.profiles_load_dirs @ !Clflags.include_dirs;
+    !GState.profiles_load_dirs @ !Clflags.include_dirs;
 
   List.iter (fun arg ->
       if Engine.verbose 1 then
@@ -183,7 +183,7 @@ let init
          fs_root, [], load_dirs, None
   in
 
-  Engine.profiles_load_dirs := load_dirs ;
+  GState.profiles_load_dirs := load_dirs ;
   let fs = Engine.new_fs ~fs_root ~fs_subpath in
 
   begin
@@ -193,8 +193,8 @@ let init
        ()
     | Some file ->
        Config.load file ;
-       Engine.profiles_load_dirs :=
-         !Engine.profiles_load_dirs
+       GState.profiles_load_dirs :=
+         !GState.profiles_load_dirs
          @ !!Config.config_load_dirs
          @ [ yalo_profiles_dir ] ;
        let profiles = ref (!!Config.config_profiles @ profiles) in
@@ -214,14 +214,14 @@ let init
               in
               let file = try
                   Yalo_misc.Utils.find_in_path
-                    !Engine.profiles_load_dirs basename
+                    !GState.profiles_load_dirs basename
                 with Not_found ->
                   Printf.eprintf
                     "Execution error: profile %S not found in search path\n%!"
                     basename;
                   List.iter (fun s ->
                       Printf.eprintf "  - %S\n%!" s
-                    ) !Engine.profiles_load_dirs ;
+                    ) !GState.profiles_load_dirs ;
                   exit 2
               in
               Config.append file ;
@@ -229,16 +229,16 @@ let init
 
               profiles := !profiles @ !!Config.profile_profiles ;
 
-              Engine.profile_append ( Engine.profiles_fileattrs,
+              Engine.profile_append ( GState.profiles_fileattrs,
                                       Config.profile_fileattrs ) ;
 
               List.iter Engine.profile_append [
 
-                  Engine.profiles_load_dirs, Config.profile_load_dirs ;
-                  Engine.profiles_plugins, Config.profile_plugins ;
-                  Engine.profiles_profiles, Config.profile_profiles ;
-                  Engine.profiles_warnings, Config.profile_warnings ;
-                  Engine.profiles_errors, Config.profile_errors ;
+                  GState.profiles_load_dirs, Config.profile_load_dirs ;
+                  GState.profiles_plugins, Config.profile_plugins ;
+                  GState.profiles_profiles, Config.profile_profiles ;
+                  GState.profiles_warnings, Config.profile_warnings ;
+                  GState.profiles_errors, Config.profile_errors ;
 
                 ];
 
@@ -248,7 +248,7 @@ let init
   end;
 
   let plugins =
-    !Engine.profiles_plugins @ !!Config.config_load_plugins @ plugins in
+    !GState.profiles_plugins @ !!Config.config_load_plugins @ plugins in
 
   if can_load_plugins then
     load_plugins ~plugins ();

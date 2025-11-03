@@ -124,13 +124,17 @@ let set_config_file opfile name = opfile.file_name <- name
 let print_options_not_found = ref false
 
 let define_option_class
-    (class_name : string) ?(option_kind = ArgOther)
-    (from_value : option_value -> 'a)
-    (to_value : 'a -> option_value) =
+      (class_name : string)
+      ?(option_kind = ArgOther)
+      ?string_wrappers
+      (from_value : option_value -> 'a)
+      (to_value : 'a -> option_value)
+  =
   let c =
     {class_name = class_name; option_kind;
      from_value = from_value; to_value = to_value;
-     class_hooks = []; string_wrappers = None;}
+     class_hooks = [];
+     string_wrappers;}
   in
   c
 
@@ -572,17 +576,30 @@ let path_to_value list =
 
 let string_option =
   define_option_class "String" value_to_string string_to_value
-let color_option = define_option_class "Color" value_to_string string_to_value
-let font_option = define_option_class "Font" value_to_string string_to_value
+    ~string_wrappers:((fun s -> s), (fun s -> s))
 
-let int_option = define_option_class
+let int_option =
+  define_option_class
     "Int" ~option_kind:ArgInt value_to_int int_to_value
-let int64_option = define_option_class
+    ~string_wrappers:( (fun i -> string_of_int i),
+                       (fun s -> int_of_string s))
+let int64_option =
+  define_option_class
     "Int64" ~option_kind:ArgInt value_to_int64 int64_to_value
+    ~string_wrappers:( (fun i -> Int64.to_string i),
+                       (fun s -> Int64.of_string s))
 
-
-let bool_option = define_option_class
+let bool_option =
+  define_option_class
     "Bool" ~option_kind:ArgBool value_to_bool bool_to_value
+    ~string_wrappers:( (fun i -> string_of_bool i),
+                       (fun s -> bool_of_string s))
+
+let float_option = define_option_class
+    "Float" ~option_kind:ArgFloat value_to_float float_to_value
+    ~string_wrappers:( (fun i -> string_of_float i),
+                       (fun s -> float_of_string s))
+
 
 let flag_option = define_option_class
     "Flag" ~option_kind:ArgFlag value_to_bool bool_to_value
@@ -590,9 +607,8 @@ let with_option = define_option_class
     "With" ~option_kind:ArgWith value_to_bool bool_to_value
 let enable_option = define_option_class
     "Enable" ~option_kind:ArgEnable value_to_bool bool_to_value
-
-let float_option = define_option_class
-    "Float" ~option_kind:ArgFloat value_to_float float_to_value
+let color_option = define_option_class "Color" value_to_string string_to_value
+let font_option = define_option_class "Font" value_to_string string_to_value
 (*let path_option = define_option_class "Path" value_to_path path_to_value *)
 
 let string2_option =

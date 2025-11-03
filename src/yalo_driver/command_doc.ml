@@ -51,8 +51,8 @@ let clippy_gen dir =
         } in
       let level = match w.w_level_warning,
                         w.w_level_error with
-          _, true -> "deny"
-        | true, _ -> "warn"
+          _, 2 -> "deny"
+        | 2, _ -> "warn"
         | _ -> "allow"
       in
 
@@ -83,7 +83,7 @@ let clippy_gen dir =
         docs ;
         applicability ;
       }
-    ) (List.rev !Yalo.Engine.all_warnings)
+    ) (List.rev !Yalo.GState.all_warnings)
   in
 
   let json_file = dir // "lints.json" in
@@ -125,7 +125,7 @@ let cmd command_name =
     arg_specs
     @ Args.initial_arg_specs
     @ Args.common_arg_specs
-    @ !Yalo.Engine.all_plugins_args
+    @ !Yalo.GState.all_plugins_args
   in
 
   EZCMD.sub

@@ -79,6 +79,10 @@ module YALO_TYPES = struct
       content_string : string ;
     }
 
+  type zone_mode = Types.zone_mode =
+    | Zone_begin
+    | Zone_all
+
 end
 
 module YALO = struct
@@ -125,7 +129,8 @@ module YALO_LANG = struct
   let add_file_classifier = Engine.add_file_classifier
   let add_folder_updater = Engine.add_folder_updater
 
-  let update_warnings = Engine.update_warnings
+  let warnings_zone = Engine.warnings_zone
+  let temp_set_option = Engine.temporary_set_option
 end
 
 module YALO_FS = struct

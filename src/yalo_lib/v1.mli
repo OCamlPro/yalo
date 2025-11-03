@@ -80,6 +80,10 @@ module YALO_TYPES : sig
   type ('a,'b) active_linters =
     ( linter * ('a, 'b) linter_function ) list
 
+  type zone_mode =
+    | Zone_begin
+    | Zone_all
+
 end
 
 open YALO_TYPES
@@ -223,7 +227,11 @@ module YALO_LANG : sig
     unit
   val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
 
-  val update_warnings : file:file -> loc:location -> string -> unit
+  val warnings_zone : file:file -> loc:location ->
+                      ?mode:zone_mode -> string -> unit
+
+  val temp_set_option : string list -> string -> unit
+
 end
 
 module YALO_INTERNAL : sig

@@ -12,8 +12,16 @@
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
+open EzConfig.OP
 
 open Plugin
+
+let max_line_length =
+  YALO.CONFIG.create_option section
+    ~path:["YALO" ; "max_line_length"]
+    ~short_help:"Maximal length of line before warning YALO+1"
+    EzConfig.int_option
+    80
 
 let w_line_too_long =
   YALO.new_warning ns
@@ -82,8 +90,12 @@ let main () =
 
       let len = String.length line in
       if len > 0 then begin
-          if len > 80 then
-            YALO.warn loc ~file ~linter w_line_too_long;
+          if len > !!max_line_length then
+            YALO.warn loc ~file ~linter w_line_too_long
+              ~msg:(Printf.sprintf
+                      "Line too long (not more than %d characters)"
+                    !!max_line_length)
+          ;
           if line.[len-1] = ' ' then begin
               let rec iter pos =
                 if pos>0 &&

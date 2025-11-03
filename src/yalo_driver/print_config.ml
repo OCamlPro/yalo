@@ -72,15 +72,15 @@ let eprint () =
       IntMap.iter (fun _ w ->
           Printf.eprintf "     %d%s %s [%s]\n%!"
             w.w_num
-            (if w.w_level_error then "+e"
+            (if w.w_level_error > 1 then "+e"
             else
-              if w.w_level_warning then "+w"
+              if w.w_level_warning > 1 then "+w"
               else "-")
             w.w_name
             (String.concat " "
                (List.map (fun t -> t.tag_name) w.w_tags))
         ) ns.ns_warnings ;
-    ) Yalo.Engine.all_namespaces ;
+    ) Yalo.GState.all_namespaces ;
 
   Printf.eprintf "Projects:\n%!";
   Hashtbl.iter (fun _ p ->
@@ -91,6 +91,6 @@ let eprint () =
         (
           p.project_files
         )
-    ) Yalo.Engine.all_projects ;
+    ) Yalo.GState.all_projects ;
 
   ()

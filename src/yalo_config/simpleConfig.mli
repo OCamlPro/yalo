@@ -192,7 +192,9 @@ val get_class : 'a config_option -> 'a option_class
 val class_hook : 'a option_class -> ('a config_option -> unit) -> unit
 
 val define_option_class :
-  string -> ?option_kind:option_kind ->
+  string ->
+  ?option_kind:option_kind ->
+  ?string_wrappers:('a -> string) * (string -> 'a) ->
   (option_value -> 'a) -> ('a -> option_value) -> 'a option_class
 
 val to_value : 'a option_class -> 'a -> option_value
