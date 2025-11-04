@@ -72,7 +72,7 @@ let cmd command_name =
     arg_specs
     @ Args.initial_arg_specs
     @ Args.common_arg_specs
-    @ !Yalo.Engine.all_plugins_args
+    @ !Yalo.GState.all_plugins_args
   in
 
   EZCMD.sub

@@ -314,7 +314,7 @@ let to_iterator ~file ( traverse : t) =
         match check_attribute_constant cst with
         | None -> ()
         | Some yalo_spec ->
-           YALO_LANG.update_warnings ~file ~loc yalo_spec ;
+           YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin yalo_spec ;
       end
     | _ -> ()
 

@@ -41,10 +41,7 @@ depends: [
   "yojson" {}
   "yalo_config" {= version}
   "re" {}
-  "ppxlib" {}
   "ppx_deriving_yojson" {}
-  "odoc-parser" {}
-  "ocaml-compiler-libs" {}
   "ez_file" {>= "0.3.0" & < "1.0.0"}
   "ez_cmdliner" {>= "0.2.0" & < "1.0.0"}
   "directories" {= "0.2"}

@@ -10,16 +10,12 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Yalo.V1
+(* [parse_spec spec set_fun]: given a specification string [spec],
+   applies [set_fun bool warning] to all warnings [warning] in the
+   specification, with [bool] depending on whether the specification
+   sets or unsets the warning *)
+val parse_spec :
+  string -> (bool -> Types.warning -> unit) -> unit
 
-let plugin = YALO.new_plugin "yalo_plugin_YALO" ~version:"0.1.0"
-
-let ns = YALO.new_namespace plugin "YALO"
-
-let tag_line = YALO.new_tag "line"
-let tag_autofix = YALO.new_tag "autofix"
-let tag_untyped = YALO.new_tag "untyped"
-let tag_typed = YALO.new_tag "typed"
-
-let section = YALO.CONFIG.create_section
-                plugin ~short_help:"YALO plugin"
+val parse_spec_list :
+  string list -> (bool -> Types.warning -> unit) -> unit

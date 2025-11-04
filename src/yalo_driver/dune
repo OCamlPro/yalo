@@ -5,7 +5,7 @@
   (public_name yalo_driver)
   (wrapped true)
   ; use field 'dune-libraries' to add libraries without opam deps
-  (libraries yalo_lib ppxlib odoc-parser ocaml-compiler-libs.common ez_file ez_cmdliner directories dynlink )
+  (libraries yalo_lib ez_file ez_cmdliner directories dynlink )
   ; use field 'dune-flags' to set this value
   (flags (:standard))
   ; use field 'dune-stanzas' to add more stanzas here

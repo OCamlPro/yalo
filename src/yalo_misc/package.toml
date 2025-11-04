@@ -57,13 +57,6 @@ directories = "=0.2"
 ez_cmdliner = "0.2.0"
 yalo_config = "version"
 ez_file = "0.3.0"
-ocaml-compiler-libs = { libname ="ocaml-compiler-libs.common" }
-#compiler-libs = { libname = "compiler-libs.common" }
-odoc-parser = ""
-#ppx_template = { libname = "ppx_template.expander" }
-ppxlib = ""
-#ppxlib_jane = ""
-#ppxlib.stdppx = ""
 base-unix = { libname = "dynlink" }
 re = ""
 yojson = ""

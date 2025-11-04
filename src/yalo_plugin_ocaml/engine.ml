@@ -269,7 +269,6 @@ let check_impl_source ~file =
 
   if YALO.verbose 2 then
     Printf.eprintf "check_impl_source %S\n%!" file_ml;
-  lint_src_file ~file ;
 
   begin
     if !arg_lint_ast_from_src then
@@ -285,13 +284,15 @@ let check_impl_source ~file =
       let st = TO_PPXLIB.structure st in
       lint_ast_impl ~file st ;
   end;
+  (* use basic linters after ast linters, because we want ast
+     linters to be able to set options with annotations *)
+  lint_src_file ~file ;
   ()
 
 let check_intf_source ~file =
   let file_mli = YALO.file_name ~file in
   if YALO.verbose 2 then
     Printf.eprintf "check_impl_source %S\n%!" file_mli;
-  lint_src_file ~file ;
 
   begin
     if !arg_lint_ast_from_src then
@@ -307,6 +308,9 @@ let check_intf_source ~file =
       let sg = TO_PPXLIB.signature sg in
       lint_ast_intf ~file sg ;
   end;
+  (* use basic linters after ast linters, because we want ast
+     linters to be able to set options with annotations *)
+  lint_src_file ~file ;
   ()
 
 let check_cmi ~file =

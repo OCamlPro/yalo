@@ -24,7 +24,7 @@ let arg_warnings = ref ( [] : string list )
 let arg_errors = ref ([] : string list )
 let arg_explicit_files = ref ([] : string list )
 
-let arg_verbosity = Yalo.Engine.verbosity
+let arg_verbosity = Yalo.GState.verbosity
 let arg_first_arg = ref ""
 let arg_projects = ref ([] : string list)
 

@@ -53,14 +53,18 @@ and tag = {
 
 and warning = {
     w_namespace : namespace ;
-    w_num : int ;
+    w_num : int ; (* uniq in namespace *)
     w_idstr : string ;
     w_name : string ;
     mutable w_tags : tag list ;
     mutable w_linters : linter StringMap.t ;
     w_msg : string ;
-    mutable w_level_warning : bool ;
-    mutable w_level_error : bool ;
+
+    (* 0: disabled,
+       1: locally disabled, but globally enabled,
+       2: enabled *)
+    mutable w_level_warning : int ;
+    mutable w_level_error : int ;
     w_desc : string ;
   }
 
@@ -116,6 +120,9 @@ and file = {
     mutable file_warnings_done : StringSet.t ;
     mutable file_done : bool ;
     mutable file_projects : project StringMap.t ;
+
+    (* messages that have been triggered by linting this file, they
+       may actually target another file *)
     mutable file_messages : message StringMap.t ;
   }
 
@@ -125,7 +132,6 @@ and position = Lexing.position = {
       pos_bol : int;
       pos_cnum : int;
     }
-
 
 and location = Location.t = {
       loc_start: position;
@@ -211,3 +217,23 @@ type message_format =
   | Format_Sarif
   | Format_Short
 
+(* what the provided loc means for the warnings zone *)
+type zone_mode =
+  | Zone_begin
+  | Zone_all
+
+type zone = {
+    zone_pos : position ;
+    zone_rev_zone : zone option ;
+    zone_target : target ;
+    zone_spec : string ;
+    zone_creator : file ;
+    mutable zone_rev_changes : (unit -> unit) list ;
+  }
+
+and target = {
+    target_name : string ; (* normalized version *)
+    target_uid : int ;
+    mutable target_zones : zone list ;
+    mutable target_messages : message list ;
+  }

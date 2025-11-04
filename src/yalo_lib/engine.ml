@@ -15,48 +15,10 @@ open Types
 open Config.OP
 open Yalo_misc.Utils.OP
 
-let file_kind_uids = ref 0
-let file_uids = ref 0
-
-let verbosity = ref 0
-let verbose n = !verbosity >= n
-
-let profiles_fileattrs = ref ([] : (string * Types.file_attr list) list)
-let profiles_load_dirs = ref ([] : string list)
-let profiles_plugins = ref ([] : string list)
-let profiles_profiles = ref ([] : string list)
-let profiles_warnings = ref ([] : string list)
-let profiles_errors = ref ([] : string list)
-
-let all_plugins = Hashtbl.create 13
-let all_languages = Hashtbl.create 13
-let all_namespaces = Hashtbl.create 13
-let all_extensions = Hashtbl.create 13
-let all_file_kinds = Hashtbl.create 13
-let all_tags = Hashtbl.create 13
-let all_nstags = Hashtbl.create 13
-let all_warnings = ref []
-let all_linters = ref []
-let all_plugins_args = ref []
-
-let all_files = (Hashtbl.create 113 : (string, file) Hashtbl.t)
-let all_projects = (Hashtbl.create 13 : (string, project) Hashtbl.t)
-
-let active_warnings = ref StringMap.empty
-let active_linters = ref []
-
-let file_classifier = ref (fun ~file_doc:_ -> None)
-let folder_updater = ref (fun ~folder:(_:folder) -> ())
-
-let messages = ref []
-
-let get_messages () =
-  let ms = List.rev !messages in
-  messages := [];
-  ms
+let verbose n = !GState.verbosity >= n
 
 let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
-  if Hashtbl.mem all_plugins plugin_name then begin
+  if Hashtbl.mem GState.all_plugins plugin_name then begin
       Printf.eprintf "Configuration error: plugin %s is defined twice.\n%!" plugin_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
@@ -67,13 +29,13 @@ let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
              plugin_args = args;
            }
   in
-  Hashtbl.add all_plugins plugin_name ns;
+  Hashtbl.add GState.all_plugins plugin_name ns;
   if verbose 1 then
     Printf.eprintf "  Plugin %S installed\n%!" plugin_name ;
   ns
 
 let new_language plugin lang_name =
-  if Hashtbl.mem all_languages lang_name then begin
+  if Hashtbl.mem GState.all_languages lang_name then begin
       Printf.eprintf "Configuration error: language %s is defined twice.\n%!" lang_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
@@ -83,7 +45,7 @@ let new_language plugin lang_name =
                lang_kinds = StringMap.empty ;
              }
   in
-  Hashtbl.add all_languages lang_name lang;
+  Hashtbl.add GState.all_languages lang_name lang;
   plugin.plugin_languages <- StringMap.add lang_name lang
                                plugin.plugin_languages ;
   if verbose 1 then
@@ -93,8 +55,7 @@ let new_language plugin lang_name =
 let new_file_kind ~lang ?(exts=[]) ~name
       ?(validate= fun ~file_doc:_ -> true)
       ~lint () =
-  let kind_uid = !file_kind_uids in
-  incr file_kind_uids ;
+  let kind_uid = GState.new_file_kind_uid () in
   (* TODO check uniqueness *)
 
   let file_kind = {
@@ -108,15 +69,15 @@ let new_file_kind ~lang ?(exts=[]) ~name
   lang.lang_kinds <- StringMap.add name file_kind lang.lang_kinds;
   List.iter (fun ext ->
       begin
-        match Hashtbl.find all_extensions ext with
+        match Hashtbl.find GState.all_extensions ext with
         | exception Not_found -> ()
         | f2 ->
            Printf.eprintf "Configuration warning: extension %S used by %S now used by %S\n%!"
              ext f2.kind_name file_kind.kind_name
       end;
-      Hashtbl.add all_extensions ext file_kind
+      Hashtbl.add GState.all_extensions ext file_kind
     ) exts ;
-  Hashtbl.add all_file_kinds kind_uid file_kind ;
+  Hashtbl.add GState.all_file_kinds kind_uid file_kind ;
   file_kind
 
 let new_namespace plugin ns_name =
@@ -128,7 +89,7 @@ let new_namespace plugin ns_name =
        Printf.eprintf "Configuration error: namespace %S contains illegal character '%c'\n%!" ns_name c;
        exit 2
   done;
-  if Hashtbl.mem all_namespaces ns_name then begin
+  if Hashtbl.mem GState.all_namespaces ns_name then begin
       Printf.eprintf "Configuration error: namespace %s is defined twice.\n%!" ns_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
@@ -138,7 +99,7 @@ let new_namespace plugin ns_name =
              ns_warnings = IntMap.empty ;
              ns_linters = StringMap.empty;
            } in
-  Hashtbl.add all_namespaces ns_name ns;
+  Hashtbl.add GState.all_namespaces ns_name ns;
   if verbose 1 then
     Printf.eprintf "  Namespace %S installed\n%!" ns_name ;
   ns
@@ -153,10 +114,10 @@ let new_tag tag_name =
        exit 2
   done;
   try
-    Hashtbl.find all_tags tag_name
+    Hashtbl.find GState.all_tags tag_name
   with Not_found ->
     let tag = { tag_name ; tag_warnings = [] } in
-    Hashtbl.add all_tags tag_name tag;
+    Hashtbl.add GState.all_tags tag_name tag;
     tag
 
 let add_tag w tag =
@@ -166,10 +127,10 @@ let add_tag w tag =
                 w.w_namespace.ns_name tag.tag_name in
   let r =
     try
-      Hashtbl.find all_nstags nstag
+      Hashtbl.find GState.all_nstags nstag
     with Not_found ->
           let r = ref [] in
-          Hashtbl.add all_nstags nstag r;
+          Hashtbl.add GState.all_nstags nstag r;
           r
   in
   r := w :: !r
@@ -192,8 +153,8 @@ let new_warning
       w_tags = [] ;
       w_linters = StringMap.empty ;
       w_msg ;
-      w_level_warning = false ;
-      w_level_error = false ;
+      w_level_warning = 0 ;
+      w_level_error = 0 ;
       w_desc = desc ;
     } in
   begin
@@ -208,7 +169,7 @@ let new_warning
        exit 2
   end;
   w_namespace.ns_warnings <- IntMap.add w_num w w_namespace.ns_warnings;
-  all_warnings := w :: !all_warnings ;
+  GState.all_warnings := w :: !GState.all_warnings ;
   List.iter (add_tag w) tags;
   w
 
@@ -257,7 +218,7 @@ let rec new_linter
     ns.ns_linters <- StringMap.add
                        linter_name l
                        ns.ns_linters ;
-    all_linters := l :: !all_linters ;
+    GState.all_linters := l :: !GState.all_linters ;
     List.iter (fun w ->
         w.w_linters <-
           StringMap.add l.linter_idstr l w.w_linters)
@@ -291,18 +252,65 @@ let activate_linters () =
         Printf.eprintf
           "Developer warning: warning %s has no associated linter\n%!"
              w.w_idstr;
-      if w.w_level_warning || w.w_level_error then
-        active_warnings := StringMap.add w.w_idstr w !active_warnings
-    ) !all_warnings ;
+      if w.w_level_warning > 1 || w.w_level_error > 1 then
+        GState.active_warnings := StringMap.add w.w_idstr w
+                                    !GState.active_warnings
+    ) !GState.all_warnings ;
   List.iter (fun l ->
       if stringMap_exists (fun w ->
-             w.w_level_warning || w.w_level_error)
+             w.w_level_warning > 1 || w.w_level_error > 1)
            l.linter_warnings then begin
           l.linter_active <- true;
-          active_linters := l :: !active_linters;
+          GState.active_linters := l :: !GState.active_linters;
           l.linter_install l
         end
-    ) !all_linters
+    ) !GState.all_linters
+
+let get_target name =
+  let name = Yalo_misc.Utils.normalize_filename name in
+  match Hashtbl.find GState.all_targets name with
+  | target -> target
+  | exception Not_found ->
+     let target = {
+         target_name = name ;
+         target_uid = GState.new_target_uid () ;
+
+         target_zones = [] ;
+         target_messages = [] ;
+       } in
+     Hashtbl.add GState.all_targets name target ;
+     target
+
+let warnings_zone ~file ~loc ?(mode=Zone_begin) spec =
+  let pos = loc.loc_start in
+  let target_name = pos.pos_fname in
+  let target = get_target target_name in
+  let zone = {
+      zone_creator = file ;
+      zone_pos = pos ;
+      zone_target = target ;
+      zone_spec = spec ;
+      zone_rev_zone = None ;
+      zone_rev_changes = [];
+    }
+  in
+  target.target_zones <- zone :: target.target_zones ;
+  match mode with
+  | Zone_begin -> ()
+  | Zone_all ->
+     let pos = loc.loc_end in
+     if target_name = pos.pos_fname then
+       let zone = {
+           zone_creator = file ;
+           zone_pos = pos ;
+           zone_target = target ;
+           zone_rev_zone = Some zone ;
+           zone_spec = spec ;
+           zone_rev_changes = [];
+         }
+       in
+       target.target_zones <- zone :: target.target_zones ;
+       ()
 
 let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
 
@@ -312,7 +320,7 @@ let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
         w.w_idstr linter.linter_name;
     end;
 
-  if w.w_level_error || w.w_level_warning then
+  if w.w_level_error > 1 || w.w_level_warning > 1 then
     let msg_string =
       match msg with
       | None -> w.w_msg
@@ -334,7 +342,14 @@ let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
         msg_autofix = autofix ;
       } in
     file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
-    messages := m :: !messages
+    GState.messages := m :: !GState.messages ;
+
+    let target_name = msg_loc.loc_start.pos_fname in
+    let target = get_target target_name in
+    target.target_messages <- m :: target.target_messages ;
+    GState.message_targets := IntMap.add target.target_uid target
+                         !GState.message_targets;
+    ()
 
 let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
       ~lnum ~file () =
@@ -393,7 +408,7 @@ let rec filter_linters ~file linters =
   | []  -> []
   | (l,f) :: linters ->
      if stringMap_exists (fun w ->
-            (w.w_level_warning || w.w_level_error) &&
+            (w.w_level_warning > 1 || w.w_level_error > 1) &&
               not (StringSet.mem w.w_idstr file.file_warnings_done)
           ) l.linter_warnings then
        (l,f) :: filter_linters ~file linters
@@ -411,8 +426,7 @@ let lint_with_active_linters active_linters_ref =
      ()
 
 let new_file ~file_doc ~file_kind ~file_crc file_name =
-  let file_uid = !file_uids in
-  incr file_uids ;
+  let file_uid = GState.new_file_uid () in
   {
     file_name ;
     file_uid ;
@@ -438,11 +452,11 @@ let add_file ~file_doc ~file_kind =
         file_name (string_of_projects file_doc.doc_parent.folder_projects);
 
     let file_crc = Digest.file file_name in
-    match Hashtbl.find all_files file_name with
+    match Hashtbl.find GState.all_files file_name with
     | _file -> assert false
     | exception Not_found ->
        let file = new_file ~file_doc ~file_kind ~file_crc file_name in
-       Hashtbl.add all_files file_name file;
+       Hashtbl.add GState.all_files file_name file;
        file_doc.doc_file <- Some file ;
        ()
 
@@ -454,14 +468,14 @@ let doc_kind ~file_doc =
 
   let rec iter_ext ext =
     if ext <> "" then
-      match Hashtbl.find all_extensions ext with
+      match Hashtbl.find GState.all_extensions ext with
       | exception Not_found ->
          let _, ext = EzString.cut_at ext '.' in
          iter_ext ext
       | file_kind ->
          Some file_kind
     else
-      match !file_classifier ~file_doc with
+      match !GState.file_classifier ~file_doc with
       | None ->
          None
       | Some file_kind ->
@@ -480,18 +494,18 @@ let add_file ~file_doc =
 
 let add_plugin_args plugin specs =
   plugin.plugin_args <- plugin.plugin_args @ specs ;
-  all_plugins_args := !all_plugins_args @ specs ;
+  GState.all_plugins_args := !GState.all_plugins_args @ specs ;
   ()
 
 let new_project name =
-  match Hashtbl.find all_projects name with
+  match Hashtbl.find GState.all_projects name with
   | p -> p
   | exception Not_found ->
      let p = {
          project_name = name ;
          project_files = [] ;
        } in
-     Hashtbl.add all_projects name p ;
+     Hashtbl.add GState.all_projects name p ;
      p
 
 let project_map_add ?(map=StringMap.empty) p =
@@ -559,8 +573,8 @@ let get_document doc_parent basename =
      file_doc
 
 let add_file_classifier f =
-  let old_f = !file_classifier in
-  file_classifier := (fun ~file_doc ->
+  let old_f = !GState.file_classifier in
+  GState.file_classifier := (fun ~file_doc ->
     match f ~file_doc with
     | Some file_kind -> Some file_kind
     | None -> old_f ~file_doc)
@@ -572,17 +586,145 @@ let profile_append ( profile_var, profile_option ) =
 let eprint_config () =
   Printf.eprintf "Engine.config:\n%!";
   Printf.eprintf "  * Active warnings: %d\n%!"
-    (StringMap.cardinal !active_warnings);
-  Printf.eprintf "  * Active linters: %d\n%!" (List.length !active_linters);
+    (StringMap.cardinal !GState.active_warnings);
+  Printf.eprintf "  * Active linters: %d\n%!"
+    (List.length !GState.active_linters);
   ()
 
 
 let add_folder_updater f =
-  let old_f = !folder_updater in
-  folder_updater := (fun ~folder ->
+  let old_f = !GState.folder_updater in
+  GState.folder_updater := (fun ~folder ->
     old_f ~folder ;
     f ~folder)
 
-let update_warnings ~file ~loc spec =
-  ignore (file, loc, spec);
-  ()
+let compare_message_start m1 m2 =
+  compare m1.msg_loc.loc_start.pos_cnum
+    m2.msg_loc.loc_start.pos_cnum
+
+let compare_zone_pos m1 m2 =
+  compare m1.zone_pos.pos_cnum
+    m2.zone_pos.pos_cnum
+
+let apply_zone z revert_warning_changes =
+  let revert_warning_changes = ref revert_warning_changes in
+  Parse_spec.parse_spec z.zone_spec
+    (fun set w ->
+
+      let w_level_warning = w.w_level_warning in
+      let w_level_error = w.w_level_error in
+      if not (StringMap.mem w.w_idstr !revert_warning_changes) then begin
+          revert_warning_changes :=
+            StringMap.add w.w_idstr
+              (fun () ->
+                w.w_level_error <- w_level_error ;
+                w.w_level_warning <- w_level_warning )
+              !revert_warning_changes ;
+        end;
+      match set, w_level_warning, w_level_error with
+      | false, 2, 2 ->
+         w.w_level_error <- 1 ;
+         w.w_level_warning <- 1 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_warning <- 2 ;
+           w.w_level_error <- 2 ;
+         ) :: z.zone_rev_changes
+      | false, 0, 2 ->
+         w.w_level_error <- 1 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_error <- 2) :: z.zone_rev_changes
+      | false, 2, 0 ->
+         w.w_level_warning <- 1 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_warning <- 2) :: z.zone_rev_changes
+      | true, 2, 0 -> ()
+      | true, 0, 2 -> ()
+      | true, 1, 0 ->
+         w.w_level_warning <- 2 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_warning <- 1) :: z.zone_rev_changes
+      | true, 0, 1 ->
+         w.w_level_error <- 2 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_error <- 1) :: z.zone_rev_changes
+      | true, 1, 1 ->
+         w.w_level_warning <- 2 ;
+         w.w_level_error <- 2 ;
+         z.zone_rev_changes <- (fun () ->
+           w.w_level_warning <- 1 ;
+           w.w_level_error <- 1 ;
+         ) :: z.zone_rev_changes
+      | _ -> ()
+    );
+  !revert_warning_changes
+
+let target_messages target =
+
+  let messages = Array.of_list target.target_messages in
+  Array.sort compare_message_start messages;
+  let messages = Array.to_list messages in
+
+  let zones = Array.of_list target.target_zones in
+  Array.sort compare_zone_pos zones ;
+  let zones = Array.to_list zones in
+
+  let rec iter messages zones kept_messages revert_warning_changes =
+    match messages with
+    | [] ->
+       StringMap.iter (fun _ f -> f ()) revert_warning_changes ;
+       List.rev kept_messages
+    | m :: rem_messages ->
+       match zones with
+       | [] ->
+          let kept_messages =
+            if m.msg_warning.w_level_error > 1 ||
+                 m.msg_warning.w_level_warning > 1 then
+              m :: kept_messages
+            else
+              List.rev kept_messages
+          in
+          iter rem_messages zones kept_messages
+            revert_warning_changes
+       | z :: rem_zones ->
+          if m.msg_loc.loc_start.pos_cnum <
+               z.zone_pos.pos_cnum then
+            let kept_messages =
+              if m.msg_warning.w_level_error > 1 ||
+                   m.msg_warning.w_level_warning > 1 then
+                m :: kept_messages
+              else
+                kept_messages
+            in
+            iter
+              rem_messages zones
+              kept_messages revert_warning_changes
+          else
+            match z.zone_rev_zone with
+            | Some z ->
+               List.iter (fun f -> f ()) z.zone_rev_changes ;
+               iter
+                 messages rem_zones kept_messages
+                 revert_warning_changes
+            | None ->
+               let revert_warning_changes =
+                 apply_zone z revert_warning_changes
+               in
+               iter
+                 messages rem_zones
+                 kept_messages revert_warning_changes
+  in
+  iter messages zones [] StringMap.empty
+
+let get_messages () =
+  let messages = ref [] in
+  Hashtbl.iter (fun _ target ->
+      messages := target_messages target @ !messages)
+    GState.all_targets ;
+  !messages
+
+let temporary_set_option option value =
+  let prev_value = Config.get_simple_option option in
+  Config.set_simple_option option value ;
+  GState.restore_after_file_lint :=
+    (fun () -> Config.set_simple_option option prev_value)
+    :: !GState.restore_after_file_lint

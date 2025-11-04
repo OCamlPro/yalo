@@ -113,7 +113,7 @@ let scan_projects
 
   let matcher = Regexps.MATCHER.create
                   ~exact:true
-                  (!Engine.profiles_fileattrs @ !!Config.fileattrs ) in
+                  (!GState.profiles_fileattrs @ !!Config.fileattrs ) in
   let get_fileattrs file_name =
     match Regexps.MATCHER.find_all matcher file_name with
     | None -> []
@@ -145,7 +145,7 @@ let scan_projects
     if Engine.verbose 2 then
       Printf.eprintf "Checking folder %S\n%!" folder.folder_name ;
 
-    !Engine.folder_updater ~folder ;
+    !GState.folder_updater ~folder ;
 
     let attrs = get_fileattrs folder.folder_name in
     List.iter (function attrs ->
@@ -248,13 +248,13 @@ let scan_projects
       StringMap.iter (fun _ p ->
           add_file_project file p) file.file_projects ;
       add_file_project file fs.fs_project ;
-    ) Engine.all_files ;
+    ) GState.all_files ;
 
   Hashtbl.iter (fun _ p ->
       let files = Array.of_list p.project_files in
       Array.sort compare files;
       p.project_files <- Array.to_list files
-    ) Engine.all_projects ;
+    ) GState.all_projects ;
 
   ()
 
@@ -280,7 +280,7 @@ let lint_projects
     | list ->
        List.map (fun name ->
            try
-             Hashtbl.find Engine.all_projects name
+             Hashtbl.find GState.all_projects name
            with Not_found ->
              Printf.eprintf "Configuration error: project %S does not exist\n%!" name;
              Hashtbl.iter (fun _ p ->
@@ -288,7 +288,7 @@ let lint_projects
                    (match p.project_name with
                    | "_" -> " (all files)"
                    | _ -> "")
-               ) Engine.all_projects ;
+               ) GState.all_projects ;
              exit 2
          ) list
   in
@@ -296,7 +296,7 @@ let lint_projects
   let files_done = ref 0 in
   List.iter (fun l ->
       l.linter_begin ()
-    ) !Engine.active_linters;
+    ) !GState.active_linters;
 
   List.iter (fun p ->
       Printf.eprintf "For project %S\n%!" p.project_name ;
@@ -304,7 +304,9 @@ let lint_projects
           if not file.file_done then begin
               file.file_done <- true;
               incr files_done ;
-              file.file_kind.kind_lint ~file
+              file.file_kind.kind_lint ~file;
+              List.iter (fun f -> f ()) !GState.restore_after_file_lint ;
+              GState.restore_after_file_lint := []
             end
         ) (
           p.project_files
@@ -313,7 +315,7 @@ let lint_projects
 
   List.iter (fun l ->
       l.linter_end ()
-    ) !Engine.active_linters;
+    ) !GState.active_linters;
 
   Printf.eprintf "%d files linted\n%!" !files_done;
   ()
@@ -364,23 +366,26 @@ let activate_warnings_and_linters
   end;
 
   let set_warning set w =
-    w.w_level_warning <- set
+    w.w_level_warning <- (if set then 2 else 0)
   in
-  let set_error set w = w.w_level_error <- set in
+  let set_error set w =
+    w.w_level_error <- (if set then 2 else 0)
+  in
 
   if not skip_config_warnings then
     Parse_spec.parse_spec_list
-      ( !Engine.profiles_warnings @ !!Config.config_warnings ) set_warning ;
+      ( !GState.profiles_warnings @ !!Config.config_warnings )
+      set_warning ;
   Parse_spec.parse_spec_list arg_warnings set_warning ;
 
   if not skip_config_warnings then
     Parse_spec.parse_spec_list
-      ( !Engine.profiles_errors @ !!Config.config_errors ) set_error ;
+      ( !GState.profiles_errors @ !!Config.config_errors ) set_error ;
   Parse_spec.parse_spec_list arg_errors set_error ;
 
   Engine.activate_linters ();
 
-  if List.length !Engine.active_linters = 0 then begin
+  if List.length !GState.active_linters = 0 then begin
       Printf.eprintf "Configuration error: no active linters\n%!";
       Engine.eprint_config ();
       exit 2

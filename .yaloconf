@@ -31,3 +31,9 @@ fileattrs = [
  "test/ocaml", { project = "yalo_test" } ;
 ]
 
+YALO = {
+  max_line_length = 80
+
+
+}
+
