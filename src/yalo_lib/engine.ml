@@ -312,7 +312,7 @@ let warnings_zone ~file ~loc ?(mode=Zone_begin) spec =
        target.target_zones <- zone :: target.target_zones ;
        ()
 
-let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
+let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
 
   if not ( StringMap.mem w.w_idstr linter.linter_warnings ) then begin
       Printf.eprintf
@@ -320,7 +320,8 @@ let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
         w.w_idstr linter.linter_name;
     end;
 
-  if w.w_level_error > 1 || w.w_level_warning > 1 then
+  if (w.w_level_error > 1 || w.w_level_warning > 1)
+     && not loc.loc_ghost then
     let msg_string =
       match msg with
       | None -> w.w_msg
@@ -328,12 +329,12 @@ let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
     in
     let msg_idstr =
       Printf.sprintf "%06d%06d%s"
-        msg_loc.loc_start.pos_lnum
-        msg_loc.loc_start.pos_cnum
-        (Marshal.to_string (msg_loc,w.w_idstr,msg) [])
+        loc.loc_start.pos_lnum
+        loc.loc_start.pos_cnum
+        (Marshal.to_string (loc,w.w_idstr,msg) [])
     in
     let m = {
-        msg_loc ;
+        msg_loc = loc ;
         msg_string ;
         msg_warning = w;
         msg_file = file ;
@@ -344,11 +345,11 @@ let warn msg_loc ~file ~linter ?msg ?(autofix=[]) w =
     file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
     GState.messages := m :: !GState.messages ;
 
-    let target_name = msg_loc.loc_start.pos_fname in
+    let target_name = loc.loc_start.pos_fname in
     let target = get_target target_name in
     target.target_messages <- m :: target.target_messages ;
     GState.message_targets := IntMap.add target.target_uid target
-                         !GState.message_targets;
+                                !GState.message_targets;
     ()
 
 let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
@@ -368,7 +369,7 @@ let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
   Location.{
       loc_start ;
       loc_end ;
-      loc_ghost = true;
+      loc_ghost = false;
   }
 
 let iter_linters ~file linters x =
@@ -589,6 +590,9 @@ let eprint_config () =
     (StringMap.cardinal !GState.active_warnings);
   Printf.eprintf "  * Active linters: %d\n%!"
     (List.length !GState.active_linters);
+  List.iter (fun linter ->
+      Printf.eprintf "    * %s\n%!" linter.linter_name )
+    !GState.active_linters ;
   ()
 
 

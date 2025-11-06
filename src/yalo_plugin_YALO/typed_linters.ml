@@ -29,7 +29,7 @@ let main () =
       match l with
         Longident.Lident s ->
          if s = "Obj" then
-           YALO.warn loc ~file ~linter Untyped_linters.w_use_obj
+           YALO.warn ~loc ~file ~linter Untyped_linters.w_use_obj
         | Longident.Ldot (l, _) ->
            check_longident ~loc (translate_longident l)
         | Longident.Lapply (l1, l2) ->

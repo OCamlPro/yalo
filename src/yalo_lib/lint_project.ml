@@ -110,7 +110,6 @@ let scan_projects
        done
   end;
 
-
   let matcher = Regexps.MATCHER.create
                   ~exact:true
                   (!GState.profiles_fileattrs @ !!Config.fileattrs ) in
@@ -179,14 +178,19 @@ let scan_projects
 
     let add_files =
       match folder.folder_scan with
-      | Scan_disabled -> StringSet.empty
-      | Scan_forced -> read_folder folder
+      | Scan_disabled ->
+         if Engine.verbose 2 then Printf.eprintf " -> Scan_disabled\n%!";
+         StringSet.empty
+      | Scan_forced ->
+         if Engine.verbose 2 then Printf.eprintf " -> Scan_forced\n%!";
+         read_folder folder
       | Scan_maybe ->
+         if Engine.verbose 2 then Printf.eprintf " -> Scan_maybe\n%!";
          let set = read_folder folder in
-         if StringSet.mem Constant.config_basename set
-            || StringSet.mem ".git" set then
+         if StringSet.mem ".git" set then begin
+             if Engine.verbose 2 then Printf.eprintf " -> Scan_avoid\n%!";
            StringSet.empty
-         else
+         end else
            set
     in
 
@@ -304,6 +308,8 @@ let lint_projects
           if not file.file_done then begin
               file.file_done <- true;
               incr files_done ;
+              if Engine.verbose 1 then
+                Printf.eprintf "* %s\n%!" file.file_name;
               file.file_kind.kind_lint ~file;
               List.iter (fun f -> f ()) !GState.restore_after_file_lint ;
               GState.restore_after_file_lint := []

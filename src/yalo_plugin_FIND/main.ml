@@ -75,7 +75,7 @@ let () =
   OCAML_LANG.new_src_file_linter ns "src-file-linter"
     ~warnings:[w_src_file]
     (fun ~file ~linter { file_loc } ->
-      YALO.warn file_loc ~file ~linter w_src_file
+      YALO.warn ~loc:file_loc ~file ~linter w_src_file
     );
 
   OCAML_LANG.new_src_line_linter ns "src-line-linter"
@@ -86,47 +86,47 @@ let () =
     (fun ~file ~linter { line_loc ; _ } ->
       if YALO.STORE.get store file then begin
           YALO.STORE.put store file false;
-          YALO.warn line_loc ~file ~linter w_src_line
+          YALO.warn ~loc:line_loc ~file ~linter w_src_line
         end
     ) ;
 
   OCAML_LANG.new_src_content_linter ns "src-content-linter"
     ~warnings:[w_src_content]
     (fun ~file ~linter { content_loc ; content_string = _ } ->
-      YALO.warn content_loc ~file ~linter w_src_content
+      YALO.warn ~loc:content_loc ~file ~linter w_src_content
     ) ;
 
   OCAML_LANG.new_sig_linter ns "src-sig"
     ~warnings:[w_sig]
     (fun ~file ~linter _cmi ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
-      YALO.warn loc ~file ~linter w_sig
+      YALO.warn ~loc ~file ~linter w_sig
     ) ;
 
   OCAML_LANG.new_ast_intf_linter ns "src-ast-intf"
     ~warnings:[w_ast_intf]
     (fun ~file ~linter _ast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
-      YALO.warn loc ~file ~linter w_ast_intf
+      YALO.warn ~loc ~file ~linter w_ast_intf
     ) ;
 
   OCAML_LANG.new_ast_impl_linter ns "src-ast-impl"
     ~warnings:[w_ast_impl]
     (fun ~file ~linter _ast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
-      YALO.warn loc ~file ~linter w_ast_impl
+      YALO.warn ~loc ~file ~linter w_ast_impl
     ) ;
 
   OCAML_LANG.new_tast_intf_linter ns "src-tast-intf"
     ~warnings:[w_tast_intf]
     (fun ~file ~linter _tast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
-      YALO.warn loc ~file ~linter w_tast_intf
+      YALO.warn ~loc ~file ~linter w_tast_intf
     ) ;
 
   OCAML_LANG.new_tast_impl_linter ns "src-tast-impl"
     ~warnings:[w_tast_impl]
     (fun ~file ~linter _tast ->
       let loc = YALO.mkloc ~file ~bol:0 ~lnum:1 () in
-      YALO.warn loc ~file ~linter w_tast_impl
+      YALO.warn ~loc ~file ~linter w_tast_impl
     ) ;
