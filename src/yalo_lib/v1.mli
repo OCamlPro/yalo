@@ -113,7 +113,7 @@ module YALO : sig
     name:string -> msg:string -> int -> warning
   val tag_danger : tag
 
-  val warn : location -> file:file -> linter:linter ->
+  val warn : loc:location -> file:file -> linter:linter ->
              ?msg:string ->
              ?autofix:(YALO_TYPES.location * string) list ->
              warning -> unit

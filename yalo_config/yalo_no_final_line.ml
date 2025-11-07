@@ -34,12 +34,12 @@ let w_windows_newline =
 let () =
   OCAML_LANG.new_src_line_linter ns "ocp_check_line2"
     ~warnings:[w_no_final_newline ; w_windows_newline]
-    (fun ~file { line_loc = loc;
+    (fun ~file ~linter { line_loc = loc;
                  line_line = line;
                  line_sep = sep } ->
       let len = String.length sep in
       if len > 1 && sep.[0] = '\r' then
-        YALO.warn loc ~file w_windows_newline;
+        YALO.warn ~loc ~linter ~file w_windows_newline;
       if len = 0 && String.length line > 0  then
-        YALO.warn loc ~file w_no_final_newline
+        YALO.warn ~loc ~linter ~file w_no_final_newline
     )

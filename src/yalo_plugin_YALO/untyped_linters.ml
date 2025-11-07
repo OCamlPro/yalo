@@ -31,7 +31,7 @@ let () =
           match l with
             Lident s ->
              if s = "Obj" then
-               YALO.warn loc ~file ~linter w_use_obj
+               YALO.warn ~loc ~file ~linter w_use_obj
             | Ldot (l, _) ->
                check_longident l
             | Lapply (l1, l2) ->
@@ -57,7 +57,7 @@ let main () =
         match str.pstr_desc with
         | Pstr_primitive { pval_prim ; _ } when pval_prim <> [] ->
            let loc = str.pstr_loc in
-           YALO.warn loc ~file ~linter w_use_external
+           YALO.warn ~loc ~file ~linter w_use_external
         | _ -> ()
       in
       traverse.structure_item <-

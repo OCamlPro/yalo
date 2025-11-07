@@ -79,11 +79,11 @@ let main () =
         let len = String.length sep in
         if is_unix && len > 1 && sep.[0] = '\r' then begin
             let loc = { loc with loc_start = loc.loc_end } in
-            YALO.warn loc ~file ~linter w_windows_newline;
+            YALO.warn ~loc ~file ~linter w_windows_newline;
           end;
         if len = 0 && String.length line > 0  then begin
             let loc = { loc with loc_start = loc.loc_end } in
-            YALO.warn loc ~file ~linter
+            YALO.warn ~loc ~file ~linter
               w_no_final_newline ~autofix:[loc,"\n"]
           end
       end;
@@ -91,7 +91,7 @@ let main () =
       let len = String.length line in
       if len > 0 then begin
           if len > !!max_line_length then
-            YALO.warn loc ~file ~linter w_line_too_long
+            YALO.warn ~loc ~file ~linter w_line_too_long
               ~msg:(Printf.sprintf
                       "Line too long (not more than %d characters)"
                     !!max_line_length)
@@ -110,7 +110,7 @@ let main () =
                                             + pos }}
               in
               let loc = iter (len-1) in
-              YALO.warn loc ~file ~linter
+              YALO.warn ~loc ~file ~linter
                 w_spaces_at_end ~autofix:[loc,""];
             end;
           let has_tab = ref false in
@@ -124,8 +124,8 @@ let main () =
                  has_nonprintable := true;
           done;
           if !has_tab then
-            YALO.warn loc ~file ~linter w_tab_used;
+            YALO.warn ~loc ~file ~linter w_tab_used;
           if !has_nonprintable then
-            YALO.warn loc ~file ~linter w_non_printable_char
+            YALO.warn ~loc ~file ~linter w_non_printable_char
         end
     )

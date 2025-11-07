@@ -9,7 +9,7 @@
 (*************************************)
 
 (* List of plugins to load *)
-plugins = []
+plugins = [ "yalo_plugin_ZANUDA" ]
 
 (* List of directories to search for plugin files *)
 search_path = [
@@ -18,16 +18,20 @@ search_path = [
 
 profiles = [ "ocaml" "ocamlpro" ]
 
-warnings = [ "YALO" ]
+warnings = [ "YALO" ; "ZANUDA" ]
 
 project = "yalo"
 default_target = "yalo_test"
 
 fileattrs = [
+ "src/yalo_tests", { project = "yalo_test" } ;
  "src/yalo_config", { project = "ez_config" } ;
  "src/yalo_plugin_ocaml", { project = "yalo:yalo_plugin_ocaml" } ;
  "src/yalo_plugin_YALO", { project = [ yalo ; yalo_plugin_YALO ] } ;
  "src/yalo_plugin_FIND", { project = [ yalo ; yalo_plugin_FIND ] } ;
+ "src/yalo_plugin_ZANUDA", { project = [ yalo ; yalo_plugin_ZANUDA ] } ;
+ "src/yalo_plugin_ZANUDA/typed", { skipdir = true } ;
+ "src/yalo_plugin_ZANUDA/untyped", { skipdir = true } ;
  "test/ocaml", { project = "yalo_test" } ;
 ]
 

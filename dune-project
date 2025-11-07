@@ -161,6 +161,26 @@
  )
 
 (package
+ (name yalo_plugin_ZANUDA)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
  (name yalo_driver)
  (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
  (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
@@ -196,6 +216,24 @@
    (ocaml (>= 4.08.0))
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    camlp-streams
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_tests)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
    ppx_inline_test
    ppx_expect
    odoc

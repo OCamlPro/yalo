@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-691146ce087fe7e27e9acc2b28d96958:.
+be688f126ac108965a8116f7706c4c99:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -66,7 +66,7 @@ eb5dffdcdfe0cf7252a14f6332d1bf50:Makefile
 
 # begin context for Makefile.drom
 # file Makefile.drom
-daaf73ab176fce4a461223d04f186189:Makefile.drom
+527a672882c501ca10ba584cb10475a7:Makefile.drom
 # end context for Makefile.drom
 
 # begin context for README.md
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-e671385ece9eb59349c59148ae29aa64:dune-project
+99a6a6edfd7fc7e2e7b83386f02d5fc9:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -159,10 +159,20 @@ b6646d346bde26e2fc632214d8c73f4f:opam/yalo_config.opam
 16b80ff26ae740d5857dc02c5ebbd7e2:opam/yalo_plugin_YALO.opam
 # end context for opam/yalo_plugin_YALO.opam
 
+# begin context for opam/yalo_plugin_ZANUDA.opam
+# file opam/yalo_plugin_ZANUDA.opam
+42d651bc1f6aaaca4318694e152d1ce6:opam/yalo_plugin_ZANUDA.opam
+# end context for opam/yalo_plugin_ZANUDA.opam
+
 # begin context for opam/yalo_plugin_ocaml.opam
 # file opam/yalo_plugin_ocaml.opam
 f50f49487251933ca9250f7f3d26042b:opam/yalo_plugin_ocaml.opam
 # end context for opam/yalo_plugin_ocaml.opam
+
+# begin context for opam/yalo_tests.opam
+# file opam/yalo_tests.opam
+3468345b547cd90fe6532476170104c7:opam/yalo_tests.opam
+# end context for opam/yalo_tests.opam
 
 # begin context for scripts/after.sh
 # file scripts/after.sh
@@ -369,6 +379,21 @@ b01d4ca31ec5291008005d5b922f2b1c:src/yalo_plugin_YALO/index.mld
 fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_YALO/version.mlt
 # end context for src/yalo_plugin_YALO/version.mlt
 
+# begin context for src/yalo_plugin_ZANUDA/dune
+# file src/yalo_plugin_ZANUDA/dune
+a60e0d5c480503db548a79190e3d4deb:src/yalo_plugin_ZANUDA/dune
+# end context for src/yalo_plugin_ZANUDA/dune
+
+# begin context for src/yalo_plugin_ZANUDA/index.mld
+# file src/yalo_plugin_ZANUDA/index.mld
+47a1d81a3849784c7d28cce1d0c33498:src/yalo_plugin_ZANUDA/index.mld
+# end context for src/yalo_plugin_ZANUDA/index.mld
+
+# begin context for src/yalo_plugin_ZANUDA/version.mlt
+# file src/yalo_plugin_ZANUDA/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_ZANUDA/version.mlt
+# end context for src/yalo_plugin_ZANUDA/version.mlt
+
 # begin context for src/yalo_plugin_ocaml/dune
 # file src/yalo_plugin_ocaml/dune
 b6e99df8013cd588412a9dc22d25f034:src/yalo_plugin_ocaml/dune
@@ -389,6 +414,26 @@ b6e99df8013cd588412a9dc22d25f034:src/yalo_plugin_ocaml/dune
 fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_ocaml/version.mlt
 # end context for src/yalo_plugin_ocaml/version.mlt
 
+# begin context for src/yalo_tests/dune
+# file src/yalo_tests/dune
+663b8b6e11e094271d041d92210e953f:src/yalo_tests/dune
+# end context for src/yalo_tests/dune
+
+# begin context for src/yalo_tests/index.mld
+# file src/yalo_tests/index.mld
+0376c478a7762ca87db21132dd41a047:src/yalo_tests/index.mld
+# end context for src/yalo_tests/index.mld
+
+# begin context for src/yalo_tests/main.ml
+# file src/yalo_tests/main.ml
+c4fdec6f743c4ba53162cd9a6cfae34e:src/yalo_tests/main.ml
+# end context for src/yalo_tests/main.ml
+
+# begin context for src/yalo_tests/version.mlt
+# file src/yalo_tests/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_tests/version.mlt
+# end context for src/yalo_tests/version.mlt
+
 # begin context for test/expect-tests/dune
 # file test/expect-tests/dune
 e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
@@ -396,7 +441,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/expect-tests/dune.drom
 # file test/expect-tests/dune.drom
-9bd05d4212c2040e8e11a88d76683c32:test/expect-tests/dune.drom
+498255a225f310704996ab2e753d6ba2:test/expect-tests/dune.drom
 # end context for test/expect-tests/dune.drom
 
 # begin context for test/expect-tests/test.ml
@@ -411,7 +456,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/inline-tests/dune.drom
 # file test/inline-tests/dune.drom
-80b5b5a155dd9d141b1ccba99ed497f8:test/inline-tests/dune.drom
+dd734261966ed2c5eebc5dcfea8dae7b:test/inline-tests/dune.drom
 # end context for test/inline-tests/dune.drom
 
 # begin context for test/inline-tests/test.ml
@@ -426,7 +471,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/output-tests/dune.drom
 # file test/output-tests/dune.drom
-1da2c43a9a7c8eb2e945052dc91386ea:test/output-tests/dune.drom
+36d430107cbb30f444666a3122fc7b18:test/output-tests/dune.drom
 # end context for test/output-tests/dune.drom
 
 # begin context for test/output-tests/test1.expected
