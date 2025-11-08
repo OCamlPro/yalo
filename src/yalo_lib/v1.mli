@@ -118,8 +118,6 @@ module YALO : sig
              ?autofix:(YALO_TYPES.location * string) list ->
              warning -> unit
 
-  val file_name : file:file -> string
-  val doc_name : file_doc:document -> string
   val mkloc :
     bol:int ->
     ?start_cnum:int ->
@@ -163,6 +161,18 @@ module YALO_WARNING : sig
   val name : warning -> string
 end
 
+module YALO_FILE : sig
+  val name : file -> string
+end
+
+module YALO_DOC : sig
+  val name : document -> string
+(*
+  val parent : document -> folder
+  val basename : document -> string
+ *)
+end
+
 module YALO_FOLDER : sig
   val name : folder -> string
   val fs : folder -> fs
@@ -174,14 +184,6 @@ module YALO_FOLDER : sig
   val basename : folder -> string
 
   val set_project : folder -> project -> unit
- *)
-end
-
-module YALO_DOC : sig
-(*
-  val parent : document -> folder
-  val basename : document -> string
-  val name : document -> string
  *)
 end
 

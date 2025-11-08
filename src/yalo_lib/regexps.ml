@@ -31,9 +31,9 @@ module MATCHER : sig
 
 end = struct
 
-  module MarkMap = Map.Make ( Re.Mark )
+  module MARK_MAP = Map.Make ( Re.Mark )
 
-  type 'a t = Re.re * 'a MarkMap.t
+  type 'a t = Re.re * 'a MARK_MAP.t
 
   type kind =
     | Pcre
@@ -43,7 +43,7 @@ end = struct
     | Perl
 
   let create_matcher ~compile list =
-    let map = ref MarkMap.empty in
+    let map = ref MARK_MAP.empty in
     let groups = ref [] in
 
     List.iter (fun (re, value) ->
@@ -56,7 +56,7 @@ end = struct
            ()
         | re ->
            let mark, group = Re.mark re in
-           map := MarkMap.add mark value !map ;
+           map := MARK_MAP.add mark value !map ;
            groups := group :: !groups
       ) list;
 
@@ -86,7 +86,7 @@ end = struct
        let min = Re.Mark.Set.min_elt marks in
        Some (Re.Group.start group 0,
              Re.Group.stop group 0,
-             MarkMap.find min map)
+             MARK_MAP.find min map)
 
   let find_all (re,map) str =
     match Re.exec re str with
@@ -95,7 +95,7 @@ end = struct
        let list = ref [] in
        let marks = Re.Mark.all group in
        Re.Mark.Set.iter (fun mark ->
-           list := MarkMap.find mark map :: !list
+           list := MARK_MAP.find mark map :: !list
          ) marks ;
        Some (Re.Group.start group 0,
              Re.Group.stop group 0,

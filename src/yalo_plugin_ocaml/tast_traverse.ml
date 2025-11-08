@@ -40,6 +40,12 @@ module OCAML_TAST = struct
     | Omitted _ -> None
   [%%endif]
 
+  [%%if ocaml_version < (4, 10, 0)]
+  let module_binding_name name = Location.{ name with txt = Some name.txt }
+  [%%else]
+  let module_binding_name name = name
+  [%%endif]
+
   module TYPES = struct
     include Types
 
@@ -58,18 +64,23 @@ module OCAML_TAST_TRAVERSE = struct
     (YALO_TYPES.location * 'a, unit) YALO_TYPES.active_linters
 
   [%%if ocaml_version < (4, 11, 0)]
-  type case_by_version = { mutable version_case : OCAML_TAST.case ast_lint_list }
+  type case_by_version = { mutable version_case :
+                                     OCAML_TAST.case ast_lint_list }
   type case_checker = { f : (OCAML_TAST.case -> unit) }
   [%%else]
-  type case_by_version = { mutable version_case : 'k. 'k OCAML_TAST.case ast_lint_list }
+  type case_by_version = { mutable version_case :
+                                     'k. 'k OCAML_TAST.case ast_lint_list }
   type case_checker = { f : 'k.'k OCAML_TAST.case -> unit }
   [%%endif]
 
   [%%if ocaml_version < (4, 11, 0)]
-  type pat_by_version = { mutable version_pat : OCAML_TAST.pattern ast_lint_list }
+  type pat_by_version = { mutable version_pat :
+                                    OCAML_TAST.pattern ast_lint_list }
   type pat_checker = { f : (OCAML_TAST.pattern -> unit) }
   [%%else]
-  type pat_by_version = { mutable version_pat : 'k. 'k OCAML_TAST.general_pattern ast_lint_list }
+  type pat_by_version = { mutable version_pat :
+                                    'k. 'k OCAML_TAST.general_pattern
+                                          ast_lint_list }
   type pat_checker = { f : 'k. 'k OCAML_TAST.general_pattern -> unit }
   [%%endif]
 
@@ -84,17 +95,20 @@ module OCAML_TAST_TRAVERSE = struct
       mutable class_signature: OCAML_TAST.class_signature ast_lint_list;
       mutable class_structure: OCAML_TAST.class_structure ast_lint_list;
       mutable class_type: OCAML_TAST.class_type ast_lint_list;
-      mutable class_type_declaration: OCAML_TAST.class_type_declaration ast_lint_list;
+      mutable class_type_declaration:
+                OCAML_TAST.class_type_declaration ast_lint_list;
       mutable class_type_field: OCAML_TAST.class_type_field ast_lint_list;
       mutable expr: OCAML_TAST.expression ast_lint_list;
-      mutable extension_constructor: OCAML_TAST.extension_constructor ast_lint_list;
+      mutable extension_constructor:
+                OCAML_TAST.extension_constructor ast_lint_list;
       mutable module_binding: OCAML_TAST.module_binding ast_lint_list;
       mutable module_coercion: OCAML_TAST.module_coercion ast_lint_list;
       mutable module_declaration: OCAML_TAST.module_declaration ast_lint_list;
       mutable module_substitution: OCAML_TAST.module_substitution ast_lint_list;
       mutable module_expr: OCAML_TAST.module_expr ast_lint_list;
       mutable module_type: OCAML_TAST.module_type ast_lint_list;
-      mutable module_type_declaration: OCAML_TAST.module_type_declaration ast_lint_list;
+      mutable module_type_declaration:
+                OCAML_TAST.module_type_declaration ast_lint_list;
       mutable package_type: OCAML_TAST.package_type ast_lint_list;
       (* since 4.11.0 *)
       mutable pat: pat_by_version;
@@ -108,8 +122,9 @@ module OCAML_TAST_TRAVERSE = struct
       mutable structure_item: OCAML_TAST.structure_item ast_lint_list;
       mutable typ: OCAML_TAST.core_type ast_lint_list;
       mutable type_declaration: OCAML_TAST.type_declaration ast_lint_list;
-      mutable type_declarations: (OCAML_TAST.rec_flag *
-                                    OCAML_TAST.type_declaration list) ast_lint_list;
+      mutable type_declarations:
+                (OCAML_TAST.rec_flag *
+                   OCAML_TAST.type_declaration list) ast_lint_list;
       mutable type_extension: OCAML_TAST.type_extension ast_lint_list;
       mutable type_exception: OCAML_TAST.type_exception ast_lint_list;
       mutable type_kind: OCAML_TAST.type_kind ast_lint_list;
@@ -283,8 +298,12 @@ end = struct
       with_constraint = [] ;
     }
 
-  let push node = node_stack_ref := node :: !node_stack_ref
-  let pop () = node_stack_ref := List.tl !node_stack_ref
+  let push node =
+    OCAML_TAST_TRAVERSE.node_stack_ref := node ::
+                                            !OCAML_TAST_TRAVERSE.node_stack_ref
+  let pop () =
+    OCAML_TAST_TRAVERSE.node_stack_ref := List.tl
+                                            !OCAML_TAST_TRAVERSE.node_stack_ref
 
   let binding_op x = Node_binding_op x
   let case x = Node_case (fun f -> f.f x)
@@ -558,9 +577,9 @@ end = struct
 
     );
     let iterator = make_iterator ~file ast_traverse_linters in
-    node_stack_ref := [];
+    OCAML_TAST_TRAVERSE.node_stack_ref := [];
     let _ = iterator.structure iterator ast in
-    assert (!node_stack_ref = []);
+    assert (!OCAML_TAST_TRAVERSE.node_stack_ref = []);
     ()
 
   let signature ~file ast_traverse_linters ast =
@@ -575,9 +594,9 @@ end = struct
 
     );
     let iterator = make_iterator ~file ast_traverse_linters in
-    node_stack_ref := [];
+    OCAML_TAST_TRAVERSE.node_stack_ref := [];
     let _ = iterator.signature iterator ast in
-    assert (!node_stack_ref = []);
+    assert (!OCAML_TAST_TRAVERSE.node_stack_ref = []);
     ()
 
 end

@@ -735,7 +735,9 @@ let target_messages target =
 let get_messages () =
   let messages = ref [] in
   Hashtbl.iter (fun _ target ->
-      messages := target_messages target @ !messages)
+      (* We don't print message on non-existant files *)
+      if Sys.file_exists target.target_name then
+        messages := target_messages target @ !messages)
     GState.all_targets ;
   !messages
 

@@ -38,7 +38,7 @@ type command_kind =
 let commands = [
     "lint", LOAD_PLUGINS, Command_lint.cmd ;
     "lint-no-plugins", NO_PLUGINS, Command_lint.cmd ;
-    "doc", NO_PLUGINS, Command_doc.cmd ;
+    "doc", LOAD_PLUGINS, Command_doc.cmd ;
   ]
 
 
@@ -71,7 +71,7 @@ let main () =
         | NO_PLUGINS -> ()
     ) commands ;
 
-  let _fs = Init.get_fs () in
+  let _fs = Init.get_fs ~needs_to_load_plugins: !needs_to_load_plugins () in
 
   (* sub-commands arguments may come from plugins... *)
   let commands =

@@ -18,6 +18,7 @@ let ns = YALO.new_namespace plugin "YALO"
 
 let tag_untyped = YALO.new_tag "untyped"
 let tag_typed = YALO.new_tag "typed"
+let tag_lex = YALO.new_tag "lex"
 
 let section = YALO.CONFIG.create_section
                 plugin ~short_help:"YALO plugin"
@@ -39,4 +40,8 @@ let () =
   Typed_use_obj.register ns w_use_obj ;
   Typed_unqualified_id.register ns
     ~tags:[ tag_typed ] 9 ;
+  Typed_all_upper_struct.register ns
+    ~tags:[ tag_typed ] 10;
+  Lex_no_semisemi.register ns
+    ~tags:[ tag_lex ] 11;
   ()

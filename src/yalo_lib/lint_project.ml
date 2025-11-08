@@ -325,7 +325,11 @@ let lint_projects
       l.linter_end ()
     ) !GState.active_linters;
 
-  Printf.eprintf "%d files linted\n%!" !files_done;
+  Printf.eprintf
+    "%d files linted with %d active linters looking for %d warnings\n%!"
+    !files_done
+    (List.length !GState.active_linters)
+    (StringMap.cardinal !GState.active_warnings);
   ()
 
 let main

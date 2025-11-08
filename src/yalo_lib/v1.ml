@@ -97,9 +97,6 @@ module YALO = struct
   let tag_danger = new_tag "danger"
   let warn = Engine.warn
 
-  let file_name ~file = file.file_name
-  let doc_name ~file_doc = file_doc.doc_name
-
   let mkloc = Engine.mkloc
 
   module CONFIG = struct
@@ -150,14 +147,6 @@ module YALO_FOLDER = struct
   let set_projects folder p = folder.folder_projects <- p
 end
 
-module YALO_DOC = struct
-(*
-  val parent : t -> folder
-  val basename : t -> string
-  val name : t -> string
- *)
-end
-
 module YALO_INTERNAL = struct
   let new_file = Engine.new_file (* don't use *)
   let add_file = Engine.add_file
@@ -166,6 +155,19 @@ end
 
 module YALO_NS = struct
   let name ns = ns.ns_name
+end
+
+module YALO_FILE = struct
+  let name file = file.file_name
+end
+
+module YALO_DOC = struct
+  let name doc = doc.doc_name
+(*
+  val parent : t -> folder
+  val basename : t -> string
+  val name : t -> string
+ *)
 end
 
 module YALO_WARNING = struct

@@ -117,6 +117,11 @@ let load_plugins ~plugins () =
           let ret = Sys.command cmd in
           if ret <> 0 then begin
               Printf.eprintf "Error: could not compile %s\n%!" arg;
+              Printf.eprintf
+                "(this version of yalo is compiled for OCaml %s)\n%!"
+                Sys.ocaml_version;
+              Printf.eprintf "Output of `ocamlopt -version`:\n%!";
+              let _ : int = Sys.command "ocamlopt -version" in
               exit 2
             end;
         in
