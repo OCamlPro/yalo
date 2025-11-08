@@ -172,7 +172,8 @@ let scan_projects
                      | Tag tagname ->
                         if Engine.verbose 2 then
                           Printf.eprintf "   Tag %S\n%!" tagname ;
-                        folder.folder_tags <- StringSet.add tagname folder.folder_tags
+                        folder.folder_tags <-
+                          StringSet.add tagname folder.folder_tags
                    ) attrs ;
       ) attrs ;
 
@@ -286,7 +287,8 @@ let lint_projects
            try
              Hashtbl.find GState.all_projects name
            with Not_found ->
-             Printf.eprintf "Configuration error: project %S does not exist\n%!" name;
+             Printf.eprintf
+               "Configuration error: project %S does not exist\n%!" name;
              Hashtbl.iter (fun _ p ->
                  Printf.eprintf "  * project %S%s\n%!" p.project_name
                    (match p.project_name with

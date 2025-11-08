@@ -23,7 +23,8 @@
    | NS (* all following warnings are in this plugin. If no
     W_SPEC follows, then +NS is understood. *)
    | +NS (* activate all warnings of this plugin and use it for next warnings *)
-   | -NS (* disactivate all warnings of this plugin and use it for next warnings *)
+   | -NS (* disactivate all warnings of this plugin and
+   use it for next warnings *)
 
    W_SPEC =
    | +tag (* activate all warnings with this tag in the plugin *)
@@ -36,11 +37,16 @@ open EzCompat
 open Types
 
 let unexpected_char spec i =
-  Printf.eprintf "Configuration error: unexpected char '%c' at position %d in spec %S\n%!" spec.[i] i spec;
+  Printf.eprintf
+    "Configuration error: unexpected char '%c' at position %d in spec %S\n%!"
+    spec.[i] i spec;
   exit 2
 
 let unexpected_end spec i =
-  Printf.eprintf "Configuration error: unexpected end of specification at position %d in spec %S\n%!" i spec;
+  Printf.eprintf
+    "Configuration error: unexpected end of specification at position %d \
+     in spec %S\n%!"
+    i spec;
   exit 2
 
 let get_tag tag_name =
@@ -206,7 +212,9 @@ let parse_spec spec set_function =
     let nstag = Printf.sprintf "%s:%s" ns.ns_name tag_name in
     match Hashtbl.find GState.all_nstags nstag with
     | exception Not_found ->
-       Printf.eprintf "Configuration error: tag %S does not appear in plugin %s\n%!" tag_name ns.ns_name;
+       Printf.eprintf
+         "Configuration error: tag %S does not appear in plugin %s\n%!"
+         tag_name ns.ns_name;
        exit 2
     | r ->
        List.iter (set_function set) !r
@@ -224,7 +232,9 @@ let parse_spec spec set_function =
     in
     match IntMap.find num ns.ns_warnings with
     | exception Not_found ->
-       Printf.eprintf "Configuration error: warning %d does not appear in plugin %s\n%!" num ns.ns_name;
+       Printf.eprintf
+         "Configuration error: warning %d does not appear in plugin %s\n%!"
+         num ns.ns_name;
        exit 2
     | w -> set_function set w
 

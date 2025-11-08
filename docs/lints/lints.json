@@ -1,1 +1,327 @@
-[{"id":"YALO+7 use-obj","namespace":"YALO","group":"untyped","tags":["untyped"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nThe use of the Obj module is dangerous\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+8 use-external","namespace":"YALO","group":"untyped","tags":["untyped"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nThe use of the external is dangerous\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+1 line-too-long","namespace":"YALO","group":"line","tags":["line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nLine too long (not more than 80 characters)\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+2 spaces-at-end","namespace":"YALO","group":"autofix:line","tags":["autofix","line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nLine ends with spaces\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+3 tab-used","namespace":"YALO","group":"line","tags":["line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nLine contains tabulations\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+4 non-printable-char","namespace":"YALO","group":"line","tags":["line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nLine contains non-printable chars\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+5 no-final-newline","namespace":"YALO","group":"autofix:line","tags":["autofix","line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nFile does not end with a newline\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"YALO+6 windows-newline","namespace":"YALO","group":"line","tags":["line"],"level":"warn","impl":"yalo_plugin_YALO","docs":"### Message\nLine contains a \\r\\n instead of only \\n\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+0 lint-src-file","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting source file\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+1 lint-src-line","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting lines of source file\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+2 lint-src-content","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting content of source file\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+3 lint-sig","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting signature of file\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+4 lint-ast-intf","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting parsetree of interface\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+5 lint-ast-impl","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting parsetree of implementation\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+6 lint-tast-intf","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting typedtree of interface\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"FIND+7 lint-tast-intf","namespace":"FIND","group":"find","tags":["find"],"level":"allow","impl":"yalo_plugin_FIND","docs":"### Message\nLinting typedtree of implementation\n### Description\n","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+1 camel_cased_types","namespace":"ZANUDA","group":"readability:fpcourse:untyped","tags":["readability","fpcourse","untyped"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nIdentifiers in camel case are discouraged\n### Description\n### What it does\nChecks that type names are using snake case (`very_useful_typ`) and not using\ncamel case (`veryUsefulTyp`) popular in Python and Haskell.\n\n### Why is this bad?\nWrong casing is not exactly bad but OCaml tradition says that types' and\nmodule types' names should be snake case.\nModules names' in standard library are in camel case but in most Janestreet\nlibraries (ppxlib, base) they are in snake case too.","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+2 no_toplevel_eval","namespace":"ZANUDA","group":"readability:fpcourse:untyped","tags":["readability","fpcourse","untyped"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nToplevel evaluations are not recommended\n### Description\n### What it does\nAdding toplevel evaluation statements is not recommended because it forces to\nadd `;;`. Rewrite using `let () = ...`","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+3 camel_extra_dollar","namespace":"ZANUDA","group":"readability:fpcourse:untyped","tags":["readability","fpcourse","untyped"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nUseless `@@` operator\n### Description\n### What it does\nThe `@@` operator is used for writing less parentheses in expression.\nCode like `f (g (h x))` could be rewritten as `f @@ g (h x)`.\nBut is some cases it is not required, like `print_int @@ 1`.\nSome of these cases are reported by this lint.","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+5 expect_tests_no_names","namespace":"ZANUDA","group":"readability:fpcourse:untyped","tags":["readability","fpcourse","untyped"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nA test without description. Try `let%expect_test \"name\" = ...`\n### Description\n### What it does\nWarns about expect tests without descriptions: `let%expect_test _ = ...`\n\n### Why?\nFor purposes of refactoring we want to know why a certain test was written.\nIt allows us to decide easily if this test is still needed.\nBetter version is `let%expect_test \"decent name\" = ...`","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+4 format_module_usage","namespace":"ZANUDA","group":"readability:camelot:typed","tags":["readability","camelot","typed"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nThe format string is too much verbose (rewrite \"%s\" -> %S)\n### Description\n### What it does\nOCaml formatted string are more powerful than C counterpart.\nYou should be aware of available features.\n\n### Why is is important?\nShorter code is more readable. Rewrite\n\n*  `\\\"%s\\\"` to `%S`","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+6 wrong_ignoring","namespace":"ZANUDA","group":"fpcourse:suspicious:typed","tags":["fpcourse","suspicious","typed"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nUnsafe ignore. It's recommended to rewrite it with a let\n### Description\n### What it does\nUsing 'Stdlib.ignore' is discouraged. It's better to rewrite it with let.\n\n#### Explanation\n\nLet's look at expression 'ignore (f x)'. If in the future the function 'f'\nwill accept one more argument or change return type the code above may\nbecome buggy, because the function will not be fully applied and executed\n(although the warning may be raised here if this warning is not masked).\nIt's recommended to rewrite the code as 'let (_ : int) = f x in ...`\nwhere 'int' is an example of return type of the function 'f'.","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+7 var_should_not_be_used","namespace":"ZANUDA","group":"fpcourse:suspicious:typed","tags":["fpcourse","suspicious","typed"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nIdentifier starting with '_' and used later\n### Description\n### What it does\nReport identifier starting with '_' and used later\n\n### Why is this bad?\nOCaml compiler has a tendency to report warning 26 about unused variables.\nUsually this warning could be supressed by adding '_' in the beginning of\nidentifier to make it look like wildcard variable.\nBut if that identifier is used later it contradicts the purpose of adding\nundescore in the beginnning.","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}},{"id":"ZANUDA+8 ambiguous_constructors","namespace":"ZANUDA","group":"suspicious:typed","tags":["suspicious","typed"],"level":"warn","impl":"yalo_plugin_ZANUDA","docs":"### Message\nConstructor should not look like defaults\n### Description\n### What it does\n\nChecks if there are constructor names that hide default constructor names\nfrom `Stdlib`, such as `Some`, `None`, `Error`, `Ok`.\n\n### Why it is important\n\nShadowing names of default constructors may lead to name clashes within\ntoplevel.\nUsing custom constructors is recommended.","applicability":{"is_multi_part_suggestion":false,"applicability":"Unresolved"}}]
+[
+  {
+    "id": "YALO+1 line_too_long",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine too long (not more than 80 characters)\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+2 spaces_at_end",
+    "namespace": "YALO",
+    "group": "autofix:line",
+    "tags": [ "autofix", "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine ends with spaces\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+3 tab_used",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains tabulations\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+4 non_printable_char",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains non-printable chars\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+5 no_final_newline",
+    "namespace": "YALO",
+    "group": "autofix:line",
+    "tags": [ "autofix", "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nFile does not end with a newline\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+6 windows_newline",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains a \\r\\n instead of only \\n\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+7 use_obj",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThe use of the Obj module is dangerous\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+8 use_external",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThe use of external values is dangerous\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+9 unqualified_id",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nValues from external modules should be fully qualified\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+0 lint-src-file",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting source file\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+1 lint-src-line",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting lines of source file\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+2 lint-src-content",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting content of source file\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+3 lint-sig",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting signature of file\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+4 lint-ast-intf",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting parsetree of interface\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+5 lint-ast-impl",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting parsetree of implementation\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+6 lint-tast-intf",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting typedtree of interface\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+7 lint-tast-intf",
+    "namespace": "FIND",
+    "group": "find",
+    "tags": [ "find" ],
+    "level": "allow",
+    "impl": "yalo_plugin_FIND",
+    "docs": "### Message\nLinting typedtree of implementation\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+1 camel_cased_types",
+    "namespace": "ZANUDA",
+    "group": "readability:fpcourse:untyped",
+    "tags": [ "readability", "fpcourse", "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nIdentifiers in camel case are discouraged\n### Description\n### What it does\nChecks that type names are using snake case (`very_useful_typ`) and not using\ncamel case (`veryUsefulTyp`) popular in Python and Haskell.\n\n### Why is this bad?\nWrong casing is not exactly bad but OCaml tradition says that types' and\nmodule types' names should be snake case.\nModules names' in standard library are in camel case but in most Janestreet\nlibraries (ppxlib, base) they are in snake case too.",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+2 no_toplevel_eval",
+    "namespace": "ZANUDA",
+    "group": "readability:fpcourse:untyped",
+    "tags": [ "readability", "fpcourse", "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nToplevel evaluations are not recommended\n### Description\n### What it does\nAdding toplevel evaluation statements is not recommended because it forces to\nadd `;;`. Rewrite using `let () = ...`",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+3 camel_extra_dollar",
+    "namespace": "ZANUDA",
+    "group": "readability:fpcourse:untyped",
+    "tags": [ "readability", "fpcourse", "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nUseless `@@` operator\n### Description\n### What it does\nThe `@@` operator is used for writing less parentheses in expression.\nCode like `f (g (h x))` could be rewritten as `f @@ g (h x)`.\nBut is some cases it is not required, like `print_int @@ 1`.\nSome of these cases are reported by this lint.",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+5 expect_tests_no_names",
+    "namespace": "ZANUDA",
+    "group": "readability:fpcourse:untyped",
+    "tags": [ "readability", "fpcourse", "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nA test without description. Try `let%expect_test \"name\" = ...`\n### Description\n### What it does\nWarns about expect tests without descriptions: `let%expect_test _ = ...`\n\n### Why?\nFor purposes of refactoring we want to know why a certain test was written.\nIt allows us to decide easily if this test is still needed.\nBetter version is `let%expect_test \"decent name\" = ...`",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+4 format_module_usage",
+    "namespace": "ZANUDA",
+    "group": "readability:camelot:typed",
+    "tags": [ "readability", "camelot", "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nThe format string is too much verbose (rewrite \"%s\" -> %S)\n### Description\n### What it does\nOCaml formatted string are more powerful than C counterpart.\nYou should be aware of available features.\n\n### Why is is important?\nShorter code is more readable. Rewrite\n\n*  `\\\"%s\\\"` to `%S`",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+6 wrong_ignoring",
+    "namespace": "ZANUDA",
+    "group": "fpcourse:suspicious:typed",
+    "tags": [ "fpcourse", "suspicious", "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nUnsafe ignore. It's recommended to rewrite it with a let\n### Description\n### What it does\nUsing 'Stdlib.ignore' is discouraged. It's better to rewrite it with let.\n\n#### Explanation\n\nLet's look at expression 'ignore (f x)'. If in the future the function 'f'\nwill accept one more argument or change return type the code above may\nbecome buggy, because the function will not be fully applied and executed\n(although the warning may be raised here if this warning is not masked).\nIt's recommended to rewrite the code as 'let (_ : int) = f x in ...`\nwhere 'int' is an example of return type of the function 'f'.",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+7 var_should_not_be_used",
+    "namespace": "ZANUDA",
+    "group": "fpcourse:suspicious:typed",
+    "tags": [ "fpcourse", "suspicious", "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nIdentifier starting with '_' and used later\n### Description\n### What it does\nReport identifier starting with '_' and used later\n\n### Why is this bad?\nOCaml compiler has a tendency to report warning 26 about unused variables.\nUsually this warning could be supressed by adding '_' in the beginning of\nidentifier to make it look like wildcard variable.\nBut if that identifier is used later it contradicts the purpose of adding\nundescore in the beginnning.",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "ZANUDA+8 ambiguous_constructors",
+    "namespace": "ZANUDA",
+    "group": "suspicious:typed",
+    "tags": [ "suspicious", "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_ZANUDA",
+    "docs": "### Message\nConstructor should not look like defaults\n### Description\n### What it does\n\nChecks if there are constructor names that hide default constructor names\nfrom `Stdlib`, such as `Some`, `None`, `Error`, `Ok`.\n\n### Why it is important\n\nShadowing names of default constructors may lead to name clashes within\ntoplevel.\nUsing custom constructors is recommended.",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  }
+]

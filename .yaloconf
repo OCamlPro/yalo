@@ -24,6 +24,7 @@ project = "yalo"
 default_target = "yalo_test"
 
 fileattrs = [
+ "_YALO", { skipdir = true } ;
  "src/yalo_tests", { project = "yalo_test" } ;
  "src/yalo_config", { project = "ez_config" } ;
  "src/yalo_plugin_ocaml", { project = "yalo:yalo_plugin_ocaml" } ;

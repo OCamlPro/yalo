@@ -11,32 +11,36 @@
 (**************************************************************************)
 
 open Yalo.V1
+open Yalo_plugin_ocaml.V1
 
-let plugin = YALO.new_plugin "yalo_plugin_YALO" ~version:"0.1.0"
+open OCAML_AST
 
-let ns = YALO.new_namespace plugin "YALO"
+let lint_msg = "The use of external values is dangerous"
 
-let tag_untyped = YALO.new_tag "untyped"
-let tag_typed = YALO.new_tag "typed"
+let register ns
+      ?(name="use_external")
+      ~tags
+      ?(msg = lint_msg)
+      id
+  =
+  let w =
+    YALO.new_warning ns ~name id
+      ~tags
+      ~msg
+  in
 
-let section = YALO.CONFIG.create_section
-                plugin ~short_help:"YALO plugin"
+  OCAML_LANG.new_ast_impl_traverse_linter ns
+    ("check:" ^ name)
+    ~warnings:[ w ]
 
-let () =
-  Line_linters.register ns section
-    { w_id_line_too_long = 1 ;
-      w_id_spaces_at_end = 2 ;
-      w_id_tab_used =3 ;
-      w_id_non_printable_char = 4 ;
-      w_id_no_final_newline =5 ;
-      w_id_windows_newline = 6 ;
-    } ;
-  let w_use_obj =
-    Untyped_use_obj.register ns
-    ~tags:[ tag_untyped ] 7 in
-  Untyped_use_external.register ns
-    ~tags:[ tag_untyped ] 8 ;
-  Typed_use_obj.register ns w_use_obj ;
-  Typed_unqualified_id.register ns
-    ~tags:[ tag_typed ] 9 ;
-  ()
+    (fun ~file:_ ~linter traverse ->
+      let str_item ~file ~linter str =
+        match str.pstr_desc with
+        | Pstr_primitive { pval_prim ; _ } when pval_prim <> [] ->
+           let loc = str.pstr_loc in
+           YALO.warn ~loc ~file ~linter w
+        | _ -> ()
+      in
+      traverse.structure_item <-
+        (linter, str_item) :: traverse.structure_item ;
+    )

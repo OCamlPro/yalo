@@ -73,7 +73,7 @@ let register ~id ~tags
           | "Base.ignore"-> true
         | _ -> false ) ->
          begin
-           match extract_arg arg with
+           match OCAML_TAST.extract_arg arg with
            | None -> assert false
            | Some arg ->
               YALO.warn ~loc:exp.exp_loc

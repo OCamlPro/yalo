@@ -49,7 +49,8 @@ let parse_initial_args args =
             arg_config_file := Some file;
             iter args
          | Some file0 ->
-            Printf.eprintf "Error in arguments: -C <config-file> cannot be used twice\n";
+            Printf.eprintf
+              "Error in arguments: -C <config-file> cannot be used twice\n";
             Printf.eprintf " - first used with %s\n" file0;
             Printf.eprintf " - second used with %s\n" file;
             exit 2
@@ -79,8 +80,11 @@ let parse_initial_args args =
 
 let initial_arg_too_late name =
   Printf.eprintf
-    "Command Error: argument %s should be specified among initial arguments.\n" name;
-  Printf.eprintf "  It should come before secondary arguments such as %s\n%!" !arg_first_arg;
+    "Command Error: argument %s should be specified among initial arguments.\n"
+    name;
+  Printf.eprintf
+    "  It should come before secondary arguments such as %s\n%!"
+    !arg_first_arg;
   exit 2
 
 let initial_arg_specs = [

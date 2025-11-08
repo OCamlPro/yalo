@@ -154,7 +154,8 @@ let init
 
   let fs_root =
     try Sys.getcwd () with _ ->
-      Printf.eprintf "Current directory does not exist anymore. Move back up.\n%!";
+      Printf.eprintf
+        "Current directory does not exist anymore. Move back up.\n%!";
       exit 2
   in
 
@@ -167,7 +168,8 @@ let init
             the file what we are supposed to parse. But we only
             see it at the end ? We could add a
             -T <target-file> early arg for that. *)
-         let file, subpath = Yalo_misc.Utils.find_file Constant.config_basename in
+         let file, subpath = Yalo_misc.Utils.find_file Constant.config_basename
+         in
          let dir = Filename.dirname file in
          Printf.eprintf "yalo: Entering directory '%s'\n%!" dir;
          at_exit (fun () ->
@@ -189,7 +191,9 @@ let init
   begin
     match config_file with
     | None ->
-       Printf.eprintf "Warning: no file %s found. Using default config.\n%!" Constant.config_basename;
+       Printf.eprintf
+         "Warning: no file %s found. Using default config.\n%!"
+         Constant.config_basename;
        ()
     | Some file ->
        Config.load file ;

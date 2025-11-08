@@ -31,7 +31,7 @@ Modules names' in standard library are in camel case but in most Janestreet
 libraries (ppxlib, base) they are in snake case too.
   |}
   |> Stdlib.String.trim
-let is_camel_case s = String.(lowercase_ascii s <> s)
+let is_camel_case s = String.lowercase_ascii s <> s
 
 let is_good_name s =
   EzString.starts_with s ~prefix:"_menhir_cell1_" || not (is_camel_case s)

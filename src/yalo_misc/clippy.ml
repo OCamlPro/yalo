@@ -15,6 +15,7 @@ type applicability = {
     applicability : string ; (* "Unresolved" *)
   }  [@@deriving yojson]
 
+[@@@yalo.warning "YALO-9"]
 type rule = {
     id : string ;
     namespace : string ;
@@ -44,9 +45,10 @@ type rule = {
   } [@@deriving yojson]
 
 type rules = rule list [@@deriving yojson]
+[@@@yalo.warning "YALO+9"]
 
 let json_of_rule rule =
   rule_to_yojson rule |> Yojson.Safe.to_string
 
 let json_of_rules rules =
-  rules_to_yojson rules |> Yojson.Safe.to_string
+  rules_to_yojson rules |> Yojson.Safe.pretty_to_string

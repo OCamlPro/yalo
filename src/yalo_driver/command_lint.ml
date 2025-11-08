@@ -13,39 +13,47 @@
 open Ezcmd.V2
 open Yalo.Types
 
-let arg_specs = Args.[
+let arg_specs = [
     [], EZCMD.Anons (fun list ->
-            arg_explicit_files := list),
-    EZCMD.info ~docv:"FILES" "List of files that should be explicitely linted. You can also use --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for .cmi/.cmt/.cmti fles) to automatically find files to lint in a project. Specifying . here is a shortcut for --source-dir . --build-dir _build";
+            Args.arg_explicit_files := list),
+    EZCMD.info ~docv:"FILES"
+      "List of files that should be explicitely linted. You can also use\
+       --source-dir DIR (for .ml/.mli files) or --build-dir DIR (for\
+       .cmi/.cmt/.cmti fles) to automatically find files to lint in a\
+       project.";
 
-    [ "skip-config-warnings" ], EZCMD.Set arg_skip_config_warnings,
+    [ "skip-config-warnings" ], EZCMD.Set Args.arg_skip_config_warnings,
     EZCMD.info "Skip warnings and errors settings by config file";
 
-    [ "w" ; "warnings" ], EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
+    [ "w" ; "warnings" ],
+    EZCMD.String (fun s -> Args.arg_warnings := !Args.arg_warnings @ [s]),
     EZCMD.info ~docv:"SPEC"
       "Set warnings according to SPEC-ification";
 
-    [ "e" ; "errors" ], EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
+    [ "e" ; "errors" ], EZCMD.String
+                          (fun s -> Args.arg_errors :=
+                                      !Args.arg_errors @ [s]),
     EZCMD.info ~docv:"SPEC"
       "Set errors according to SPEC-ification";
 
     [ "message-format" ],
     EZCMD.String (function
-        | "context" -> arg_message_format := Format_Context
-        | "human" -> arg_message_format := Format_Human
-        | "sarif" -> arg_message_format := Format_Sarif
-        | "short" -> arg_message_format := Format_Short
-(* TODO Clippy: human, short, json, json-diagnostic-short,
-   json-diagnostic-rendered-ansi, json-render-diagnostics *)
+        | "context" -> Args.arg_message_format := Format_Context
+        | "human" -> Args.arg_message_format := Format_Human
+        | "sarif" -> Args.arg_message_format := Format_Sarif
+        | "short" -> Args.arg_message_format := Format_Short
+        (* TODO Clippy: human, short, json, json-diagnostic-short,
+           json-diagnostic-rendered-ansi, json-render-diagnostics *)
         | s ->
-           Printf.eprintf "Configuration error: message format %S does not exist\n%!" s;
+           Printf.eprintf
+             "Configuration error: message format %S does not exist\n%!" s;
            exit 2
       ),
     EZCMD.info ~docv:"FORMAT"
       "Set message format to FORMAT: human, short, sarif(JSON)";
 
     [ "p" ; "package" ],
-    EZCMD.String (fun s -> arg_projects := !arg_projects @ [ s ]),
+    EZCMD.String (fun s -> Args.arg_projects := !Args.arg_projects @ [ s ]),
     EZCMD.info ~docv:"PROJECT" "Lint only files from PROJECT";
     (* TODO      --all-targets       Check all targets *)
 
@@ -61,7 +69,7 @@ let arg_specs = Args.[
     EZCMD.info "Autofix files in place" ;
 
     [ "o" ; "output" ],
-    EZCMD.String (fun s -> arg_output := Some s),
+    EZCMD.String (fun s -> Args.arg_output := Some s),
     EZCMD.info ~docv:"FILE" "File for JSON output";
 
   ]
