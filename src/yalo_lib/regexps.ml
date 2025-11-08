@@ -113,13 +113,15 @@ let my_rules =
       ("foo", "Found 'foo'");
       ("\\d{4}", "Found four digits");
       ("^[A-Z]+$", "Found all caps");
-      ("invalid_regex([", "This one is broken"); (* This will be safely skipped *)
+      ("invalid_regex([", "This one is broken");
+      (* This will be safely skipped *)
       ("bar$", "Found 'bar' at the end");
     ]
 
 let test_string str =
   match MATCHER.find_first_match my_rules str with
-  | Some (pos, endpos, value) -> Printf.printf "Input: \"%s\"  ->  Match: \"%s\" (%S)\n" str value
+  | Some (pos, endpos, value) ->
+  Printf.printf "Input: \"%s\"  ->  Match: \"%s\" (%S)\n" str value
                                    (String.sub str pos (endpos - pos))
   | None -> Printf.printf "Input: \"%s\"  ->  No Match\n" str
 

@@ -19,9 +19,9 @@ let () =
     "-raise-on-lint-error"
     (Set raise_on_lint_error)
     ~doc:
-      " Report an error during linting rather than injecting an error node. This is \
-       particularly useful when using the [lint] dune stanza, which ignores typical lint \
-       errors."
+    " Report an error during linting rather than injecting an error \
+     node. This is particularly useful when using the [lint] dune \
+     stanza, which ignores typical lint errors."
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
@@ -39,7 +39,8 @@ let new_dummy_file file_kind =
      linting, so that we can benefit from the fileattrs *)
   let basename = "<ppxlib>" in
   let file_doc = YALO_INTERNAL.get_document fs.fs_folder basename in
-  YALO_INTERNAL.new_file basename ~file_doc ~file_kind ~file_crc:(Digest.string "")
+  YALO_INTERNAL.new_file basename ~file_doc ~file_kind
+    ~file_crc:(Digest.string "")
 
 let () =
   Driver.register_transformation
@@ -47,26 +48,26 @@ let () =
     ~lint_intf:(fun sg ->
       let file = new_dummy_file OCAML_LANG.mli_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
-      Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
+      Yalo_plugin_ocaml.Main.lint_ast_intf ~file sg ;
       let messages = Yalo.Engine.get_messages () in
       List.map lint_error messages)
     ~lint_impl:(fun st ->
       let file = new_dummy_file OCAML_LANG.ml_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
-      Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
+      Yalo_plugin_ocaml.Main.lint_ast_impl ~file st ;
       let messages = Yalo.Engine.get_messages () in
       List.map lint_error messages)
     ~intf:(fun sg ->
       let file = new_dummy_file OCAML_LANG.mli_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
-      Yalo_plugin_ocaml.Engine.lint_ast_intf ~file sg ;
+      Yalo_plugin_ocaml.Main.lint_ast_intf ~file sg ;
       let messages = Yalo.Engine.get_messages () in
       Yalo.Message_format.display_messages messages ;
       sg)
     ~impl:(fun st ->
       let file = new_dummy_file OCAML_LANG.ml_file in
       Yalo.Lint_project.activate_warnings_and_linters ([],[]);
-      Yalo_plugin_ocaml.Engine.lint_ast_impl ~file st ;
+      Yalo_plugin_ocaml.Main.lint_ast_impl ~file st ;
       let messages = Yalo.Engine.get_messages () in
       Yalo.Message_format.display_messages messages ;
       st)

@@ -19,15 +19,15 @@ open Yalo.Types
 
 let arg_output_dir = ref "."
 
-let arg_specs = Args.[
+let arg_specs = [
 
       [ "w" ; "warnings" ],
-      EZCMD.String (fun s -> arg_warnings := !arg_warnings @ [s]),
+      EZCMD.String (fun s -> Args.arg_warnings := !Args.arg_warnings @ [s]),
       EZCMD.info ~docv:"SPEC"
         "Set warnings according to SPEC-ification";
 
       [ "e" ; "errors" ],
-      EZCMD.String (fun s -> arg_errors := !arg_errors @ [s]),
+      EZCMD.String (fun s -> Args.arg_errors := !Args.arg_errors @ [s]),
       EZCMD.info ~docv:"SPEC"
         "Set errors according to SPEC-ification";
 

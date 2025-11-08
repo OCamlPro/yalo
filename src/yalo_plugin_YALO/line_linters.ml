@@ -14,55 +14,69 @@ open Yalo.V1
 open Yalo_plugin_ocaml.V1
 open EzConfig.OP
 
-open Plugin
-
-let max_line_length =
-  YALO.CONFIG.create_option section
-    ~path:["YALO" ; "max_line_length"]
-    ~short_help:"Maximal length of line before warning YALO+1"
-    EzConfig.int_option
-    80
-
-let w_line_too_long =
-  YALO.new_warning ns
-    ~name:"line-too-long" 1
-    ~tags:[ tag_line ]
-    ~msg:"Line too long (not more than 80 characters)"
-
-let w_spaces_at_end =
-  YALO.new_warning ns
-    ~name:"spaces-at-end" 2
-    ~tags:[ tag_line ; tag_autofix ]
-    ~msg:"Line ends with spaces"
-
-let w_tab_used =
-  YALO.new_warning ns
-    ~name:"tab-used" 3
-    ~tags:[ tag_line ]
-    ~msg:"Line contains tabulations"
-
-let w_non_printable_char =
-  YALO.new_warning ns
-    ~name:"non-printable-char" 4
-    ~tags:[ tag_line ]
-    ~msg:"Line contains non-printable chars"
-
-let w_no_final_newline =
-  YALO.new_warning ns
-    ~name:"no-final-newline" 5
-    ~tags:[ tag_line ; tag_autofix ]
-    ~msg:"File does not end with a newline"
-
-(* Disabled under Windows *)
-let w_windows_newline =
-  YALO.new_warning ns
-    ~name:"windows-newline" 6
-    ~tags:[ tag_line ]
-    ~msg:"Line contains a \\r\\n instead of only \\n"
-
 let is_unix = Sys.os_type = "Unix"
 
-let main () =
+let tag_line = YALO.new_tag "line"
+let tag_autofix = YALO.new_tag "autofix"
+
+type w_ids = {
+    w_id_line_too_long : int ;
+    w_id_spaces_at_end : int ;
+    w_id_tab_used : int ;
+    w_id_non_printable_char : int ;
+    w_id_no_final_newline : int ;
+    w_id_windows_newline : int ;
+  }
+
+let register ns section w_ids =
+
+  let ns_name = YALO_NS.name ns in
+  let max_line_length =
+    YALO.CONFIG.create_option section
+      ~path:[ ns_name; "max_line_length"]
+      ~short_help:"Maximal length of line before warning YALO+1"
+      EzConfig.int_option
+      80
+  in
+
+  let w_line_too_long =
+    YALO.new_warning ns
+      ~name:"line_too_long" w_ids.w_id_line_too_long
+      ~tags:[ tag_line ]
+      ~msg:"Line too long (not more than 80 characters)"
+  in
+  let w_spaces_at_end =
+    YALO.new_warning ns
+      ~name:"spaces_at_end" w_ids.w_id_spaces_at_end
+      ~tags:[ tag_line ; tag_autofix ]
+      ~msg:"Line ends with spaces"
+  in
+  let w_tab_used =
+    YALO.new_warning ns
+      ~name:"tab_used" w_ids.w_id_tab_used
+      ~tags:[ tag_line ]
+      ~msg:"Line contains tabulations"
+  in
+  let w_non_printable_char =
+    YALO.new_warning ns
+      ~name:"non_printable_char" w_ids.w_id_non_printable_char
+      ~tags:[ tag_line ]
+      ~msg:"Line contains non-printable chars"
+  in
+  let w_no_final_newline =
+    YALO.new_warning ns
+      ~name:"no_final_newline" w_ids.w_id_no_final_newline
+      ~tags:[ tag_line ; tag_autofix ]
+      ~msg:"File does not end with a newline"
+  in
+  (* Disabled under Windows *)
+  let w_windows_newline =
+    YALO.new_warning ns
+      ~name:"windows_newline" w_ids.w_id_windows_newline
+      ~tags:[ tag_line ]
+      ~msg:"Line contains a \\r\\n instead of only \\n"
+  in
+
   OCAML_LANG.new_src_line_linter ns "check_line"
     ~warnings:[w_line_too_long;
                w_spaces_at_end ;
@@ -94,25 +108,25 @@ let main () =
             YALO.warn ~loc ~file ~linter w_line_too_long
               ~msg:(Printf.sprintf
                       "Line too long (not more than %d characters)"
-                    !!max_line_length)
+                      !!max_line_length)
           ;
-          if line.[len-1] = ' ' then begin
-              let rec iter pos =
-                if pos>0 &&
-                     match line.[pos-1] with
-                     | ' ' | '\t' -> true
-                     | _ -> false then
-                  iter (pos-1)
-                else
-                  { loc with loc_start =
-                               { loc.loc_start with
-                                 pos_cnum = loc.loc_start.pos_cnum
-                                            + pos }}
-              in
-              let loc = iter (len-1) in
-              YALO.warn ~loc ~file ~linter
-                w_spaces_at_end ~autofix:[loc,""];
-            end;
+            if line.[len-1] = ' ' then begin
+                let rec iter pos =
+                  if pos>0 &&
+                       match line.[pos-1] with
+                       | ' ' | '\t' -> true
+                       | _ -> false then
+                    iter (pos-1)
+                  else
+                    { loc with loc_start =
+                                 { loc.loc_start with
+                                   pos_cnum = loc.loc_start.pos_cnum
+                                              + pos }}
+                in
+                let loc = iter (len-1) in
+                YALO.warn ~loc ~file ~linter
+                  w_spaces_at_end ~autofix:[loc,""];
+              end;
           let has_tab = ref false in
           let has_nonprintable = ref false in
           for i = 0 to len-1 do

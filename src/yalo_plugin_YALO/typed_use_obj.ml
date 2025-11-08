@@ -11,15 +11,23 @@
 (**************************************************************************)
 
 open Yalo.V1
+open Yalo_plugin_ocaml.V1
 
-let plugin = YALO.new_plugin "yalo_plugin_YALO" ~version:"0.1.0"
-
-let ns = YALO.new_namespace plugin "YALO"
-
-let tag_line = YALO.new_tag "line"
-let tag_autofix = YALO.new_tag "autofix"
-let tag_untyped = YALO.new_tag "untyped"
-let tag_typed = YALO.new_tag "typed"
-
-let section = YALO.CONFIG.create_section
-                plugin ~short_help:"YALO plugin"
+let register ns w =
+  OCAML_LANG.new_tast_impl_traverse_linter ns
+    ("check:typed:" ^ YALO_WARNING.name w)
+    ~warnings:[ w ]
+    OCAML_TAST.(fun ~file ~linter traverse ->
+    let check_expr ~file:_ ~linter:_ expr =
+      match expr.exp_desc with
+      | Texp_ident (path, _, _) ->
+         begin
+           let path = Path.name path in
+           if EzString.starts_with path ~prefix:"Stdlib.Obj" then
+             let loc = expr.exp_loc in
+             YALO.warn ~loc ~file ~linter w
+         end
+      | _ -> ()
+    in
+    traverse.expr <- (linter, check_expr) :: traverse.expr
+  )

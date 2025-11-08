@@ -19,7 +19,8 @@ type plugin = {
     plugin_version : string ;
     mutable plugin_languages : language StringMap.t ;
     mutable plugin_args :
-              (string list * Ezcmd.V2.EZCMD.spec * Ezcmd.V2.EZCMD.TYPES.info) list ;
+              (string list * Ezcmd.V2.EZCMD.spec *
+                 Ezcmd.V2.EZCMD.TYPES.info) list ;
   }
 
 and language = {

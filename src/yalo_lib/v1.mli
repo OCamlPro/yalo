@@ -155,6 +155,14 @@ module YALO_FS : sig
   val folder : fs -> folder
 end
 
+module YALO_NS : sig
+  val name : namespace -> string
+end
+
+module YALO_WARNING : sig
+  val name : warning -> string
+end
+
 module YALO_FOLDER : sig
   val name : folder -> string
   val fs : folder -> fs
@@ -232,6 +240,23 @@ module YALO_LANG : sig
 
   val temp_set_option : string list -> string -> unit
 
+  module Make_source_linters
+           (M:sig
+                val lang : language
+              end) : sig
+
+    val lint_src_file : file:YALO_TYPES.file -> unit
+
+    val new_src_file_linter :
+      namespace ->
+      string ->
+      warnings:warning list ->
+      ?on_begin : (unit -> unit) ->
+      ?on_end : (unit -> unit) ->
+      (src_file_input, unit) linter_function -> unit
+    val new_src_content_linter : src_content_input new_gen_unit_linter
+    val new_src_line_linter : src_line_input new_gen_unit_linter
+    end
 end
 
 module YALO_INTERNAL : sig

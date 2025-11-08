@@ -158,9 +158,11 @@ module FILEATTR = struct
            EZCONFIG.list_to_value
              EZCONFIG.string_to_value list
         | Tag tagname ->
-           "tag", string_to_value tagname ;
+           "tag",
+           EZCONFIG.string_to_value tagname ;
         | Skipdir bool ->
-           "skipdir", bool_to_value bool ;
+           "skipdir",
+           EZCONFIG.bool_to_value bool ;
       ) fileattrs
       )
 
@@ -196,7 +198,8 @@ let fileattrs =
 let config_profiles =
   create_config_option main_section
     ~path:[ "profiles" ]
-    ~short_help:"List of profiles to use for this project (NAME means yalo-NAME.conf should be loaded)"
+    ~short_help:"List of profiles to use for this project (NAME means \
+                 yalo-NAME.conf should be loaded)"
     EZCONFIG.string_list_option
     []
 
@@ -216,7 +219,8 @@ let profile_plugins =
   create_config_option profiles_section
     ~path: [ "profile_plugins" ]
     ~level:10
-    ~short_help:"List of plugins to load (in this specific order) for this profile"
+    ~short_help:"List of plugins to load (in this specific order) \
+                 for this profile"
     EZCONFIG.string_list_option
     []
 
@@ -224,7 +228,8 @@ let profile_load_dirs =
   create_config_option profiles_section
     ~path:[ "profile_search_path" ]
     ~level:10
-    ~short_help:"List of directories to search for plugin files for this profile"
+    ~short_help:"List of directories to search for plugin files for \
+                 this profile"
     EZCONFIG.string_list_option
     []
 

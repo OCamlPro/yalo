@@ -24,7 +24,7 @@ module TYPES = struct
 end
 open TYPES
 
-let to_string json =
+let to_string_compact json =
   let b = Buffer.create 1000 in
   let rec iter_json b json =
     match json with
@@ -66,3 +66,59 @@ let to_string json =
   in
   iter_json b json;
   Buffer.contents b
+
+let to_string_indented json =
+  let b = Buffer.create 1000 in
+  let rec iter_json b indent json =
+    match json with
+    | OBJECT assocs ->
+       Printf.bprintf b  "%s{\n" indent;
+       let rec iter assocs =
+         match assocs with
+         | [] -> ()
+         | [ name, v ] ->
+            Printf.bprintf b  "%s%S: " indent name;
+            iter_json b (indent ^ "  ") v;
+            Printf.bprintf b "\n"
+         | (name, v ) :: assocs ->
+            Printf.bprintf b  "%s%S: " indent name;
+            iter_json b (indent ^ "  ") v ;
+            Printf.bprintf b  ",\n";
+            iter assocs
+       in
+       iter assocs ;
+       Printf.bprintf b  "%s}" indent;
+    | LIST list ->
+       Printf.bprintf b  "%s[\n" indent;
+       let rec iter list =
+         match list with
+         | [] -> ()
+         | [ v ] ->
+            Printf.bprintf b  "%s" indent;
+            iter_json b (indent ^ "  ") v;
+            Printf.bprintf b "\n"
+         | v :: list ->
+            Printf.bprintf b "%s" indent;
+            iter_json b (indent ^ "  ") v ;
+            Printf.bprintf b  ",\n";
+            iter list
+       in
+       iter list ;
+       Printf.bprintf b  "%s]" indent;
+    | STRING s ->
+       Printf.bprintf b  "%S" s
+    | INT n ->
+       Printf.bprintf b  "%d" n
+    | BOOL bool ->
+       Printf.bprintf b  "%b" bool
+    | NULL ->
+       Printf.bprintf b  "null"
+  in
+  iter_json b "" json;
+  Buffer.contents b
+
+let to_string ?(compact = false) string =
+  if compact then
+    to_string_compact string
+  else
+    to_string_indented string

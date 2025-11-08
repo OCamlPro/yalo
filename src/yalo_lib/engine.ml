@@ -19,7 +19,8 @@ let verbose n = !GState.verbosity >= n
 
 let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
   if Hashtbl.mem GState.all_plugins plugin_name then begin
-      Printf.eprintf "Configuration error: plugin %s is defined twice.\n%!" plugin_name ;
+      Printf.eprintf
+        "Configuration error: plugin %s is defined twice.\n%!" plugin_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
     end;
@@ -36,7 +37,8 @@ let new_plugin ?(version="0.1.0") ?(args=[]) plugin_name =
 
 let new_language plugin lang_name =
   if Hashtbl.mem GState.all_languages lang_name then begin
-      Printf.eprintf "Configuration error: language %s is defined twice.\n%!" lang_name ;
+      Printf.eprintf
+        "Configuration error: language %s is defined twice.\n%!" lang_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
     end;
@@ -72,7 +74,8 @@ let new_file_kind ~lang ?(exts=[]) ~name
         match Hashtbl.find GState.all_extensions ext with
         | exception Not_found -> ()
         | f2 ->
-           Printf.eprintf "Configuration warning: extension %S used by %S now used by %S\n%!"
+           Printf.eprintf
+             "Configuration warning: extension %S used by %S and %S\n%!"
              ext f2.kind_name file_kind.kind_name
       end;
       Hashtbl.add GState.all_extensions ext file_kind
@@ -86,11 +89,14 @@ let new_namespace plugin ns_name =
     | 'A'..'Z' -> ()
     | '0'..'9' | '_' when i>0 -> ()
     | c ->
-       Printf.eprintf "Configuration error: namespace %S contains illegal character '%c'\n%!" ns_name c;
+       Printf.eprintf
+         "Configuration error: namespace %S contains illegal character '%c'\n%!"
+         ns_name c;
        exit 2
   done;
   if Hashtbl.mem GState.all_namespaces ns_name then begin
-      Printf.eprintf "Configuration error: namespace %s is defined twice.\n%!" ns_name ;
+      Printf.eprintf
+        "Configuration error: namespace %s is defined twice.\n%!" ns_name ;
       Printf.eprintf "  Did you load twice the same plugin ?\n%!";
       exit 2
     end;
@@ -110,7 +116,9 @@ let new_tag tag_name =
     | 'a'..'z' -> ()
     | '0'..'9' | '_' when i>0 -> ()
     | c ->
-       Printf.eprintf "Configuration error: tag_name %S contains illegal character '%c'\n%!" tag_name c;
+       Printf.eprintf
+         "Configuration error: tag_name %S contains illegal character '%c'\n%!"
+         tag_name c;
        exit 2
   done;
   try
@@ -376,7 +384,9 @@ let iter_linters ~file linters x =
   List.iter (fun (linter, f) ->
       try f ~file ~linter x with
       | exn ->
-         Printf.eprintf "Configuration warning: linter %S raised exception %S while linting file %S\n%!"
+         Printf.eprintf
+           "Internal warning: linter %S raised exception %S
+            while linting file %S\n%!"
            linter.linter_name
            (Printexc.to_string exn)
            file.file_name
@@ -387,7 +397,8 @@ let iter_linters_open ~file linters =
       try
         linter.linter_open ~file ~linter
       with exn ->
-        Printf.eprintf "Configuration warning: linter %S raised exception %S while opening file %S\n%!"
+        Printf.eprintf "Internal Warning: linter %S raised exception %S \
+                        while opening file %S\n%!"
           linter.linter_name
           (Printexc.to_string exn)
           file.file_name
@@ -398,7 +409,9 @@ let iter_linters_close ~file linters =
       try
         linter.linter_close ~file ~linter
       with exn ->
-        Printf.eprintf "Configuration warning: linter %S raised exception %S while closing file %S\n%!"
+        Printf.eprintf
+          "Configuration warning: linter %S raised exception %S \
+           while closing file %S\n%!"
           linter.linter_name
           (Printexc.to_string exn)
           file.file_name

@@ -131,6 +131,8 @@ module YALO_LANG = struct
 
   let warnings_zone = Engine.warnings_zone
   let temp_set_option = Engine.temporary_set_option
+
+  module Make_source_linters = Source_linters.Make
 end
 
 module YALO_FS = struct
@@ -160,6 +162,14 @@ module YALO_INTERNAL = struct
   let new_file = Engine.new_file (* don't use *)
   let add_file = Engine.add_file
   let get_document = Engine.get_document
+end
+
+module YALO_NS = struct
+  let name ns = ns.ns_name
+end
+
+module YALO_WARNING = struct
+  let name w = w.w_name
 end
 
 let init () = ()

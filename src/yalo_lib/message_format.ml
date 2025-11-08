@@ -24,6 +24,7 @@ let show_context loc =
   let file_name = start.pos_fname in
   try
     let lines = EzFile.read_lines file_name in
+    Printf.eprintf "\n%!";
     let rec iter i lines =
       if i < Array.length lines then
         if i >= start.pos_lnum-3 then begin
@@ -33,8 +34,7 @@ let show_context loc =
                     i+1 <= stop.pos_lnum then
                 '>'
               else ' ')
-              lines.(i)
-          ;
+              lines.(i) ;
             if i+1 = stop.pos_lnum then begin
                 let c1 = start.pos_cnum - start.pos_bol in
                 let c2 = stop.pos_cnum - stop.pos_bol in
@@ -51,7 +51,8 @@ let show_context loc =
         else
           iter (i+1) lines
     in
-    iter 0 lines
+    iter 0 lines;
+    Printf.eprintf "\n%!";
   with _ -> ()
 
 let short_location loc =
@@ -104,6 +105,9 @@ let display_human ~format messages =
       | _ -> assert false
     ) messages ;
   ()
+
+let sarif_schema =
+  "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"
 
 (* TODO: we should use the 'sarif' package instead *)
 let display_sarif ?output messages =
@@ -190,7 +194,8 @@ let display_sarif ?output messages =
   let str =
     Yalo_misc.Ez_json.to_string
       (OBJECT [
-           "$schema", STRING "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json" ;
+           "$schema", STRING
+                        sarif_schema ;
            "version", STRING "2.1.0";
            "runs",
            LIST [

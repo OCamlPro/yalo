@@ -61,7 +61,9 @@ let load () =
                             close_in ic; raise exn
       in
       if cache_version <> version then begin
-          Printf.eprintf "Configuration warning: wrong cache version %d instead of %d.\n%!" cache_version version ;
+      Printf.eprintf
+      "Configuration warning: wrong cache version %d instead of %d.\n%!
+      " cache_version version ;
           raise Exit
         end ;
       let cache = try (input_value ic : cache) with exn ->
@@ -72,7 +74,9 @@ let load () =
     with
       Exit -> default_cache
     | exn ->
-       Printf.eprintf "Configuration warning: reading cache raised exception %s.\n%!" (Printexc.to_string exn) ;
+    Printf.eprintf
+    "Configuration warning: reading cache raised exception %s.\n%!"
+    (Printexc.to_string exn) ;
        default_cache
   else
     default_cache
