@@ -10,30 +10,37 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Yalo_misc.Ez_config.V1
+open Yalo.V1
+open Yalo_plugin_ocaml.V1
 
-let fsroot = ref None
-let get_fs ?(needs_to_load_plugins=true) () =
-  match !fsroot with
-  | Some fs -> fs
-  | None ->
-     let can_load_plugins =
-       needs_to_load_plugins
-       && not !Args.arg_no_load_plugins
-     in
-     let fs =
-       try
-         Yalo.Main.init
-                ?config_file: !Args.arg_config_file
-                ~load_dirs: !Args.arg_load_dirs
-                ~plugins: !Args.arg_load_plugins
-                ~profiles: !Args.arg_profiles
-                ~can_load_plugins
-                ()
-       with EZCONFIG.LoadError _ as exn ->
-         Printf.eprintf "Configuration error: exception %s\n%!"
-           (Printexc.to_string exn) ;
-         exit 2
-     in
-     fsroot := Some fs;
-     fs
+open OCAML_AST
+open OCAML_LEX
+
+let lint_msg = "Double semi (;;) should be avoided"
+
+let register ns
+      ?(name="no_semisemi")
+      ~tags
+      ?(msg = lint_msg)
+      id
+  =
+  let w =
+    YALO.new_warning ns ~name id
+      ~tags
+      ~msg
+  in
+
+  OCAML_LANG.new_src_lex_linter ns
+    ("check:lex:" ^ YALO_WARNING.name w)
+    ~warnings:[ w ]
+    (fun ~file ~linter tokens ->
+      let rec iter tokens =
+      match tokens with
+      | { txt = SEMISEMI ; loc }:: tokens ->
+         YALO.warn ~loc ~file ~linter w ;
+         iter tokens
+      | _ :: tokens -> iter tokens
+      | [] -> ()
+    in
+    iter tokens
+  )

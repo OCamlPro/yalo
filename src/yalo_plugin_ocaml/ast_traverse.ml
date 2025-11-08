@@ -42,13 +42,15 @@ module OCAML_AST_TRAVERSE = struct
       mutable constructor_declaration :
                 OCAML_AST.constructor_declaration ast_lint_list ;
       mutable type_extension : OCAML_AST.type_extension ast_lint_list ;
-      mutable extension_constructor : OCAML_AST.extension_constructor ast_lint_list ;
+      mutable extension_constructor : OCAML_AST.extension_constructor
+                                        ast_lint_list ;
       mutable type_exception : OCAML_AST.type_exception ast_lint_list ;
       mutable class_type : OCAML_AST.class_type ast_lint_list ;
       mutable class_signature : OCAML_AST.class_signature ast_lint_list ;
       mutable class_type_field : OCAML_AST.class_type_field ast_lint_list ;
       mutable class_description : OCAML_AST.class_description ast_lint_list ;
-      mutable class_type_declaration : OCAML_AST.class_type_declaration ast_lint_list ;
+      mutable class_type_declaration :
+                OCAML_AST.class_type_declaration ast_lint_list ;
       mutable class_expr : OCAML_AST.class_expr ast_lint_list ;
       mutable class_structure : OCAML_AST.class_structure ast_lint_list ;
       mutable class_field : OCAML_AST.class_field ast_lint_list ;
@@ -56,13 +58,16 @@ module OCAML_AST_TRAVERSE = struct
       mutable module_type : OCAML_AST.module_type ast_lint_list ;
       mutable signature_item : OCAML_AST.signature_item ast_lint_list ;
       mutable module_declaration : OCAML_AST.module_declaration ast_lint_list ;
-      mutable module_substitution : OCAML_AST.module_substitution ast_lint_list ;
+      mutable module_substitution :
+                OCAML_AST.module_substitution ast_lint_list ;
       mutable module_type_declaration :
                 OCAML_AST.module_type_declaration ast_lint_list ;
       mutable open_description : OCAML_AST.open_description ast_lint_list ;
       mutable open_declaration : OCAML_AST.open_declaration ast_lint_list ;
-      mutable include_description : OCAML_AST.include_description ast_lint_list ;
-      mutable include_declaration : OCAML_AST.include_declaration ast_lint_list ;
+      mutable include_description :
+                OCAML_AST.include_description ast_lint_list ;
+      mutable include_declaration :
+                OCAML_AST.include_declaration ast_lint_list ;
       mutable structure_item : OCAML_AST.structure_item ast_lint_list ;
       mutable value_binding : OCAML_AST.value_binding ast_lint_list ;
       mutable module_binding : OCAML_AST.module_binding ast_lint_list ;
@@ -263,8 +268,12 @@ module OCAML_AST_INTERNAL : sig
       directive_argument = [] ;
     }
 
-  let push node = node_stack_ref := node :: !node_stack_ref
-  let pop () = node_stack_ref := List.tl !node_stack_ref
+  let push node =
+    OCAML_AST_TRAVERSE.node_stack_ref := node ::
+                                           !OCAML_AST_TRAVERSE.node_stack_ref
+  let pop () =
+    OCAML_AST_TRAVERSE.node_stack_ref := List.tl
+                                           !OCAML_AST_TRAVERSE.node_stack_ref
 
   let binding_op x = Node_binding_op x
   let case x = Node_case x
@@ -635,9 +644,9 @@ module OCAML_AST_INTERNAL : sig
     ) ast ;
 
     let traverse = make_iterator ~file ast_traverse_linters in
-    node_stack_ref := [] ;
+    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#signature ast traverse in
-    assert ( !node_stack_ref == [] );
+    assert ( !OCAML_AST_TRAVERSE.node_stack_ref == [] );
     ()
 
   let structure ~file ast_traverse_linters ast =
@@ -648,8 +657,8 @@ module OCAML_AST_INTERNAL : sig
         | _ -> ()
       ) ast ;
     let traverse = make_iterator ~file ast_traverse_linters in
-    node_stack_ref := [] ;
+    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#structure ast traverse in
-    assert ( !node_stack_ref == [] );
+    assert ( !OCAML_AST_TRAVERSE.node_stack_ref == [] );
     ()
 end

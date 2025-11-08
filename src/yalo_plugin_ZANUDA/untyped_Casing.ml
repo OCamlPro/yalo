@@ -40,7 +40,6 @@ open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
 open OCAML_AST
-;;
 
 let register
       ~id

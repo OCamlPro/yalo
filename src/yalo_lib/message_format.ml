@@ -28,13 +28,19 @@ let show_context loc =
     let rec iter i lines =
       if i < Array.length lines then
         if i >= start.pos_lnum-3 then begin
-            Printf.eprintf "%05d %c %s\n%!"
-              (i+1)
-              (if i+1 >= start.pos_lnum &&
-                    i+1 <= stop.pos_lnum then
-                '>'
-              else ' ')
-              lines.(i) ;
+            Printf.eprintf "%05d" (i+1);
+            let is_error_line = i+1 >= start.pos_lnum &&
+                                  i+1 <= stop.pos_lnum in
+            let line = lines.(i) in
+            let is_empty_line = line = "" in
+            begin
+              match is_error_line, is_empty_line with
+              | true, true ->   Printf.eprintf " >"
+              | true, false ->  Printf.eprintf " > %s" line
+              | false, false -> Printf.eprintf "   %s" line
+              | false, true -> ()
+            end;
+            Printf.eprintf "\n%!";
             if i+1 = stop.pos_lnum then begin
                 let c1 = start.pos_cnum - start.pos_bol in
                 let c2 = stop.pos_cnum - stop.pos_bol in
@@ -42,7 +48,7 @@ let show_context loc =
                 let c1 = max c1 c2 in
                 Printf.eprintf "%s%s\n%!"
                   (String.make (c0+5+3) ' ')
-                  (String.make (c1-c0) '^')
+                  (String.make (max 1 (c1-c0)) '^')
 
               end;
             if i < stop.pos_lnum+2 then

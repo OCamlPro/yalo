@@ -12,6 +12,8 @@
 
 open Yalo.V1
 
+
+module OCAML_LEX = Parser
 include Ast_traverse
 include Tast_traverse
 
@@ -59,6 +61,7 @@ module OCAML_LANG = struct
         ?on_begin ?on_end f =
     Main.new_src_file_linter ns name ~warnings ?on_begin ?on_end f
 
+  let new_src_lex_linter = Main.new_src_lex_linter
   let new_src_content_linter = Main.new_src_content_linter
   let new_src_line_linter = Main.new_src_line_linter
   let new_sig_linter = Main.new_sig_linter
