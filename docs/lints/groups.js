@@ -17,6 +17,7 @@ var GROUPS_FILTER_DEFAULT = {
     "camelot": true,
     "find": true,
     "fpcourse": true,
+    "immutable": true,
     "lex": true,
     "line": true,
     "readability": true,

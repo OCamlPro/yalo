@@ -52,6 +52,7 @@ let () =
     ~id: w_id_expect_tests_no_names ;
   Typed_Printf.register ns
     ~tags:[ tag_typed ; tag_camelot ; tag_readability ]
+    ~set_by_default:false
     ~id: w_id_format_module_usage ;
   Typed_Ignore.register ns
     ~tags:[ tag_typed ; tag_suspicious ; tag_fpcourse ]

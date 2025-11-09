@@ -38,7 +38,15 @@ fileattrs = [
 
 YALO = {
   max_line_length = 80
+  allowed_infix = [
+     "Yalo_misc.Infix.!!"; "Yalo_misc.Infix.//";
+     "Yalo_misc.Infix.=:=";
 
+     "Yalo.V1.YALO_INFIX.!!"; "Yalo.V1.YALO_INFIX.//";
+     "Yalo.V1.YALO_INFIX.=:=";
+
+     "Ppx_deriving_yojson_runtime.>>=";
+     ]
 
 }
 

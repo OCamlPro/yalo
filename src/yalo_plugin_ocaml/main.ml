@@ -18,8 +18,7 @@ open Tast_traverse (* for OCAML_TAST* modules *)
 open Ast_traverse  (* for OCAML_AST* modules *)
 
 let active_src_lex_linters =
-  ref ([] : (Parser.token Location.loc list
-            , unit) active_linters )
+  ref ([] : ((Parser.token * Location.t) list, unit) active_linters )
 let active_ast_intf_linters =
   ref ([] : (OCAML_AST.signature, unit) active_linters )
 let active_ast_intf_traverse_linters =
@@ -198,6 +197,65 @@ let set_lexbuf_filename lexbuf fname =
 let set_lexbuf_filename = Lexing.set_filename
 [%%endif]
 
+[%%if ocaml_version < (4,11,0)]
+let get_STRING tok =
+  match tok with
+  | Parser.STRING (s, delim) -> s, delim
+  |  _ -> assert false
+[%%else]
+let get_STRING tok =
+  match tok with
+  | Parser.STRING (s, _, delim) -> s, delim
+  |  _ -> assert false
+[%%endif]
+
+let with_string ~loc f tokens =
+  match tokens with
+  | (Parser.STRING _ as tok, loc) :: tokens ->
+     let s, _delim = get_STRING tok in
+     f ~loc s tokens
+  | _ ->
+      YALO.eprintf ~loc
+        "Expecting string after this token in yalo \
+         annotation\n%!" ;
+      tokens
+
+let with_value ~loc f tokens =
+  match tokens with
+  | (Parser.STRING _ as tok, loc) :: tokens ->
+     let s, _delim = get_STRING tok in
+     f ~loc s tokens
+  | (Parser.INT (s, _), loc) :: tokens ->
+     f ~loc s tokens
+  | (Parser.FLOAT (s, _), loc) :: tokens ->
+     f ~loc s tokens
+  |  _ ->
+      YALO.eprintf ~loc
+        "Expecting string after this token in yalo \
+         annotation\n%!";
+      tokens
+
+let rec with_path ~loc path f tokens =
+  match tokens with
+  | (Parser.STRING _ as tok, _) :: (DOT, loc) :: tokens ->
+     let ident, _delim = get_STRING tok in
+     with_path ~loc (ident :: path) f tokens
+  | (Parser.LIDENT ident, _) :: (DOT, loc) :: tokens ->
+     with_path ~loc (ident :: path) f tokens
+  | (Parser.UIDENT ident, _) :: (DOT, loc) :: tokens ->
+     with_path ~loc (ident :: path) f tokens
+  | (Parser.STRING _ as tok, loc) :: tokens ->
+     let ident, _delim = get_STRING tok in
+     f ~loc (List.rev (ident :: path)) tokens
+  | (Parser.LIDENT ident, loc) :: tokens ->
+     f ~loc (List.rev (ident :: path)) tokens
+  | (Parser.UIDENT ident, loc) :: tokens ->
+     f ~loc (List.rev (ident :: path)) tokens
+  |  _ ->
+      YALO.eprintf ~loc
+        "Expecting path after this token in \
+         yalo annotation\n%!" ;
+      tokens
 
 let check_ml_source ~file =
   let file_name = YALO_FILE.name file in
@@ -219,15 +277,67 @@ let check_ml_source ~file =
           let lexbuf = Lexing.from_string content in
           set_lexbuf_filename lexbuf (YALO_FILE.name file) ;
 
+          let check_yalo_annot ~loc ident tokens =
+            match ident with
+            | "warning" ->
+               with_string ~loc (fun ~loc yalo_spec tokens ->
+                   YALO_LANG.warnings_zone ~file ~loc
+                     ~mode:Zone_begin yalo_spec ;
+                   tokens
+                 ) tokens
+            | "check" ->
+               with_string ~loc (fun ~loc spec tokens ->
+                   YALO_LANG.warnings_check ~file ~loc spec true;
+                   tokens
+                 ) tokens
+            | "check_before" ->
+               with_string ~loc (fun ~loc spec tokens ->
+                   YALO_LANG.warnings_check ~file ~loc spec false;
+                   tokens
+                 ) tokens
+            | "option" ->
+               with_path ~loc []
+                 (fun ~loc path tokens ->
+                   with_value ~loc (fun ~loc value tokens ->
+                       match
+                         YALO_LANG.temp_set_option path value
+                       with
+                       | exception exn ->
+                          YALO.eprintf ~loc
+                            "Configuration error: exception %s in \
+                             yalo.set\n%!"
+                            (Printexc.to_string exn);
+                          tokens
+                       | () -> tokens
+                     )
+                     tokens
+                 ) tokens
+            | ident ->
+               YALO.eprintf ~loc "Unknown annotation \"yalo.%s\"\n%!"
+                 ident;
+               tokens
+          in
           let rec iter lexbuf rev_tokens =
             let token = Lexer.token lexbuf in
             match token with
             | Parser.EOF -> List.rev rev_tokens
             | _ ->
-               iter lexbuf (Location.mkloc token (Location.curr lexbuf)
-                            :: rev_tokens)
+               iter lexbuf ( (token, Location.curr lexbuf)
+                             :: rev_tokens)
           in
           let tokens = iter lexbuf [] in
+          let rec iter tokens =
+            match tokens with
+            | [] -> ()
+            | (
+              (Parser.LBRACKETATATAT | LBRACKETAT | LBRACKETATAT)
+            , _) :: (LIDENT "yalo", loc) ::
+                (DOT, _) :: (LIDENT ident, _) :: tokens ->
+               check_yalo_annot ~loc ident tokens |> iter
+            | _ :: tokens -> iter tokens
+
+          in
+          iter tokens ;
 
           YALO_LANG.iter_linters_open ~file lex_linters ;
           YALO_LANG.iter_linters ~file lex_linters tokens ;
@@ -236,153 +346,153 @@ let check_ml_source ~file =
   end;
   ()
 
-let check_impl_source ~file =
-  let file_name = YALO_FILE.name file in
+    let check_impl_source ~file =
+      let file_name = YALO_FILE.name file in
 
-  if YALO.verbose 2 then
-    Printf.eprintf "check_impl_source %S\n%!" file_name;
+      if YALO.verbose 2 then
+        Printf.eprintf "check_impl_source %S\n%!" file_name;
 
-  check_ml_source ~file ;
-  begin
-    if !arg_lint_ast_from_src then
-      let st =
-        try
-          with_info Impl
-            ~source_file:file_name
-            Compile_common.parse_impl
-        with exn ->
-          Location.report_exception Format.err_formatter exn;
-          exit 2
+      check_ml_source ~file ;
+      begin
+        if !arg_lint_ast_from_src then
+          let st =
+            try
+              with_info Impl
+                ~source_file:file_name
+                Compile_common.parse_impl
+            with exn ->
+              Location.report_exception Format.err_formatter exn;
+              exit 2
+          in
+          let st = TO_PPXLIB.structure st in
+          lint_ast_impl ~file st ;
+      end;
+      (* use basic linters after ast linters, because we want ast
+         linters to be able to set options with annotations *)
+      lint_src_file ~file ;
+      ()
+
+    let check_intf_source ~file =
+      let file_mli = YALO_FILE.name file in
+      if YALO.verbose 2 then
+        Printf.eprintf "check_impl_source %S\n%!" file_mli;
+
+      check_ml_source ~file ;
+      begin
+        if !arg_lint_ast_from_src then
+          let sg =
+            try
+              with_info Intf
+                ~source_file:file_mli
+                Compile_common.parse_intf
+            with exn ->
+              Location.report_exception Format.err_formatter exn;
+              exit 2
+          in
+          let sg = TO_PPXLIB.signature sg in
+          lint_ast_intf ~file sg ;
+      end;
+      (* use basic linters after ast linters, because we want ast
+         linters to be able to set options with annotations *)
+      lint_src_file ~file ;
+      ()
+
+    let check_cmi ~file =
+      let file_cmi = YALO_FILE.name file in
+      if YALO.verbose 2 then
+        Printf.eprintf "check_cmi %S\n%!" file_cmi;
+      match Cmi_format.read_cmi file_cmi with
+      | exception exn ->
+         Printf.eprintf
+           "Execution error: exception %s while loading cmi file %S\n%!"
+           (Printexc.to_string exn) file_cmi;
+         Printf.eprintf
+           "(this version of yalo_plugin_ocaml is compiled for OCaml %s)\n%!"
+           Sys.ocaml_version
+      | cmi -> lint_sig ~file cmi
+
+    let check_cmt ~file =
+      let file_cmt = YALO_FILE.name file in
+      if YALO.verbose 2 then
+        Printf.eprintf "check_cmt %S\n%!" file_cmt;
+      match Cmt_format.read_cmt file_cmt with
+      | exception exn ->
+         Printf.eprintf
+           "Execution error: exception %s while loading cmt file %S\n%!"
+           (Printexc.to_string exn) file_cmt;
+         Printf.eprintf
+           "(this version of yalo_plugin_ocaml is compiled for OCaml %s)\n%!"
+           Sys.ocaml_version
+      | cmt ->
+         match cmt.cmt_annots with
+         | Implementation tst ->
+            lint_tast_impl ~file tst ;
+
+            begin
+              if !arg_lint_ast_from_cmt then
+                let mapper = Untypeast.default_mapper in
+                let st = Untypeast.untype_structure ~mapper tst in
+                let st = TO_PPXLIB.structure st in
+                lint_ast_impl ~file st ;
+            end;
+
+         | Interface tsg ->
+            lint_tast_intf ~file tsg ;
+
+            begin
+              if !arg_lint_ast_from_cmt then
+
+                let mapper = Untypeast.default_mapper in
+                let sg = Untypeast.untype_signature ~mapper tsg in
+                let sg = TO_PPXLIB.signature sg in
+                lint_ast_intf ~file sg ;
+            end
+
+         | _ ->
+            Printf.eprintf
+              "Warning: file %s does not match a single module.\n%!" file_cmt
+
+    let non_source_directories =
+      StringSet.of_list [ "_build" ; "_opam" ; "_drom" ]
+
+    let check_in_source_dir ~file_doc =
+      let file_name = YALO_DOC.name file_doc in
+      let path = String.split_on_char '/' file_name in
+      List.for_all (fun component ->
+          not @@ StringSet.mem component non_source_directories) path
+
+    let check_in_artefact_dir ~file_doc =
+      let file_name = YALO_DOC.name file_doc in
+      let path = String.split_on_char '/' file_name in
+      let rec iter path =
+        match path with
+        | "_build" :: "install" :: _ -> false
+        | "_opam" :: _ -> false
+        | [] -> true
+        | _ :: path -> iter path
       in
-      let st = TO_PPXLIB.structure st in
-      lint_ast_impl ~file st ;
-  end;
-  (* use basic linters after ast linters, because we want ast
-     linters to be able to set options with annotations *)
-  lint_src_file ~file ;
-  ()
+      iter path
 
-let check_intf_source ~file =
-  let file_mli = YALO_FILE.name file in
-  if YALO.verbose 2 then
-    Printf.eprintf "check_impl_source %S\n%!" file_mli;
-
-  check_ml_source ~file ;
-  begin
-    if !arg_lint_ast_from_src then
-      let sg =
-        try
-          with_info Intf
-            ~source_file:file_mli
-            Compile_common.parse_intf
-        with exn ->
-          Location.report_exception Format.err_formatter exn;
-          exit 2
-      in
-      let sg = TO_PPXLIB.signature sg in
-      lint_ast_intf ~file sg ;
-  end;
-  (* use basic linters after ast linters, because we want ast
-     linters to be able to set options with annotations *)
-  lint_src_file ~file ;
-  ()
-
-let check_cmi ~file =
-  let file_cmi = YALO_FILE.name file in
-  if YALO.verbose 2 then
-    Printf.eprintf "check_cmi %S\n%!" file_cmi;
-  match Cmi_format.read_cmi file_cmi with
-  | exception exn ->
-     Printf.eprintf
-       "Execution error: exception %s while loading cmi file %S\n%!"
-       (Printexc.to_string exn) file_cmi;
-     Printf.eprintf
-       "(this version of yalo_plugin_ocaml is compiled for OCaml %s)\n%!"
-       Sys.ocaml_version
-  | cmi -> lint_sig ~file cmi
-
-let check_cmt ~file =
-  let file_cmt = YALO_FILE.name file in
-  if YALO.verbose 2 then
-    Printf.eprintf "check_cmt %S\n%!" file_cmt;
-  match Cmt_format.read_cmt file_cmt with
-  | exception exn ->
-     Printf.eprintf
-       "Execution error: exception %s while loading cmt file %S\n%!"
-       (Printexc.to_string exn) file_cmt;
-     Printf.eprintf
-       "(this version of yalo_plugin_ocaml is compiled for OCaml %s)\n%!"
-       Sys.ocaml_version
-  | cmt ->
-     match cmt.cmt_annots with
-     | Implementation tst ->
-        lint_tast_impl ~file tst ;
-
-        begin
-          if !arg_lint_ast_from_cmt then
-            let mapper = Untypeast.default_mapper in
-            let st = Untypeast.untype_structure ~mapper tst in
-            let st = TO_PPXLIB.structure st in
-            lint_ast_impl ~file st ;
-        end;
-
-     | Interface tsg ->
-        lint_tast_intf ~file tsg ;
-
-        begin
-          if !arg_lint_ast_from_cmt then
-
-            let mapper = Untypeast.default_mapper in
-            let sg = Untypeast.untype_signature ~mapper tsg in
-            let sg = TO_PPXLIB.signature sg in
-            lint_ast_intf ~file sg ;
-        end
-
-     | _ ->
-        Printf.eprintf
-          "Warning: file %s does not match a single module.\n%!" file_cmt
-
-let non_source_directories =
-  StringSet.of_list [ "_build" ; "_opam" ; "_drom" ]
-
-let check_in_source_dir ~file_doc =
-  let file_name = YALO_DOC.name file_doc in
-  let path = String.split_on_char '/' file_name in
-  List.for_all (fun component ->
-      not @@ StringSet.mem component non_source_directories) path
-
-let check_in_artefact_dir ~file_doc =
-  let file_name = YALO_DOC.name file_doc in
-  let path = String.split_on_char '/' file_name in
-  let rec iter path =
-    match path with
-    | "_build" :: "install" :: _ -> false
-    | "_opam" :: _ -> false
-    | [] -> true
-    | _ :: path -> iter path
-  in
-  iter path
-
-(* This function will propagate projects from the source tree
-   to the _build/default artefact tree *)
-let folder_updater ~folder =
-  let name = YALO_FOLDER.name folder in
-  let path = String.split_on_char '/' name in
-  match path with
-  | "_build" :: "default" :: path ->
-     let rec iter folder2 path =
-       match path with
-       | [] ->
-          YALO_FOLDER.set_projects folder
-            (YALO_FOLDER.projects folder2)
-       | basename :: path ->
-          match StringMap.find basename (YALO_FOLDER.folders folder2) with
-          | exception Not_found -> () (* weird *)
-          | folder2 ->
-             iter folder2 path
-     in
-     iter (YALO_FOLDER.fs folder |> YALO_FS.folder) path
-  | _ -> ()
+    (* This function will propagate projects from the source tree
+       to the _build/default artefact tree *)
+    let folder_updater ~folder =
+      let name = YALO_FOLDER.name folder in
+      let path = String.split_on_char '/' name in
+      match path with
+      | "_build" :: "default" :: path ->
+         let rec iter folder2 path =
+           match path with
+           | [] ->
+              YALO_FOLDER.set_projects folder
+                (YALO_FOLDER.projects folder2)
+           | basename :: path ->
+              match StringMap.find basename (YALO_FOLDER.folders folder2) with
+              | exception Not_found -> () (* weird *)
+              | folder2 ->
+                 iter folder2 path
+         in
+         iter (YALO_FOLDER.fs folder |> YALO_FS.folder) path
+      | _ -> ()
 
 
 

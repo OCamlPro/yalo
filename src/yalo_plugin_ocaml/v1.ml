@@ -13,7 +13,11 @@
 open Yalo.V1
 
 
-module OCAML_LEX = Parser
+module OCAML_LEX = struct
+  include Parser
+  let get_STRING = Main.get_STRING
+end
+
 include Ast_traverse
 include Tast_traverse
 

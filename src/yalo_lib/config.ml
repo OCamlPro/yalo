@@ -16,7 +16,6 @@
 
 
 open Yalo_misc.Ez_config.V1
-module OP = EZCONFIG.OP
 open Types
 
 let config_file =
@@ -74,7 +73,7 @@ let config_errors =
     ~path:[ "errors" ]
     ~short_help:"List of specifications to activate errors"
     EZCONFIG.string_list_option
-    [ "danger" ]
+    [ "#danger" ]
 
 module FILEATTR = struct
   open EZCONFIG

@@ -10,5 +10,8 @@
 (*                                                                        *)
 (**************************************************************************)
 
-let () = Printf.eprintf "\"%s\"\n%!" "Hello"
+[@@@yalo.warning "ZANUDA+4"]
 
+let () = Printf.eprintf "\"%s\" World\n%!" "Hello"
+
+[@@@yalo.check "ZANUDA+4"]

@@ -24,49 +24,49 @@ let tag_find = YALO.new_tag "find"
 
 let w_src_file =
   YALO.new_warning ns
-    ~name:"lint-src-file" 0
+    ~name:"lint_src_file" 0
     ~tags:[ tag_find ]
     ~msg:"Linting source file"
 
 let w_src_line =
   YALO.new_warning ns
-    ~name:"lint-src-line" 1
+    ~name:"lint_src_line" 1
     ~tags:[ tag_find ]
     ~msg:"Linting lines of source file"
 
 let w_src_content =
   YALO.new_warning ns
-    ~name:"lint-src-content" 2
+    ~name:"lint_src_content" 2
     ~tags:[ tag_find ]
     ~msg:"Linting content of source file"
 
 let w_sig =
   YALO.new_warning ns
-    ~name:"lint-sig" 3
+    ~name:"lint_sig" 3
     ~tags:[ tag_find ]
     ~msg:"Linting signature of file"
 
 let w_ast_intf =
   YALO.new_warning ns
-    ~name:"lint-ast-intf" 4
+    ~name:"lint_ast_intf" 4
     ~tags:[ tag_find ]
     ~msg:"Linting parsetree of interface"
 
 let w_ast_impl =
   YALO.new_warning ns
-    ~name:"lint-ast-impl" 5
+    ~name:"lint_ast_impl" 5
     ~tags:[ tag_find ]
     ~msg:"Linting parsetree of implementation"
 
 let w_tast_intf =
   YALO.new_warning ns
-    ~name:"lint-tast-intf" 6
+    ~name:"lint_tast_intf" 6
     ~tags:[ tag_find ]
     ~msg:"Linting typedtree of interface"
 
 let w_tast_impl =
   YALO.new_warning ns
-    ~name:"lint-tast-intf" 7
+    ~name:"lint_tast_impl" 7
     ~tags:[ tag_find ]
     ~msg:"Linting typedtree of implementation"
 

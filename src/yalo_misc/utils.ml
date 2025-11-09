@@ -10,22 +10,14 @@
 (*                                                                        *)
 (**************************************************************************)
 
-module OP = struct
-
-  let filename_concat dir file =
-    match dir with
-    | "" | "." -> file
-    | _ -> Printf.sprintf "%s/%s" dir file
-
-  let (//) = filename_concat
-
-end
-
-open OP
+let filename_concat dir file =
+  match dir with
+  | "" | "." -> file
+  | _ -> Printf.sprintf "%s/%s" dir file
 
 let find_file ?from file =
   let rec iter dirname path =
-    let filename = dirname // file in
+    let filename = filename_concat dirname file in
     if Sys.file_exists filename then
       filename, path
     else
@@ -49,7 +41,7 @@ let find_in_path path name =
     let rec try_dir = function
         [] -> raise Not_found
       | dir::rem ->
-         let fullname = dir // name in
+         let fullname = filename_concat dir name in
          if Sys.file_exists fullname then fullname
          else try_dir rem
     in

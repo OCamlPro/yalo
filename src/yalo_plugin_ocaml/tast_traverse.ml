@@ -521,6 +521,7 @@ end = struct
         f ~file ~linter traverse) ast_traverse_linters ;
     to_iterator ~file traverse
 
+  (*
   [%%if ocaml_version < (4, 11, 0)]
   let check_attribute_constant = function
     | Parsetree.Pconst_string (yalo_spec, None) ->
@@ -561,21 +562,13 @@ end = struct
         match check_attribute_constant cst with
         | None -> ()
         | Some yalo_spec ->
-           YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin yalo_spec ;
+           YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin
+             (yalo_spec) ;
       end
     | _ -> ()
+   *)
 
   let structure ~file ast_traverse_linters ast =
-    OCAML_TAST.(
-
-      List.iter (fun pstr ->
-          match pstr.str_desc with
-          | Tstr_attribute attr ->
-             check_attribute ~file attr
-          | _ -> ()
-        ) ast.str_items ;
-
-    );
     let iterator = make_iterator ~file ast_traverse_linters in
     OCAML_TAST_TRAVERSE.node_stack_ref := [];
     let _ = iterator.structure iterator ast in
@@ -583,16 +576,6 @@ end = struct
     ()
 
   let signature ~file ast_traverse_linters ast =
-    OCAML_TAST.(
-
-      List.iter (fun pstr ->
-          match pstr.sig_desc with
-          | Tsig_attribute attr ->
-             check_attribute ~file attr
-          | _ -> ()
-        ) ast.sig_items ;
-
-    );
     let iterator = make_iterator ~file ast_traverse_linters in
     OCAML_TAST_TRAVERSE.node_stack_ref := [];
     let _ = iterator.signature iterator ast in

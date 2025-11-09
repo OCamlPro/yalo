@@ -13,12 +13,10 @@
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
-open OCAML_LEX
-
-let lint_msg = "Double semi (;;) should be avoided"
+let lint_msg = "Mutable fields in records are forbidden in this project"
 
 let register ns
-      ?(name="no_semisemi")
+      ?(name="no_mutable_fields")
       ~tags
       ?(msg = lint_msg)
       id
@@ -26,20 +24,34 @@ let register ns
   let w =
     YALO.new_warning ns ~name id
       ~tags
+      ~set_by_default:false (* disabled by default *)
       ~msg
   in
-
-  OCAML_LANG.new_src_lex_linter ns
-    ("check:lex:" ^ YALO_WARNING.name w)
+  OCAML_LANG.new_tast_impl_traverse_linter ns
+    ("check:typed:" ^ YALO_WARNING.name w)
     ~warnings:[ w ]
-    (fun ~file ~linter tokens ->
-      let rec iter tokens =
-      match tokens with
-      | (SEMISEMI, loc) :: tokens ->
-         YALO.warn ~loc ~file ~linter w ;
-         iter tokens
-      | _ :: tokens -> iter tokens
-      | [] -> ()
+    OCAML_TAST.(fun ~file ~linter traverse ->
+    let label_declaration ld =
+      match ld.ld_mutable with
+      | Mutable ->
+         let loc = ld.ld_loc in
+         YALO.warn ~loc ~file ~linter w
+      | Immutable -> ()
     in
-    iter tokens
+    let type_declaration ~file:_ ~linter:_ t =
+      match t.typ_kind with
+      | Ttype_record labels ->
+         List.iter label_declaration labels
+      | Ttype_abstract
+        | Ttype_open -> ()
+      | Ttype_variant constructors ->
+         List.iter (fun cd ->
+             match cd.cd_args with
+             | Cstr_tuple _ -> ()
+             | Cstr_record labels ->
+                List.iter label_declaration labels
+           ) constructors
+    in
+    traverse.type_declaration <- (linter, type_declaration) ::
+                                    traverse.type_declaration
   )

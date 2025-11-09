@@ -43,6 +43,27 @@ let module_type check ~file ~linter mty =
   | _ -> ()
 [%%endif]
 
+let uppercase s =
+  let len = String.length s in
+  let b = Buffer.create (2*len) in
+  let rec iter need_underscore i =
+    if i < len then
+      let c = s.[i] in
+      match c with
+      | 'a'..'z' ->
+         Buffer.add_char b (Char.uppercase_ascii c);
+         iter true (i+1)
+      | 'A'..'Z' ->
+         if need_underscore then Buffer.add_char b '_';
+         Buffer.add_char b c ;
+         iter false (i+1)
+      | _ ->
+         Buffer.add_char b c ;
+         iter true (i+1)
+  in
+  iter false 0;
+  Buffer.contents b
+
 let register ns
       ?(name="all_upper_struct")
       ~tags
@@ -71,9 +92,9 @@ let register ns
               let loc = mb_name.loc in
               YALO.warn ~loc ~file ~linter w
                 ~msg:(Printf.sprintf
-                        "Inner modules should be fully uppercase \
-                         (%S here)"
-                        upname)
+                        "Inner module %S should be fully uppercase \
+                         (%S here)" name
+                        (uppercase name))
 
            | Mty_ident _id -> ()
            | Mty_functor _ -> ()

@@ -544,105 +544,11 @@ module OCAML_AST_INTERNAL : sig
   let ast_of_pattern =
     format_to_string (Ppxlib.Pp_ast.pattern ~config)
 
-  let eprint_structure str =
-    Printf.eprintf "structure: %s\n%!"
-      (ast_of_structure str)
-
-  let rec parse_option exp =
-    match exp.OCAML_AST.pexp_desc with
-    | Pexp_constant (Pconst_string (v, _, None)) ->
-       String.split_on_char '.' v
-    | Pexp_field (exp, lid) ->
-       parse_option exp @
-         parse_option_lid lid.txt
-    | Pexp_ident lid ->
-       parse_option_lid lid.txt
-    | _ -> assert false
-
-  and parse_option_lid lid =
-    match lid with
-    | OCAML_AST.Lident id -> [ id ]
-    | OCAML_AST.Ldot (lid, s) ->
-       parse_option_lid lid @ [ s ]
-    | Lapply _ -> assert false
-
-  let parse_value exp =
-    match exp.OCAML_AST.pexp_desc with
-    | Pexp_constant (Pconst_string (v, _, None)) -> v
-    | Pexp_constant (Pconst_integer (v, None)) -> v
-    | Pexp_constant (Pconst_float (v, None)) -> v
-    | Pexp_constant (Pconst_char v) -> String.make 1 v
-    | _ -> assert false
-
-  let check_attribute ~file attr =
-    match attr with
-    | OCAML_AST.{
-        attr_name = { txt = "yalo.warning" ; _ } ;
-        attr_loc = loc ;
-        attr_payload =
-          PStr
-            [ { pstr_desc =
-                  Pstr_eval
-                    ({ pexp_desc =
-                         Pexp_constant
-                           (Pconst_string (yalo_spec, _loc, None));
-                       _ },
-                     []);
-                _
-              }
-            ]
-        ;
-          _
-      } ->
-       YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin yalo_spec ;
-       ()
-    | OCAML_AST.{
-        attr_name = { txt = "yalo.set_option" ; _ } ;
-        attr_loc = _loc ;
-        attr_payload =
-          PStr
-            [ { pstr_desc =
-                  Pstr_eval
-                    ({ pexp_desc =
-                         Pexp_apply
-                           (option,
-                            [(Nolabel, value)]) ;
-                       _ },
-                     []);
-                _
-              }
-            ]
-        ;
-          _
-      } ->
-       begin
-         try
-           let path = parse_option option in
-           let value = parse_value value in
-           YALO_LANG.temp_set_option path value
-         with exn ->
-           Printf.eprintf
-             "Configuration error: exception %s in yalo.set\n%!"
-             (Printexc.to_string exn)
-       end
-    | attr ->
-       let name = attr.attr_name.txt in
-       if String.length name >= 5 &&
-            String.sub name 0 5 = "yalo." then
-         let str = OCAML_AST.{
-               pstr_desc = Pstr_attribute attr ;
-               pstr_loc = attr.attr_loc ;
-                   } in
-         eprint_structure [str]
-
   let signature ~file ast_traverse_linters ast =
-    List.iter OCAML_AST.(fun pstr ->
-      match pstr.psig_desc with
-      | Psig_attribute attr ->
-         check_attribute ~file attr
-      | _ -> ()
-    ) ast ;
-
+    if YALO.verbose 4 then
+      Printf.eprintf "signature of %S: %s\n%!"
+        (YALO_FILE.name file)
+        (ast_of_signature ast);
     let traverse = make_iterator ~file ast_traverse_linters in
     OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#signature ast traverse in
@@ -650,12 +556,10 @@ module OCAML_AST_INTERNAL : sig
     ()
 
   let structure ~file ast_traverse_linters ast =
-    List.iter OCAML_AST.(fun pstr ->
-        match pstr.pstr_desc with
-        | Pstr_attribute attr ->
-           check_attribute ~file attr
-        | _ -> ()
-      ) ast ;
+    if YALO.verbose 4 then
+      Printf.eprintf "structure of %S: %s\n%!"
+        (YALO_FILE.name file)
+        (ast_of_structure ast);
     let traverse = make_iterator ~file ast_traverse_linters in
     OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#structure ast traverse in

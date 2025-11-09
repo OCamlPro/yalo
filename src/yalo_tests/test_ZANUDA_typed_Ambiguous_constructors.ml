@@ -11,6 +11,17 @@
 (**************************************************************************)
 
 type 'a a = 'a option = None | Some of 'a
-type 'a b = None | Some of 'a
-type 'a c = Error
 
+[@@@yalo.check ""]
+
+type 'a b =
+  None
+| Some of 'a
+[@@@yalo.check "ZANUDA+8"]
+[@@@yalo.check "ZANUDA+8"]
+
+[@@@yalo.check ""]
+type 'a c = Error
+[@@@yalo.check "ZANUDA+8"]
+
+[@@@yalo.check ""]

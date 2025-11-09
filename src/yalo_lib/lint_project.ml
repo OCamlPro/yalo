@@ -31,8 +31,7 @@
 open EzCompat
 
 open Types
-open Config.OP
-open Yalo_misc.Utils.OP
+open Yalo_misc.Infix
 
 (* TODO: explicit files and -p PROJECT should be forbidden to appear
    together *)
@@ -377,11 +376,20 @@ let activate_warnings_and_linters
        Config.append filename
   end;
 
-  let set_warning set w =
-    w.w_level_warning <- (if set then 2 else 0)
+  let set_warning new_state w =
+    w.w_state <- new_state
   in
-  let set_error set w =
-    w.w_level_error <- (if set then 2 else 0)
+  let set_error new_state w =
+    begin
+      match new_state with
+      | Warning_enabled
+        | Warning_sleeping -> w.w_level_error <- true
+      | Warning_disabled -> w.w_level_error <- false
+    end;
+    match new_state, w.w_state with
+    | (Warning_enabled | Warning_sleeping), Warning_disabled ->
+       w.w_state <- new_state
+    | _ -> ()
   in
 
   if not skip_config_warnings then

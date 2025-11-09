@@ -12,7 +12,7 @@
 
 open EzCompat (* for IntMap *)
 open Yalo.Types
-open Yalo.Config.OP
+open Yalo_misc.Infix
 
 let eprint () =
 
@@ -70,16 +70,20 @@ let eprint () =
       Printf.eprintf "  Namespace %S\n%!" ns.ns_name ;
       Printf.eprintf "  Warnings:\n%!";
       IntMap.iter (fun _ w ->
-          Printf.eprintf "     %d%s %s [%s]\n%!"
+          Printf.eprintf "     %d%c%s %s [%s]\n%!"
             w.w_num
-            (if w.w_level_error > 1 then "+e"
-            else
-              if w.w_level_warning > 1 then "+w"
-              else "-")
+            (if w.w_set_by_default then ' ' else '!')
+            (match w.w_state, w.w_level_error with
+            | Warning_enabled, true -> "+e"
+            | Warning_sleeping, true -> "?e"
+            | Warning_disabled, true -> assert false
+            | Warning_enabled, false -> "+w"
+            | Warning_sleeping, false -> "?a" (* allow *)
+            | Warning_disabled, false -> "--")
             w.w_name
             (String.concat " "
                (List.map (fun t -> t.tag_name) w.w_tags))
-        ) ns.ns_warnings ;
+        ) ns.ns_warnings_by_num ;
     ) Yalo.GState.all_namespaces ;
 
   Printf.eprintf "Projects:\n%!";

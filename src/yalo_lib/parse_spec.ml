@@ -21,7 +21,7 @@
 
    NS_SPEC =
    | NS (* all following warnings are in this plugin. If no
-    W_SPEC follows, then +NS is understood. *)
+           W_SPEC follows, then +NS is understood. *)
    | +NS (* activate all warnings of this plugin and use it for next warnings *)
    | -NS (* disactivate all warnings of this plugin and
    use it for next warnings *)
@@ -63,16 +63,17 @@ let get_ns ns_name =
         Printf.eprintf "Configuration error: unknown namespace %S\n%!" ns_name;
         exit 2
 
-let parse_spec spec set_function =
+let parse_spec spec (set_function : warning_state -> warning -> unit) =
   let len = String.length spec in
   let rec iter0 i =
     (* Printf.eprintf "iter0 %d\n%!" i; *)
     if i < len then
       match spec.[i] with
       | ' ' -> iter0 (i+1)
-      | '+' -> iter1 (i+1) ~set:true
-      | '-' -> iter1 (i+1) ~set:false
-      | 'a'..'z' -> iter_tag ~set:true i (i+1)
+      | '+' -> iter1 (i+1) ~set:Warning_enabled
+      | '?' -> iter1 (i+1) ~set:Warning_sleeping
+      | '-' -> iter1 (i+1) ~set:Warning_disabled
+      | '#' -> iter_tag (i+1) (i+1)
       | 'A'..'Z' -> iter_ns i (i+1)
       | ',' -> iter0 (i+1)
       | _c -> unexpected_char spec i
@@ -87,22 +88,23 @@ let parse_spec spec set_function =
       | ',' ->
          List.iter (set_function set) !GState.all_warnings;
          iter0 (i+1)
-      | 'a'..'z' -> iter_tag i (i+1) ~set
+      | '#' -> iter_tag (i+1) (i+1) ~set
       | 'A'..'Z' -> iter_ns i (i+1) ~set
       | _c -> unexpected_char spec i
 
-  and iter_tag ~set pos0 i =
+  and iter_tag ?set pos0 i =
     (* Printf.eprintf "iter_tag %d\n%!" i; *)
     if i = len then
-      set_tag ~set pos0 i
+      set_tag ?set pos0 i
     else
       match spec.[i] with
       | ',' ->
-         set_tag ~set pos0 i;
+         set_tag ?set pos0 i;
          iter0 (i+1)
-      | 'a'..'z' | '0'..'9' | '_' -> iter_tag ~set pos0 (i+1)
+      | 'a'..'z' | '0'..'9' | '_' ->
+         iter_tag ?set pos0 (i+1)
       | ' ' ->
-         set_tag ~set pos0 i;
+         set_tag ?set pos0 i;
          iter0 (i+1)
       | _c -> unexpected_char spec i
 
@@ -119,10 +121,13 @@ let parse_spec spec set_function =
          iter0 (i+1)
       | '+' ->
          let ns = set_in_ns ?set pos0 i in
-         iter_ns1 ns ~set:true (i+1)
+         iter_ns1 ns ~set:Warning_enabled (i+1)
+      | '?' ->
+         let ns = set_in_ns ?set pos0 i in
+         iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
          let ns = set_in_ns ?set pos0 i in
-         iter_ns1 ns ~set:false (i+1)
+         iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
   and iter_plugin_space ?set pos0 pos1 i =
@@ -137,10 +142,13 @@ let parse_spec spec set_function =
          iter0 (i+1)
       | '+' ->
          let ns = set_in_ns ?set pos0 pos1 in
-         iter_ns1 ns ~set:true (i+1)
+         iter_ns1 ns ~set:Warning_enabled (i+1)
+      | '?' ->
+         let ns = set_in_ns ?set pos0 pos1 in
+         iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
          let ns = set_in_ns ?set pos0 pos1 in
-         iter_ns1 ns ~set:false (i+1)
+         iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
   and iter_ns0 ns i = (* PLUGIN_SPEC W_SPEC . *)
@@ -149,8 +157,9 @@ let parse_spec spec set_function =
       match spec.[i] with
       | ' ' -> iter_ns0 ns (i+1)
       | ',' -> iter0 (i+1)
-      | '+' -> iter_ns1 ns ~set:true (i+1)
-      | '-' -> iter_ns1 ns ~set:false (i+1)
+      | '+' -> iter_ns1 ns ~set:Warning_enabled (i+1)
+      | '?' -> iter_ns1 ns ~set:Warning_sleeping (i+1)
+      | '-' -> iter_ns1 ns ~set:Warning_disabled (i+1)
       | _ -> unexpected_char spec i
 
   and iter_ns1 ns ~set i = (* PLUGIN_SPEC {+/-} . *)
@@ -161,7 +170,7 @@ let parse_spec spec set_function =
       match spec.[i] with
       | ',' -> unexpected_end spec i
       | ' ' -> iter_ns1 ns ~set (i+1)
-      | 'a'..'z' -> iter_plugin_tag ns ~set i (i+1)
+      | '#' -> iter_plugin_tag ns ~set (i+1) (i+1)
       | '0'..'9' -> iter_plugin_num ns ~set i (i+1)
       | _ -> unexpected_char spec i
 
@@ -178,12 +187,18 @@ let parse_spec spec set_function =
          set_plugin_tag ns ~set pos0 i;
          iter0 (i+1)
       | 'a'..'z' | '0'..'9' | '_' -> iter_plugin_tag ns ~set pos0 (i+1)
+      | '#' ->
+         set_plugin_tag ns ~set pos0 i;
+         iter_plugin_tag ns ~set (i+1) (i+1)
       | '+' ->
          set_plugin_tag ns ~set pos0 i;
-         iter_ns1 ns ~set:true (i+1)
+         iter_ns1 ns ~set:Warning_enabled (i+1)
+      | '?' ->
+         set_plugin_tag ns ~set pos0 i;
+         iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
          set_plugin_tag ns ~set pos0 i;
-         iter_ns1 ns ~set:false (i+1)
+         iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
   and iter_plugin_num ns ~set pos0 i =
@@ -201,10 +216,13 @@ let parse_spec spec set_function =
       | '0'..'9' -> iter_plugin_num ns ~set pos0 (i+1)
       | '+' ->
          set_plugin_num ns ~set pos0 i;
-         iter_ns1 ns ~set:true (i+1)
+         iter_ns1 ns ~set:Warning_enabled (i+1)
+      | '?' ->
+         set_plugin_num ns ~set pos0 i;
+         iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
          set_plugin_num ns ~set pos0 i;
-         iter_ns1 ns ~set:false (i+1)
+         iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
   and set_plugin_tag ns ~set pos i =
@@ -230,7 +248,7 @@ let parse_spec spec set_function =
         exit 2
 
     in
-    match IntMap.find num ns.ns_warnings with
+    match IntMap.find num ns.ns_warnings_by_num with
     | exception Not_found ->
        Printf.eprintf
          "Configuration error: warning %d does not appear in plugin %s\n%!"
@@ -238,18 +256,30 @@ let parse_spec spec set_function =
        exit 2
     | w -> set_function set w
 
-  and set_tag ~set pos i =
+  and set_function_default w =
+    let set =
+      if w.w_set_by_default then Warning_enabled
+      else Warning_sleeping
+    in
+    set_function set w
+
+  and set_tag ?set pos i =
     let tag_name = String.sub spec pos (i-pos) in
     let tag = get_tag tag_name in
-    List.iter (set_function set) tag.tag_warnings
+    match set with
+    | Some set ->
+       List.iter (set_function set) tag.tag_warnings
+    | None ->
+       List.iter set_function_default tag.tag_warnings
 
   and set_ns ?set pos i =
-    let set = match set with
-      | None -> true
-      | Some set -> set
-    in
-    let _ns = set_in_ns ~set pos i in
-    ()
+    let plugin_name = String.sub spec pos (i-pos) in
+    let ns = get_ns plugin_name in
+    match set with
+    | None ->
+       IntMap.iter (fun _ w -> set_function_default w) ns.ns_warnings_by_num
+    | Some set ->
+       IntMap.iter (fun _ w -> set_function set w) ns.ns_warnings_by_num
 
   and set_in_ns ?set pos i =
     let plugin_name = String.sub spec pos (i-pos) in
@@ -258,7 +288,7 @@ let parse_spec spec set_function =
       match set with
       | None -> ()
       | Some set ->
-         IntMap.iter (fun _ w -> set_function set w) ns.ns_warnings
+         IntMap.iter (fun _ w -> set_function set w) ns.ns_warnings_by_num
     end;
     ns
   in
