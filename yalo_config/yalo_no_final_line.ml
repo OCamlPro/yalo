@@ -21,13 +21,13 @@ let tag_line = YALO.new_tag "line"
 
 let w_no_final_newline =
   YALO.new_warning ns
-    ~name:"no-final-newline" 0
+    ~name:"no_final_newline" 0
     ~tags:[ tag_line ]
     ~msg:"File does not end with a newline"
 
 let w_windows_newline =
   YALO.new_warning ns
-    ~name:"windows-newline" 1
+    ~name:"windows_newline" 1
     ~tags:[ tag_line ]
     ~msg:"Line contains a \\r\\n instead of only \\n"
 

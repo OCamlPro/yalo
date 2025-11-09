@@ -11,8 +11,23 @@
 (**************************************************************************)
 
 let a x = print_int @@ x
+
+[@@@yalo.check "ZANUDA+3"]
+
 let b _ = print_string @@ "Hello"
+
+[@@@yalo.check "ZANUDA+3"]
+
 let c () = b @@ None
+
+[@@@yalo.check "ZANUDA+3"]
+
 let d () = b @@ { contents = 0 }
+
+[@@@yalo.check "ZANUDA+3"]
+
 let e () = b @@ (1,2)
+
+[@@@yalo.check "ZANUDA+3"]
+
 

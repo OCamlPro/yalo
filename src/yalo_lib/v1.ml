@@ -12,7 +12,7 @@
 
 open Types
 
-module YALO_OP = Yalo_misc.Utils.OP
+module YALO_INFIX = Yalo_misc.Infix
 
 module YALO_TYPES = struct
 
@@ -107,6 +107,14 @@ module YALO = struct
   module STORE = File_store
 
   let verbose = Engine.verbose
+  let string_of_loc = Engine.string_of_loc
+  let eprintf ?loc fmt =
+    begin
+    match loc with
+    | Some loc -> Printf.eprintf "%s\n" (string_of_loc loc)
+    | None -> ()
+    end;
+    Printf.eprintf fmt
 end
 
 module YALO_LANG = struct
@@ -127,9 +135,11 @@ module YALO_LANG = struct
   let add_folder_updater = Engine.add_folder_updater
 
   let warnings_zone = Engine.warnings_zone
+  let warnings_check = Engine.warnings_check
   let temp_set_option = Engine.temporary_set_option
 
   module Make_source_linters = Source_linters.Make
+
 end
 
 module YALO_FS = struct

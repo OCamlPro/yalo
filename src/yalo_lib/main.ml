@@ -12,8 +12,7 @@
 
 open EzCompat
 open Ez_file.V1
-open Yalo_misc.Utils.OP
-open Config.OP
+open Yalo_misc.Infix
 
 let load_plugin file =
   try

@@ -12,8 +12,19 @@
 
 open EzCompat (* for IntMap *)
 open Types
-open Config.OP
-open Yalo_misc.Utils.OP
+open Yalo_misc.Infix
+
+let string_of_loc loc =
+  Location.print_loc Format.str_formatter loc;
+  Format.flush_str_formatter ()
+
+let eprintf ?loc fmt =
+  begin
+    match loc with
+    | Some loc -> Printf.eprintf "%s\n" (string_of_loc loc)
+    | None -> ()
+  end;
+  Printf.eprintf fmt
 
 let verbose n = !GState.verbosity >= n
 
@@ -102,7 +113,8 @@ let new_namespace plugin ns_name =
     end;
   let ns = { ns_name ;
              ns_plugin = plugin ;
-             ns_warnings = IntMap.empty ;
+             ns_warnings_by_num = IntMap.empty ;
+             ns_warnings_by_name = StringMap.empty ;
              ns_linters = StringMap.empty;
            } in
   Hashtbl.add GState.all_namespaces ns_name ns;
@@ -147,10 +159,23 @@ let new_warning
       w_namespace
       ?(tags=[])
       ?(desc="")
+      ?(set_by_default=true)
       ~name:w_name
       ~msg:w_msg
       w_num
   =
+  for i = 0 to String.length w_name - 1 do
+    match w_name.[i] with
+    | 'a'..'z' -> ()
+    | '0'..'9' | '_' | ':'
+         when i>0 -> ()
+    | c ->
+       Printf.eprintf
+         "Configuration error: warning %S contains illegal character '%c'\n%!"
+         w_name c;
+       exit 2
+  done;
+
   let w_idstr = Printf.sprintf "%s+%d" w_namespace.ns_name  w_num
   in
   let w = {
@@ -161,12 +186,13 @@ let new_warning
       w_tags = [] ;
       w_linters = StringMap.empty ;
       w_msg ;
-      w_level_warning = 0 ;
-      w_level_error = 0 ;
+      w_set_by_default = set_by_default ;
+      w_state = Warning_disabled ;
+      w_level_error = false ;
       w_desc = desc ;
     } in
   begin
-    match IntMap.find w_num w_namespace.ns_warnings with
+    match IntMap.find w_num w_namespace.ns_warnings_by_num with
     | exception Not_found -> (* good *) ()
     | w0 ->
        Printf.eprintf
@@ -176,7 +202,21 @@ let new_warning
        Printf.eprintf "  * for warning %S\n%!" w.w_name;
        exit 2
   end;
-  w_namespace.ns_warnings <- IntMap.add w_num w w_namespace.ns_warnings;
+  begin
+    match StringMap.find w_name w_namespace.ns_warnings_by_name with
+    | exception Not_found -> (* good *) ()
+    | w0 ->
+       Printf.eprintf
+         "Configuration error: in plugin %S, warning %S is defined twice:\n%!"
+         w_namespace.ns_name w_name;
+       Printf.eprintf "  * for warning %s\n%!" w0.w_idstr;
+       Printf.eprintf "  * for warning %s\n%!" w.w_idstr;
+       exit 2
+  end;
+  w_namespace.ns_warnings_by_num <-
+    IntMap.add w_num w w_namespace.ns_warnings_by_num;
+  w_namespace.ns_warnings_by_name <-
+    StringMap.add w_name w w_namespace.ns_warnings_by_name;
   GState.all_warnings := w :: !GState.all_warnings ;
   List.iter (add_tag w) tags;
   w
@@ -259,14 +299,20 @@ let activate_linters () =
       if StringMap.is_empty w.w_linters then
         Printf.eprintf
           "Developer warning: warning %s has no associated linter\n%!"
-             w.w_idstr;
-      if w.w_level_warning > 1 || w.w_level_error > 1 then
-        GState.active_warnings := StringMap.add w.w_idstr w
-                                    !GState.active_warnings
+          w.w_idstr;
+      match w.w_state with
+      | Warning_disabled -> ()
+      | Warning_sleeping
+        | Warning_enabled ->
+         GState.active_warnings := StringMap.add w.w_idstr w
+                                     !GState.active_warnings
     ) !GState.all_warnings ;
   List.iter (fun l ->
       if stringMap_exists (fun w ->
-             w.w_level_warning > 1 || w.w_level_error > 1)
+             match w.w_state with
+             | Warning_disabled -> false
+             | Warning_sleeping
+               | Warning_enabled -> true)
            l.linter_warnings then begin
           l.linter_active <- true;
           GState.active_linters := l :: !GState.active_linters;
@@ -283,21 +329,27 @@ let get_target name =
          target_name = name ;
          target_uid = GState.new_target_uid () ;
 
+         target_checks = [] ;
          target_zones = [] ;
          target_messages = [] ;
        } in
      Hashtbl.add GState.all_targets name target ;
      target
 
-let warnings_zone ~file ~loc ?(mode=Zone_begin) spec =
+let warnings_check ~file:_ ~loc spec after =
+  let target_name = loc.loc_start.pos_fname in
+  let target = get_target target_name in
+  target.target_checks <- (spec, loc, after) :: target.target_checks
+
+let warnings_zone ~file ~loc ?(mode=Zone_begin) action =
   let pos = loc.loc_start in
   let target_name = pos.pos_fname in
   let target = get_target target_name in
   let zone = {
       zone_creator = file ;
-      zone_pos = pos ;
+      zone_loc = loc ;
       zone_target = target ;
-      zone_spec = spec ;
+      zone_spec = action ;
       zone_rev_zone = None ;
       zone_rev_changes = [];
     }
@@ -310,10 +362,10 @@ let warnings_zone ~file ~loc ?(mode=Zone_begin) spec =
      if target_name = pos.pos_fname then
        let zone = {
            zone_creator = file ;
-           zone_pos = pos ;
+           zone_loc = { loc with loc_start = pos } ;
            zone_target = target ;
            zone_rev_zone = Some zone ;
-           zone_spec = spec ;
+           zone_spec = action ;
            zone_rev_changes = [];
          }
        in
@@ -328,37 +380,40 @@ let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
         w.w_idstr linter.linter_name;
     end;
 
-  if (w.w_level_error > 1 || w.w_level_warning > 1)
-     && not loc.loc_ghost then
-    let msg_string =
-      match msg with
-      | None -> w.w_msg
-      | Some msg -> msg
-    in
-    let msg_idstr =
-      Printf.sprintf "%06d%06d%s"
-        loc.loc_start.pos_lnum
-        loc.loc_start.pos_cnum
-        (Marshal.to_string (loc,w.w_idstr,msg) [])
-    in
-    let m = {
-        msg_loc = loc ;
-        msg_string ;
-        msg_warning = w;
-        msg_file = file ;
-        msg_linter = linter ;
-        msg_idstr ;
-        msg_autofix = autofix ;
-      } in
-    file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
-    GState.messages := m :: !GState.messages ;
+  match w.w_state with
+  | Warning_disabled -> ()
+  | Warning_sleeping
+  | Warning_enabled ->
+     (*     if not loc.loc_ghost then *)
+       let msg_string =
+         match msg with
+         | None -> w.w_msg
+         | Some msg -> msg
+       in
+       let msg_idstr =
+         Printf.sprintf "%06d%06d%s"
+           loc.loc_start.pos_lnum
+           loc.loc_start.pos_cnum
+           (Marshal.to_string (loc,w.w_idstr,msg) [])
+       in
+       let m = {
+           msg_loc = loc ;
+           msg_string ;
+           msg_warning = w;
+           msg_file = file ;
+           msg_linter = linter ;
+           msg_idstr ;
+           msg_autofix = autofix ;
+         } in
+       file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
+       GState.messages := m :: !GState.messages ;
 
-    let target_name = loc.loc_start.pos_fname in
-    let target = get_target target_name in
-    target.target_messages <- m :: target.target_messages ;
-    GState.message_targets := IntMap.add target.target_uid target
-                                !GState.message_targets;
-    ()
+       let target_name = loc.loc_start.pos_fname in
+       let target = get_target target_name in
+       target.target_messages <- m :: target.target_messages ;
+       GState.message_targets := IntMap.add target.target_uid target
+                                   !GState.message_targets;
+       ()
 
 let mkloc ~bol ?(start_cnum=bol) ?(end_cnum=start_cnum)
       ~lnum ~file () =
@@ -422,7 +477,10 @@ let rec filter_linters ~file linters =
   | []  -> []
   | (l,f) :: linters ->
      if stringMap_exists (fun w ->
-            (w.w_level_warning > 1 || w.w_level_error > 1) &&
+            (match w.w_state with
+            | Warning_disabled -> false
+            | Warning_enabled
+              | Warning_sleeping -> true) &&
               not (StringSet.mem w.w_idstr file.file_warnings_done)
           ) l.linter_warnings then
        (l,f) :: filter_linters ~file linters
@@ -615,63 +673,44 @@ let add_folder_updater f =
     old_f ~folder ;
     f ~folder)
 
+let compare_check_start (_,loc1,_) (_,loc2,_) =
+  compare loc1.loc_start.pos_cnum
+    loc2.loc_start.pos_cnum
+
 let compare_message_start m1 m2 =
   compare m1.msg_loc.loc_start.pos_cnum
     m2.msg_loc.loc_start.pos_cnum
 
 let compare_zone_pos m1 m2 =
-  compare m1.zone_pos.pos_cnum
-    m2.zone_pos.pos_cnum
+  compare m1.zone_loc.loc_start.pos_cnum
+    m2.zone_loc.loc_start.pos_cnum
 
 let apply_zone z revert_warning_changes =
   let revert_warning_changes = ref revert_warning_changes in
   Parse_spec.parse_spec z.zone_spec
-    (fun set w ->
-
-      let w_level_warning = w.w_level_warning in
-      let w_level_error = w.w_level_error in
+    (fun new_state w ->
+      let old_state = w.w_state in
       if not (StringMap.mem w.w_idstr !revert_warning_changes) then begin
           revert_warning_changes :=
-            StringMap.add w.w_idstr
-              (fun () ->
-                w.w_level_error <- w_level_error ;
-                w.w_level_warning <- w_level_warning )
-              !revert_warning_changes ;
+            StringMap.add w.w_idstr (w, old_state) !revert_warning_changes ;
         end;
-      match set, w_level_warning, w_level_error with
-      | false, 2, 2 ->
-         w.w_level_error <- 1 ;
-         w.w_level_warning <- 1 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_warning <- 2 ;
-           w.w_level_error <- 2 ;
-         ) :: z.zone_rev_changes
-      | false, 0, 2 ->
-         w.w_level_error <- 1 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_error <- 2) :: z.zone_rev_changes
-      | false, 2, 0 ->
-         w.w_level_warning <- 1 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_warning <- 2) :: z.zone_rev_changes
-      | true, 2, 0 -> ()
-      | true, 0, 2 -> ()
-      | true, 1, 0 ->
-         w.w_level_warning <- 2 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_warning <- 1) :: z.zone_rev_changes
-      | true, 0, 1 ->
-         w.w_level_error <- 2 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_error <- 1) :: z.zone_rev_changes
-      | true, 1, 1 ->
-         w.w_level_warning <- 2 ;
-         w.w_level_error <- 2 ;
-         z.zone_rev_changes <- (fun () ->
-           w.w_level_warning <- 1 ;
-           w.w_level_error <- 1 ;
-         ) :: z.zone_rev_changes
-      | _ -> ()
+      match new_state, old_state with
+      | Warning_disabled, Warning_enabled ->
+         w.w_state <- Warning_sleeping ;
+         z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
+      | Warning_disabled, (Warning_disabled | Warning_sleeping) -> ()
+      | Warning_enabled, Warning_enabled -> ()
+      | Warning_enabled, Warning_sleeping ->
+         w.w_state <- Warning_enabled ;
+         z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
+      | Warning_enabled, Warning_disabled ->
+         (* TODO: we should create warnings for these ones ! *)
+         Printf.eprintf
+           "Warning: cannot wake up locally warnings that have been \
+            disabled globally (should be sleeping with '?')\n%!"
+      | Warning_sleeping, _ ->
+         Printf.eprintf
+           "Warning: sleeping mode '?' has no meaning in local annotations\n%!"
     );
   !revert_warning_changes
 
@@ -685,32 +724,39 @@ let target_messages target =
   Array.sort compare_zone_pos zones ;
   let zones = Array.to_list zones in
 
+  let checks = Array.of_list target.target_checks in
+  Array.sort compare_check_start checks ;
+  let checks = Array.to_list checks in
+
   let rec iter messages zones kept_messages revert_warning_changes =
     match messages with
     | [] ->
-       StringMap.iter (fun _ f -> f ()) revert_warning_changes ;
+       StringMap.iter (fun _ (w,state) -> w.w_state <- state)
+         revert_warning_changes ;
        List.rev kept_messages
     | m :: rem_messages ->
        match zones with
        | [] ->
           let kept_messages =
-            if m.msg_warning.w_level_error > 1 ||
-                 m.msg_warning.w_level_warning > 1 then
-              m :: kept_messages
-            else
-              List.rev kept_messages
+            match m.msg_warning.w_state with
+            | Warning_enabled ->
+               m :: kept_messages
+            | Warning_disabled
+              | Warning_sleeping ->
+               List.rev kept_messages
           in
           iter rem_messages zones kept_messages
             revert_warning_changes
        | z :: rem_zones ->
           if m.msg_loc.loc_start.pos_cnum <
-               z.zone_pos.pos_cnum then
+               z.zone_loc.loc_start.pos_cnum then
             let kept_messages =
-              if m.msg_warning.w_level_error > 1 ||
-                   m.msg_warning.w_level_warning > 1 then
-                m :: kept_messages
-              else
-                kept_messages
+              match m.msg_warning.w_state with
+              | Warning_enabled ->
+                 m :: kept_messages
+              | Warning_disabled
+                | Warning_sleeping ->
+                 List.rev kept_messages
             in
             iter
               rem_messages zones
@@ -718,7 +764,8 @@ let target_messages target =
           else
             match z.zone_rev_zone with
             | Some z ->
-               List.iter (fun f -> f ()) z.zone_rev_changes ;
+               List.iter (fun (w,state) -> w.w_state <- state)
+                 z.zone_rev_changes ;
                iter
                  messages rem_zones kept_messages
                  revert_warning_changes
@@ -730,14 +777,93 @@ let target_messages target =
                  messages rem_zones
                  kept_messages revert_warning_changes
   in
-  iter messages zones [] StringMap.empty
+  let messages = iter messages zones [] StringMap.empty in
+
+  let parse_check ~loc spec f =
+    match
+      let ns_name, w_num = EzString.cut_at spec '+' in
+      let w_num = int_of_string w_num in
+      let ns = Hashtbl.find GState.all_namespaces ns_name in
+      ns, w_num
+    with
+    | (ns, w_num) -> f ~loc ns w_num
+    | exception exn ->
+       eprintf ~loc
+         "check yalo annotation raised %s\n%!"
+         (Printexc.to_string exn)
+  in
+  match checks with
+  | [] -> messages
+  | _ ->
+     let rec iter checks messages rev_messages =
+       match checks, messages with
+       | [], _ -> List.rev rev_messages @ messages
+       | (spec, loc, _after) :: checks, [] ->
+          if spec <> "" then
+            parse_check ~loc spec (fun ~loc _ns _w_num ->
+                eprintf ~loc
+                  "Check yalo annotation %s FAILED with no warning\n%!"
+                  spec
+              );
+          iter checks messages []
+       | ("", loc, _after) :: checks, m :: _ ->
+          if loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum
+          then begin
+              eprintf ~loc "Check yalo annotation no-warning FAILED\n%!";
+              let w = m.msg_warning in
+              eprintf
+                "   found warning %s+%d at %s:%d\n%!"
+                w.w_namespace.ns_name w.w_num
+                m.msg_loc.loc_start.pos_fname
+                m.msg_loc.loc_start.pos_lnum;
+            end (* else
+            begin
+              eprintf "Check yalo annotation no-warning OK at %s:%d\n%!"
+                loc.loc_start.pos_fname
+                loc.loc_start.pos_lnum ;
+            end *);
+          iter checks messages rev_messages
+       | (spec, loc, after) :: checks, m :: messages ->
+          parse_check ~loc spec (fun ~loc ns w_num ->
+              let w = m.msg_warning in
+              if w.w_num = w_num &&
+                   w.w_namespace == ns &&
+                     (not after ||
+                     loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum)
+              then begin
+                  (*
+                  eprintf "Check yalo annotation %s OK at %s:%d\n%!"
+                    spec
+                    loc.loc_start.pos_fname
+                    loc.loc_start.pos_lnum ;
+                  eprintf "   found warning at %s:%d\n%!"
+                    m.msg_loc.loc_start.pos_fname
+                    m.msg_loc.loc_start.pos_lnum
+                   *)
+                  ()
+                end
+              else
+                begin
+                  eprintf ~loc "Check yalo annotation %s FAILED\n%!"
+                    spec ;
+                  eprintf
+                    "   mismatch with warning %s+%d at %s:%d\n%!"
+                    w.w_namespace.ns_name w.w_num
+                    m.msg_loc.loc_start.pos_fname
+                    m.msg_loc.loc_start.pos_lnum
+                end
+            );
+          iter checks messages rev_messages
+     in
+     iter checks messages []
 
 let get_messages () =
   let messages = ref [] in
   Hashtbl.iter (fun _ target ->
       (* We don't print message on non-existant files *)
       if Sys.file_exists target.target_name then
-        messages := target_messages target @ !messages)
+        messages := target_messages target @ !messages
+    )
     GState.all_targets ;
   !messages
 

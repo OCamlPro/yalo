@@ -3,4 +3,5 @@
 open List
 let f1 list = length list > 2
 
+[@@@yalo.check "YALO+9"]
 

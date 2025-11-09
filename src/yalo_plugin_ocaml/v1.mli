@@ -12,7 +12,11 @@
 
 open Yalo.V1.YALO_TYPES
 
-module OCAML_LEX = Parser
+module OCAML_LEX : sig
+  include (module type of Parser)
+  (* extract info from STRING token, version compatible *)
+  val get_STRING : token -> string * string option
+end
 
 module OCAML_AST : (* = Ppxlib.Ast *)
   module type of Ast_traverse.OCAML_AST
@@ -43,7 +47,7 @@ module OCAML_LANG : sig
     (src_file_input, unit) linter_function -> unit
 
   val new_src_lex_linter :
-    OCAML_LEX.token OCAML_AST.loc list new_gen_unit_linter
+    (OCAML_LEX.token * location) list new_gen_unit_linter
   val new_src_content_linter : src_content_input new_gen_unit_linter
   val new_src_line_linter : src_line_input new_gen_unit_linter
   val new_sig_linter : Cmi_format.cmi_infos new_gen_unit_linter

@@ -43,7 +43,8 @@ and file_kind = {
 and namespace = {
     ns_plugin : plugin ;
     ns_name : string;
-    mutable ns_warnings : warning IntMap.t ;
+    mutable ns_warnings_by_num : warning IntMap.t ;
+    mutable ns_warnings_by_name : warning StringMap.t ;
     mutable ns_linters : linter StringMap.t ;
   }
 
@@ -61,13 +62,20 @@ and warning = {
     mutable w_linters : linter StringMap.t ;
     w_msg : string ;
 
-    (* 0: disabled,
-       1: locally disabled, but globally enabled,
-       2: enabled *)
-    mutable w_level_warning : int ;
-    mutable w_level_error : int ;
+    (* If a namespace or tag is activated without +, is this warning
+       set by default ? *)
+    mutable w_set_by_default : bool ;
+    mutable w_state : warning_state ;
+
+    (* If the warning is triggered, is it an error ? *)
+    mutable w_level_error : bool ;
     w_desc : string ;
   }
+
+and warning_state =
+  | Warning_disabled
+  | Warning_sleeping
+  | Warning_enabled
 
 and project = {
     project_name : string ;
@@ -224,17 +232,18 @@ type zone_mode =
   | Zone_all
 
 type zone = {
-    zone_pos : position ;
+    zone_loc : location ;
     zone_rev_zone : zone option ;
     zone_target : target ;
     zone_spec : string ;
     zone_creator : file ;
-    mutable zone_rev_changes : (unit -> unit) list ;
+    mutable zone_rev_changes : (warning * warning_state) list ;
   }
 
 and target = {
     target_name : string ; (* normalized version *)
     target_uid : int ;
     mutable target_zones : zone list ;
+    mutable target_checks : (string * location * bool (* after? *)) list ;
     mutable target_messages : message list ;
   }

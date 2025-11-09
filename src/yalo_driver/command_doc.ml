@@ -13,7 +13,7 @@
 open EzCompat
 open Ezcmd.V2
 open Ez_file.V1
-open Yalo_misc.Utils.OP
+open Yalo_misc.Infix
 
 open Yalo.Types
 
@@ -49,11 +49,10 @@ let clippy_gen dir =
           is_multi_part_suggestion = false ;
           applicability = "Unresolved" ;
         } in
-      let level = match w.w_level_warning,
-                        w.w_level_error with
-          _, 2 -> "deny"
-        | 2, _ -> "warn"
-        | _ -> "allow"
+      let level = match w.w_set_by_default, w.w_level_error with
+        | true, true -> "deny"
+        | true, false -> "warn"
+        | false, _ -> "allow"
       in
 
       let namespace = w.w_namespace.ns_name in

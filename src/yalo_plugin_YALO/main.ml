@@ -19,6 +19,7 @@ let ns = YALO.new_namespace plugin "YALO"
 let tag_untyped = YALO.new_tag "untyped"
 let tag_typed = YALO.new_tag "typed"
 let tag_lex = YALO.new_tag "lex"
+let tag_immutable = YALO.new_tag "immutable"
 
 let section = YALO.CONFIG.create_section
                 plugin ~short_help:"YALO plugin"
@@ -44,4 +45,8 @@ let () =
     ~tags:[ tag_typed ] 10;
   Lex_no_semisemi.register ns
     ~tags:[ tag_lex ] 11;
+  Typed_forbidden_infix.register ns section
+    ~tags: [ tag_typed ] 12;
+  Typed_no_mutable_fields.register ns
+    ~tags: [ tag_typed ; tag_immutable ] 13;
   ()

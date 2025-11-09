@@ -143,11 +143,37 @@
     }
   },
   {
-    "id": "FIND+0 lint-src-file",
+    "id": "YALO+12 forbidden_infix",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nUse of infix operator not in the allowed set\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+13 no_mutable_fields",
+    "namespace": "YALO",
+    "group": "immutable:typed",
+    "tags": [ "immutable", "typed" ],
+    "level": "allow",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nMutable fields in records are forbidden in this project\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "FIND+0 lint_src_file",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting source file\n### Description\n",
     "applicability": {
@@ -156,11 +182,11 @@
     }
   },
   {
-    "id": "FIND+1 lint-src-line",
+    "id": "FIND+1 lint_src_line",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting lines of source file\n### Description\n",
     "applicability": {
@@ -169,11 +195,11 @@
     }
   },
   {
-    "id": "FIND+2 lint-src-content",
+    "id": "FIND+2 lint_src_content",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting content of source file\n### Description\n",
     "applicability": {
@@ -182,11 +208,11 @@
     }
   },
   {
-    "id": "FIND+3 lint-sig",
+    "id": "FIND+3 lint_sig",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting signature of file\n### Description\n",
     "applicability": {
@@ -195,11 +221,11 @@
     }
   },
   {
-    "id": "FIND+4 lint-ast-intf",
+    "id": "FIND+4 lint_ast_intf",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting parsetree of interface\n### Description\n",
     "applicability": {
@@ -208,11 +234,11 @@
     }
   },
   {
-    "id": "FIND+5 lint-ast-impl",
+    "id": "FIND+5 lint_ast_impl",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting parsetree of implementation\n### Description\n",
     "applicability": {
@@ -221,11 +247,11 @@
     }
   },
   {
-    "id": "FIND+6 lint-tast-intf",
+    "id": "FIND+6 lint_tast_intf",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting typedtree of interface\n### Description\n",
     "applicability": {
@@ -234,11 +260,11 @@
     }
   },
   {
-    "id": "FIND+7 lint-tast-intf",
+    "id": "FIND+7 lint_tast_impl",
     "namespace": "FIND",
     "group": "find",
     "tags": [ "find" ],
-    "level": "allow",
+    "level": "warn",
     "impl": "yalo_plugin_FIND",
     "docs": "### Message\nLinting typedtree of implementation\n### Description\n",
     "applicability": {
@@ -303,7 +329,7 @@
     "namespace": "ZANUDA",
     "group": "readability:camelot:typed",
     "tags": [ "readability", "camelot", "typed" ],
-    "level": "warn",
+    "level": "allow",
     "impl": "yalo_plugin_ZANUDA",
     "docs": "### Message\nThe format string is too much verbose (rewrite \"%s\" -> %S)\n### Description\n### What it does\nOCaml formatted string are more powerful than C counterpart.\nYou should be aware of available features.\n\n### Why is is important?\nShorter code is more readable. Rewrite\n\n*  `\\\"%s\\\"` to `%S`",
     "applicability": {

@@ -12,7 +12,7 @@
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
-open EzConfig.OP
+open YALO_INFIX
 
 let is_unix = Sys.os_type = "Unix"
 

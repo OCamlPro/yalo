@@ -12,8 +12,10 @@
 
 open EzCompat
 
-module YALO_OP : sig
+module YALO_INFIX : sig
   val (//) : string -> string -> string
+  val ( !! ) : 'a EzConfig__SimpleConfig.config_option -> 'a
+  val ( =:= ) : 'a EzConfig__SimpleConfig.config_option -> 'a -> unit
 end
 
 module YALO_TYPES : sig
@@ -110,6 +112,7 @@ module YALO : sig
     namespace ->
     ?tags:tag list ->
     ?desc:string ->
+    ?set_by_default:bool ->
     name:string -> msg:string -> int -> warning
   val tag_danger : tag
 
@@ -145,6 +148,10 @@ module YALO : sig
     val check : 'a t -> file -> 'a option
     val get : 'a t -> file -> 'a
   end
+
+  val string_of_loc : location -> string
+  val eprintf :
+    ?loc:YALO_TYPES.location -> ('a, out_channel, unit) format -> 'a
 end
 
 
@@ -239,6 +246,7 @@ module YALO_LANG : sig
 
   val warnings_zone : file:file -> loc:location ->
                       ?mode:zone_mode -> string -> unit
+  val warnings_check : file:file -> loc:location -> string -> bool -> unit
 
   val temp_set_option : string list -> string -> unit
 

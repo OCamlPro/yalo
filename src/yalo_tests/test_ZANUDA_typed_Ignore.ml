@@ -13,6 +13,11 @@
 let () =
   ignore (Sys.command "/bin/sh")
 ;;
+
 1
 ;;
 
+[@@@yalo.check "ZANUDA+6"]
+[@@@yalo.check "YALO+11"]
+[@@@yalo.check "ZANUDA+2"]
+[@@@yalo.check "YALO+11"]
