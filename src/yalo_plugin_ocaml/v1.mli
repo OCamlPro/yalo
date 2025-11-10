@@ -28,6 +28,9 @@ module OCAML_TAST :
 module OCAML_TAST_TRAVERSE :
   module type of Tast_traverse.OCAML_TAST_TRAVERSE
 
+module OCAML_AST_CHECK :
+  module type of Ast_check
+
 module OCAML_LANG : sig
 
   val ocaml : language

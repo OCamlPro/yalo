@@ -99,88 +99,6 @@
  )
 
 (package
- (name yalo_plugin_ocaml)
- (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
- (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
- 
-  (sites
-    (share_root yalo)
-  )
-
- (depends
-   (ocaml (>= 4.08.0))
-   (dune-site ( >= 3.14.0 ))
-   (yalo_lib (= :version))
-   (ppxlib ( >= 0.35 ))
-   ppx_optcomp
-   ppx_inline_test
-   ppx_expect
-   odoc
-   ocamlformat
-  )
- )
-
-(package
- (name yalo_plugin_YALO)
- (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
- (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
- 
-  (sites
-    
-  )
-
- (depends
-   (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml (= :version))
-   (yalo_lib (= :version))
-   ppx_inline_test
-   ppx_expect
-   odoc
-   ocamlformat
-  )
- )
-
-(package
- (name yalo_plugin_FIND)
- (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
- (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
- 
-  (sites
-    
-  )
-
- (depends
-   (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml (= :version))
-   (yalo_lib (= :version))
-   ppx_inline_test
-   ppx_expect
-   odoc
-   ocamlformat
-  )
- )
-
-(package
- (name yalo_plugin_ZANUDA)
- (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
- (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
- 
-  (sites
-    
-  )
-
- (depends
-   (ocaml (>= 4.08.0))
-   (yalo_plugin_ocaml (= :version))
-   (yalo_lib (= :version))
-   ppx_inline_test
-   ppx_expect
-   odoc
-   ocamlformat
-  )
- )
-
-(package
  (name yalo_driver)
  (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
  (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
@@ -224,7 +142,145 @@
  )
 
 (package
- (name yalo_tests)
+ (name yalo_plugin_ocaml)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    (share_root yalo)
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (dune-site ( >= 3.14.0 ))
+   (yalo_lib (= :version))
+   (ppxlib ( >= 0.35 ))
+   ppx_optcomp
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_plugin_FIND)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_plugin_YALO)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_test_YALO)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_plugin_ZANUDA)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_test_ZANUDA)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_plugin_CAMELOT)
+ (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
+ (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
+ 
+  (sites
+    
+  )
+
+ (depends
+   (ocaml (>= 4.08.0))
+   (yalo_plugin_ocaml (= :version))
+   (yalo_lib (= :version))
+   ppx_inline_test
+   ppx_expect
+   odoc
+   ocamlformat
+  )
+ )
+
+(package
+ (name yalo_test_CAMELOT)
  (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
  (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
  

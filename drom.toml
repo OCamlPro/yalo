@@ -116,24 +116,33 @@ dir = "src/yalo_lib"
 dir = "src/ppx_yalo"
 
 [[package]]
-dir = "src/yalo_plugin_ocaml"
-
-[[package]]
-dir = "src/yalo_plugin_YALO"
-
-[[package]]
-dir = "src/yalo_plugin_FIND"
-
-[[package]]
-dir = "src/yalo_plugin_ZANUDA"
-
-[[package]]
 dir = "src/yalo_driver"
 
 [[package]]
 dir = "src/yalo_config"
 
 [[package]]
-dir = "src/yalo_tests"
+dir = "src/yalo_plugin_ocaml"
+
+[[package]]
+dir = "src/yalo_plugin_FIND"
+
+[[package]]
+dir = "src/yalo_plugin_YALO"
+
+[[package]]
+dir = "src/yalo_test_YALO"
+
+[[package]]
+dir = "src/yalo_plugin_ZANUDA"
+
+[[package]]
+dir = "src/yalo_test_ZANUDA"
+
+[[package]]
+dir = "src/yalo_plugin_CAMELOT"
+
+[[package]]
+dir = "src/yalo_test_CAMELOT"
 
 

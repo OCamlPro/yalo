@@ -62,7 +62,7 @@ let arg_specs = [
         match !Args.arg_autofix_inplace with
         | None -> Args.arg_autofix_inplace := Some false
         | Some _ -> ()),
-    EZCMD.info "Apply all automatic replacements (files created in _YALO/)" ;
+    EZCMD.info "Apply all automatic replacements (files created in _yalo/)" ;
 
     [ "autofix-inplace" ],
     EZCMD.Unit (fun () -> Args.arg_autofix_inplace := Some true),

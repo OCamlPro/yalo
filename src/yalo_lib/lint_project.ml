@@ -187,10 +187,11 @@ let scan_projects
       | Scan_maybe ->
          if Engine.verbose 2 then Printf.eprintf " -> Scan_maybe\n%!";
          let set = read_folder folder in
-         if StringSet.mem ".git" set then begin
+         if StringSet.mem ".git" set || StringSet.mem ".yaloskip" set then
+           begin
              if Engine.verbose 2 then Printf.eprintf " -> Scan_avoid\n%!";
-           StringSet.empty
-         end else
+             StringSet.empty
+           end else
            set
     in
 
