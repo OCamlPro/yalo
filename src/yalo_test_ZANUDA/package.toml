@@ -1,6 +1,6 @@
 
 # name of package
-name = "yalo_tests"
+name = "yalo_test_ZANUDA"
 skeleton = "library"
 
 # version if different from project version

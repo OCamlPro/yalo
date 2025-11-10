@@ -1,0 +1,8 @@
+{1 Library yalo_plugin_CAMELOT}
+
+Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.
+
+
+
+The entry point of this library is the module: {!Yalo_plugin_CAMELOT}.
+

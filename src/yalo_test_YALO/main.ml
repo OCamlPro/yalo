@@ -10,14 +10,8 @@
 (*                                                                        *)
 (**************************************************************************)
 
-let () =
-  ignore (Sys.command "/bin/sh")
-;;
 
-1
-;;
+(* If you delete or rename this file, you should add
+   'src/yalo_tests/main.ml' to the 'skip' field in "drom.toml" *)
 
-[@@@yalo.check "ZANUDA+6"]
-[@@@yalo.check "YALO+11"]
-[@@@yalo.check "ZANUDA+2"]
-[@@@yalo.check "YALO+11"]
+let main () = Printf.printf "Hello world!\n"

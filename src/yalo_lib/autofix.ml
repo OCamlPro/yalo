@@ -30,7 +30,7 @@ let apply ~inplace messages =
         ) m.msg_autofix
     ) messages ;
   let files = Yalo_misc.Ez_autofix.apply
-                ~destdir:(if inplace then "" else "_YALO")
+                ~destdir:(if inplace then "" else "_yalo")
                 ~suffix:"" !repls in
 
   List.iter (fun (file, applied, skipped) ->

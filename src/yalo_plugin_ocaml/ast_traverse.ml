@@ -182,6 +182,10 @@ module OCAML_AST_TRAVERSE = struct
     | Node_toplevel_directive _ -> "toplevel_directive"
     | Node_directive_argument _ -> "directive_argument"
 
+    (* This reference is updated during the AST traversal to contain the
+     path of nodes from the current element to the root of the AST. It
+     may be used to check whether something happens under a given
+     construction. *)
   let node_stack_ref = ref ([] : node list)
   let node_stack () = !node_stack_ref
 

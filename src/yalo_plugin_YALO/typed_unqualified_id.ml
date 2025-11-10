@@ -13,6 +13,14 @@
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
+(*
+This warning checks that all identifiers in expressions are either
+defined in the same module, or qualified (i.e. have a module
+prefix). It should prevent using identifiers exported by toplevel
+`open` statements. As an exception, identifiers exported by inner
+`let-open` are allowed to be used without qualification.  *)
+
+
 let lint_msg = "Values from external modules should be fully qualified"
 
 let shortest path =
@@ -22,6 +30,17 @@ let shortest path =
     match List.rev @@ EzString.split path '.' with
     | x :: y :: _ -> Printf.sprintf "%s.%s" y x
     | _ -> path
+
+let node_is_letopen node =
+  match node with
+  | OCAML_TAST_TRAVERSE.Node_expression
+    { exp_desc =
+        Texp_open ({ open_expr = me ; _ }, _); _ } ->
+     begin match me.mod_desc with
+     | Tmod_ident (path, _) -> Some path
+     | _ -> None
+     end
+  | _ -> None
 
 let register ns
       ?(name="unqualified_id")
@@ -48,7 +67,18 @@ let register ns
                 match Longident.flatten longident.txt with
                 | [ name ] -> begin
                     match name.[0] with
-                    | 'a'..'z' -> path <> "Stdlib." ^ name
+                    | 'a'..'z' ->
+                       path <> "Stdlib." ^ name &&
+
+                         (* Try to find a let-open in the node stack *)
+                         not (List.exists (fun node ->
+                                  match node_is_letopen node with
+                                  | Some open_path ->
+                                     Path.name open_path ^ "." ^ name = path
+                                  | None -> false
+                                )
+                                (OCAML_TAST_TRAVERSE.node_stack ())
+                           )
                     | _ -> false
                   end
                 | _ -> false

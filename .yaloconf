@@ -9,7 +9,7 @@
 (*************************************)
 
 (* List of plugins to load *)
-plugins = [ "yalo_plugin_ZANUDA" ]
+plugins = [ "yalo_plugin_ZANUDA";  "yalo_plugin_CAMELOT" ]
 
 (* List of directories to search for plugin files *)
 search_path = [
@@ -18,14 +18,16 @@ search_path = [
 
 profiles = [ "ocaml" "ocamlpro" ]
 
-warnings = [ "YALO" ; "ZANUDA" ]
+warnings = [ "YALO" ; "ZANUDA" ; "?CAMELOT" ]
 
 project = "yalo"
 default_target = "yalo_test"
 
 fileattrs = [
  "_YALO", { skipdir = true } ;
- "src/yalo_tests", { project = "yalo_test" } ;
+ "src/yalo_test_YALO", { project = "yalo_test" } ;
+ "src/yalo_test_ZANUDA", { project = "yalo_test" } ;
+ "src/yalo_test_CAMELOT", { project = "yalo_test" } ;
  "src/yalo_config", { project = "ez_config" } ;
  "src/yalo_plugin_ocaml", { project = "yalo,yalo_plugin_ocaml" } ;
  "src/yalo_plugin_YALO", { project = [ yalo ; yalo_plugin_YALO ] } ;
@@ -46,6 +48,10 @@ YALO = {
      "Yalo.V1.YALO_INFIX.=:=";
 
      "Ppx_deriving_yojson_runtime.>>=";
+
+     "=|"; "=~" ;
+     "Yalo_plugin_CAMELOT.Astutils.=|" ;
+     "Yalo_plugin_CAMELOT.Astutils.=~" ;
      ]
 
 }

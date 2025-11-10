@@ -678,7 +678,8 @@ let compare_check_start (_,loc1,_) (_,loc2,_) =
     loc2.loc_start.pos_cnum
 
 let compare_message_start m1 m2 =
-  compare m1.msg_loc.loc_start.pos_cnum
+  compare
+    m1.msg_loc.loc_start.pos_cnum
     m2.msg_loc.loc_start.pos_cnum
 
 let compare_zone_pos m1 m2 =
@@ -743,7 +744,7 @@ let target_messages target =
                m :: kept_messages
             | Warning_disabled
               | Warning_sleeping ->
-               List.rev kept_messages
+               kept_messages
           in
           iter rem_messages zones kept_messages
             revert_warning_changes
@@ -756,7 +757,7 @@ let target_messages target =
                  m :: kept_messages
               | Warning_disabled
                 | Warning_sleeping ->
-                 List.rev kept_messages
+                 kept_messages
             in
             iter
               rem_messages zones
@@ -817,11 +818,11 @@ let target_messages target =
                 m.msg_loc.loc_start.pos_fname
                 m.msg_loc.loc_start.pos_lnum;
             end (* else
-            begin
-              eprintf "Check yalo annotation no-warning OK at %s:%d\n%!"
-                loc.loc_start.pos_fname
-                loc.loc_start.pos_lnum ;
-            end *);
+                   begin
+                   eprintf "Check yalo annotation no-warning OK at %s:%d\n%!"
+                   loc.loc_start.pos_fname
+                   loc.loc_start.pos_lnum ;
+                   end *);
           iter checks messages rev_messages
        | (spec, loc, after) :: checks, m :: messages ->
           parse_check ~loc spec (fun ~loc ns w_num ->
@@ -829,14 +830,14 @@ let target_messages target =
               if w.w_num = w_num &&
                    w.w_namespace == ns &&
                      (not after ||
-                     loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum)
+                        loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum)
               then begin
                   (*
-                  eprintf "Check yalo annotation %s OK at %s:%d\n%!"
+                    eprintf "Check yalo annotation %s OK at %s:%d\n%!"
                     spec
                     loc.loc_start.pos_fname
                     loc.loc_start.pos_lnum ;
-                  eprintf "   found warning at %s:%d\n%!"
+                    eprintf "   found warning at %s:%d\n%!"
                     m.msg_loc.loc_start.pos_fname
                     m.msg_loc.loc_start.pos_lnum
                    *)

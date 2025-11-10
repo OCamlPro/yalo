@@ -21,6 +21,8 @@ end
 include Ast_traverse
 include Tast_traverse
 
+module OCAML_AST_CHECK = Ast_check
+
 module OCAML_LANG = struct
 
   let ocaml = Main.ocaml

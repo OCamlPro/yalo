@@ -221,7 +221,12 @@ module OCAML_TAST_TRAVERSE = struct
     | Node_value_description _ -> "value_description"
     | Node_with_constraint _ -> "with_constraint"
 
+  (* This reference is updated during the AST traversal to contain the
+     path of nodes from the current element to the root of the AST. It
+     may be used to check whether something happens under a given
+     construction. *)
   let node_stack_ref = ref ([] : node list)
+  let node_stack () = !node_stack_ref
 
   let print_node_stack () =
     Printf.eprintf "Node stack:\n%!";
@@ -229,8 +234,6 @@ module OCAML_TAST_TRAVERSE = struct
         Printf.eprintf "  %d. %s\n%!" i
           (string_of_node node)) !node_stack_ref;
     ()
-
-  let node_stack () = !node_stack_ref
 
 end
 

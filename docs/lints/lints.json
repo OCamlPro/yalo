@@ -375,5 +375,343 @@
       "is_multi_part_suggestion": false,
       "applicability": "Unresolved"
     }
+  },
+  {
+    "id": "CAMELOT+1 use_map",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose function implementation\n### Description\n### Violation\n           overly verbose function implementation\n\n           ### Correction\n           using a higher order function like transform\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+2 use_fold",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose function implementation\n### Description\n### Violation\n           overly verbose function implementation\n\n           ### Correction\n           using a higher order function like fold\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+3 use_iter",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose function implementation\n### Description\n### Violation\n           overly verbose function implementation\n\n           ### Correction\n           using a higher order function like iter\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+4 match_bool",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing pattern matching on boolean literals\n### Description\n### Violation\n           using pattern matching on boolean literals\n\n           ### Correction\n           using an if statement or boolean operators\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+5 match_int",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing integer pattern matching on fewer than 3 cases\n### Description\n### Violation\n           using integer pattern matching on fewer than 3 cases\n\n           ### Correction\n           using an if statement and `=`\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+6 match_list_verbose",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing an overly complex match clause\n### Description\n### Violation\n           using an overly complex match clause\n\n           ### Correction\n           expressing this match case more compactly\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+7 match_record",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing pattern matching on a record (for fewer than 3 cases)\n### Description\n### Violation\n           using pattern matching on a record (for fewer than 3 cases)\n\n           ### Correction\n           using a let statement to extract record fields\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+8 match_tuple",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing pattern matching on a tuple (for fewer than 2 cases)\n### Description\n### Violation\n           using pattern matching on a tuple (for fewer than 2 cases)\n\n           ### Correction\n           using a let statement to extract tuple fields\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+9 eq_list",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `=` with lists as a condition in an if statement\n### Description\n### Violation\n           using `=` with lists as a condition in an if statement\n\n           ### Correction\n           using a pattern match to check whether a list has a certain value\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+10 eq_option",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `=` with options\n### Description\n### Violation\n           using `=` with options\n\n           ### Correction\n           using a pattern match to check the presence of an option\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+11 eq_bool",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `=` with a boolean literal\n### Description\n### Violation\n           using `=` with a boolean literal\n\n           ### Correction\n           using the variable itself to represent the value\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+12 eq_physical",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `==` when structural equality is intended\n### Description\n### Violation\n           using `==` when structural equality is intended\n\n           ### Correction\n           using `=` to evaluate structural equality\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+13 neq_physical",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `!=` when structural equality is intended\n### Description\n### Violation\n           using `!=` when structural equality is intended\n\n           ### Correction\n           using `<>` to evaluate structural inequality\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+14 lit_prepend",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing `@` to prepend an element to a list\n### Description\n### Violation\n           using `@` to prepend an element to a list\n\n           ### Correction\n           using `::` instead\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+15 tuple_proj",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing fst / snd to project values out of a tuple\n### Description\n### Violation\n           using fst / snd to project values out of a tuple\n\n           ### Correction\n           using a let pattern match statement instead\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+16 if_returns_lit",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing an if statement to return `true | false` literally\n### Description\n### Violation\n           using an if statement to return `true | false` literally\n\n           ### Correction\n           returning just the condition (+ some tweaks)\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+17 if_cond_then_cond",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nreturning the condition of an if statement on success and a boolean literal otherwise\n### Description\n### Violation\n           returning the condition of an if statement on success and a boolean literal otherwise\n\n           ### Correction\n           returning just the condition or simplifying further\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+18 if_not_cond",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nchecking negation in the if condition\n### Description\n### Violation\n           checking negation in the if condition\n\n           ### Correction\n           swapping the then and else branches of the if statement\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+19 if_to_or",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose if statement that can be simplified\n### Description\n### Violation\n           overly verbose if statement that can be simplified\n\n           ### Correction\n           rewriting using a boolean operator like `||`\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+20 if_to_and",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose if statement that can be simplified\n### Description\n### Violation\n           overly verbose if statement that can be simplified\n\n           ### Correction\n           rewriting using a boolean operator like `&&`\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+21 if_to_and_inv",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose if statement that can be simplified\n### Description\n### Violation\n           overly verbose if statement that can be simplified\n\n           ### Correction\n           rewriting using a boolean operator like `&&` and `not`\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+22 if_to_or_inv",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\noverly verbose if statement that can be simplified\n### Description\n### Violation\n           overly verbose if statement that can be simplified\n\n           ### Correction\n           rewriting using a boolean operator like `||` and `not`\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+23 nested_if",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing nested if statements more than three layers deep\n### Description\n### Violation\n           using nested if statements more than three layers deep\n\n           ### Correction\n           using let statements or helper methods / rethinking logic\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+24 nested_match",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nusing nested match statements three or more layers deep\n### Description\n### Violation\n           using nested match statements three or more layers deep\n\n           ### Correction\n           using let statements or helper methods / rethinking logic\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+25 redundant_or",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nUsage of the `||` is redundant\n### Description\n### Violation\n           Usage of the `||` is redundant\n\n           ### Correction\n           simplifying further\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "CAMELOT+26 redundant_and",
+    "namespace": "CAMELOT",
+    "group": "untyped:camelot",
+    "tags": [ "untyped", "camelot" ],
+    "level": "warn",
+    "impl": "yalo_plugin_CAMELOT",
+    "docs": "### Message\nUsage of the `&&` is redundant\n### Description\n### Violation\n           Usage of the `&&` is redundant\n\n           ### Correction\n           simplifying further\n           ",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
   }
 ]
