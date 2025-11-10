@@ -1,9 +1,11 @@
 
 var NAMESPACES_FILTERS_DEFAULT = {
+    "CAMELOT": true,
     "FIND": true,
     "YALO": true,
     "ZANUDA": true };
 var IMPL_FILTERS_DEFAULT = {
+    "yalo_plugin_CAMELOT": true,
     "yalo_plugin_FIND": true,
     "yalo_plugin_YALO": true,
     "yalo_plugin_ZANUDA": true };
