@@ -20,8 +20,8 @@ let eprint () =
   Printf.eprintf "   --no-load-plugins: %b\n%!" !Args.arg_no_load_plugins ;
   Printf.eprintf
     "   -C (--config-file): %s\n%!" (match !Args.arg_config_file with
-    | None -> "none"
-    | Some s -> Printf.sprintf "%S\n%!" s);
+        | None -> "none"
+        | Some s -> Printf.sprintf "%S\n%!" s);
   Printf.eprintf "   -L (--load-plugin)\n%!";
   List.iter (fun plugin ->
       Printf.eprintf "        plugin %S\n%!" plugin
@@ -34,7 +34,7 @@ let eprint () =
   List.iter (fun dir ->
       Printf.eprintf "        warnings %S%s\n%!" dir
         (if !Args.arg_skip_config_warnings then
-          " (skipped)" else "")
+           " (skipped)" else "")
     ) !!Yalo.Config.config_warnings ;
   List.iter (fun dir ->
       Printf.eprintf "        warnings %S\n%!" dir
@@ -43,7 +43,7 @@ let eprint () =
   List.iter (fun dir ->
       Printf.eprintf "        errors %S%s\n%!" dir
         (if !Args.arg_skip_config_warnings then
-          " (skipped)" else "")
+           " (skipped)" else "")
     ) !Args.arg_errors ;
   Printf.eprintf "   -e (--errors)\n%!";
   List.iter (fun dir ->
@@ -74,12 +74,12 @@ let eprint () =
             w.w_num
             (if w.w_set_by_default then ' ' else '!')
             (match w.w_state, w.w_level_error with
-            | Warning_enabled, true -> "+e"
-            | Warning_sleeping, true -> "?e"
-            | Warning_disabled, true -> assert false
-            | Warning_enabled, false -> "+w"
-            | Warning_sleeping, false -> "?a" (* allow *)
-            | Warning_disabled, false -> "--")
+             | Warning_enabled, true -> "+e"
+             | Warning_sleeping, true -> "?e"
+             | Warning_disabled, true -> assert false
+             | Warning_enabled, false -> "+w"
+             | Warning_sleeping, false -> "?a" (* allow *)
+             | Warning_disabled, false -> "--")
             w.w_name
             (String.concat " "
                (List.map (fun t -> t.tag_name) w.w_tags))

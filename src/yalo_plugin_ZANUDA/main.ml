@@ -26,7 +26,7 @@ let tag_camelot = YALO.new_tag "camelot"
 let tag_suspicious = YALO.new_tag "suspicious"
 
 let section = YALO.CONFIG.create_section
-                plugin ~short_help:"ZANUDA plugin"
+    plugin ~short_help:"ZANUDA plugin"
 
 let w_id_caml_cased_types = 1
 let w_id_no_toplevel_eval = 2

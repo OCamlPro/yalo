@@ -12,7 +12,37 @@
 
 open Yalo.V1
 
-module OCAML_AST = Ppxlib.Ast
+module OCAML_AST = struct
+  include Ppxlib.Ast
+
+  let config = Ppxlib.Pp_ast.Config.make ~show_attrs:true ()
+  let format_to_string pp x =
+    Buffer.clear Format.stdbuf;
+    Format.fprintf Format.str_formatter "%a@."
+      pp x;
+    Format.flush_str_formatter ()
+
+  (* Print the AST to ease pattern-matching on it *)
+  let string_of_structure =
+    format_to_string (Ppxlib.Pp_ast.structure ~config)
+  let string_of_signature =
+    format_to_string (Ppxlib.Pp_ast.signature ~config)
+  let string_of_expression =
+    format_to_string (Ppxlib.Pp_ast.expression ~config)
+  let string_of_pattern =
+    format_to_string (Ppxlib.Pp_ast.pattern ~config)
+
+  let is_menhir_generated_file str_items =
+    match str_items with
+      { pstr_desc =
+          Pstr_module {
+            pmb_name = { txt = Some id; _ }; _ } ; _ }
+      :: _
+      ->
+        id = "MenhirBasics"
+    | _ -> false
+
+end
 
 module OCAML_AST_TRAVERSE = struct
 
@@ -21,59 +51,59 @@ module OCAML_AST_TRAVERSE = struct
     (YALO_TYPES.location * 'a, unit) YALO_TYPES.active_linters
 
   type t = {
-      file : YALO_TYPES.file ;
-      mutable longident : OCAML_AST.longident ast_lint_list_with_loc ;
-      mutable constant : OCAML_AST.constant ast_lint_list ;
-      mutable attribute : OCAML_AST.attribute ast_lint_list ;
-      mutable extension : OCAML_AST.extension ast_lint_list ;
-      mutable payload : OCAML_AST.payload ast_lint_list ;
-      mutable core_type : OCAML_AST.core_type ast_lint_list ;
-      mutable package_type : OCAML_AST.package_type ast_lint_list ;
-      mutable row_field : OCAML_AST.row_field ast_lint_list ;
-      mutable object_field : OCAML_AST.object_field ast_lint_list ;
-      mutable pattern : OCAML_AST.pattern ast_lint_list ;
-      mutable expression : OCAML_AST.expression ast_lint_list ;
-      mutable case : OCAML_AST.case ast_lint_list ;
-      mutable letop : OCAML_AST.letop ast_lint_list ;
-      mutable binding_op : OCAML_AST.binding_op ast_lint_list ;
-      mutable value_description : OCAML_AST.value_description ast_lint_list ;
-      mutable type_declaration : OCAML_AST.type_declaration ast_lint_list ;
-      mutable label_declaration : OCAML_AST.label_declaration ast_lint_list ;
-      mutable constructor_declaration :
-                OCAML_AST.constructor_declaration ast_lint_list ;
-      mutable type_extension : OCAML_AST.type_extension ast_lint_list ;
-      mutable extension_constructor : OCAML_AST.extension_constructor
-                                        ast_lint_list ;
-      mutable type_exception : OCAML_AST.type_exception ast_lint_list ;
-      mutable class_type : OCAML_AST.class_type ast_lint_list ;
-      mutable class_signature : OCAML_AST.class_signature ast_lint_list ;
-      mutable class_type_field : OCAML_AST.class_type_field ast_lint_list ;
-      mutable class_description : OCAML_AST.class_description ast_lint_list ;
-      mutable class_type_declaration :
-                OCAML_AST.class_type_declaration ast_lint_list ;
-      mutable class_expr : OCAML_AST.class_expr ast_lint_list ;
-      mutable class_structure : OCAML_AST.class_structure ast_lint_list ;
-      mutable class_field : OCAML_AST.class_field ast_lint_list ;
-      mutable class_declaration : OCAML_AST.class_declaration ast_lint_list ;
-      mutable module_type : OCAML_AST.module_type ast_lint_list ;
-      mutable signature_item : OCAML_AST.signature_item ast_lint_list ;
-      mutable module_declaration : OCAML_AST.module_declaration ast_lint_list ;
-      mutable module_substitution :
-                OCAML_AST.module_substitution ast_lint_list ;
-      mutable module_type_declaration :
-                OCAML_AST.module_type_declaration ast_lint_list ;
-      mutable open_description : OCAML_AST.open_description ast_lint_list ;
-      mutable open_declaration : OCAML_AST.open_declaration ast_lint_list ;
-      mutable include_description :
-                OCAML_AST.include_description ast_lint_list ;
-      mutable include_declaration :
-                OCAML_AST.include_declaration ast_lint_list ;
-      mutable structure_item : OCAML_AST.structure_item ast_lint_list ;
-      mutable value_binding : OCAML_AST.value_binding ast_lint_list ;
-      mutable module_binding : OCAML_AST.module_binding ast_lint_list ;
-      mutable toplevel_directive : OCAML_AST.toplevel_directive ast_lint_list ;
-      mutable directive_argument : OCAML_AST.directive_argument ast_lint_list ;
-    }
+    file : YALO_TYPES.file ;
+    mutable longident : OCAML_AST.longident ast_lint_list_with_loc ;
+    mutable constant : OCAML_AST.constant ast_lint_list ;
+    mutable attribute : OCAML_AST.attribute ast_lint_list ;
+    mutable extension : OCAML_AST.extension ast_lint_list ;
+    mutable payload : OCAML_AST.payload ast_lint_list ;
+    mutable core_type : OCAML_AST.core_type ast_lint_list ;
+    mutable package_type : OCAML_AST.package_type ast_lint_list ;
+    mutable row_field : OCAML_AST.row_field ast_lint_list ;
+    mutable object_field : OCAML_AST.object_field ast_lint_list ;
+    mutable pattern : OCAML_AST.pattern ast_lint_list ;
+    mutable expression : OCAML_AST.expression ast_lint_list ;
+    mutable case : OCAML_AST.case ast_lint_list ;
+    mutable letop : OCAML_AST.letop ast_lint_list ;
+    mutable binding_op : OCAML_AST.binding_op ast_lint_list ;
+    mutable value_description : OCAML_AST.value_description ast_lint_list ;
+    mutable type_declaration : OCAML_AST.type_declaration ast_lint_list ;
+    mutable label_declaration : OCAML_AST.label_declaration ast_lint_list ;
+    mutable constructor_declaration :
+      OCAML_AST.constructor_declaration ast_lint_list ;
+    mutable type_extension : OCAML_AST.type_extension ast_lint_list ;
+    mutable extension_constructor : OCAML_AST.extension_constructor
+        ast_lint_list ;
+    mutable type_exception : OCAML_AST.type_exception ast_lint_list ;
+    mutable class_type : OCAML_AST.class_type ast_lint_list ;
+    mutable class_signature : OCAML_AST.class_signature ast_lint_list ;
+    mutable class_type_field : OCAML_AST.class_type_field ast_lint_list ;
+    mutable class_description : OCAML_AST.class_description ast_lint_list ;
+    mutable class_type_declaration :
+      OCAML_AST.class_type_declaration ast_lint_list ;
+    mutable class_expr : OCAML_AST.class_expr ast_lint_list ;
+    mutable class_structure : OCAML_AST.class_structure ast_lint_list ;
+    mutable class_field : OCAML_AST.class_field ast_lint_list ;
+    mutable class_declaration : OCAML_AST.class_declaration ast_lint_list ;
+    mutable module_type : OCAML_AST.module_type ast_lint_list ;
+    mutable signature_item : OCAML_AST.signature_item ast_lint_list ;
+    mutable module_declaration : OCAML_AST.module_declaration ast_lint_list ;
+    mutable module_substitution :
+      OCAML_AST.module_substitution ast_lint_list ;
+    mutable module_type_declaration :
+      OCAML_AST.module_type_declaration ast_lint_list ;
+    mutable open_description : OCAML_AST.open_description ast_lint_list ;
+    mutable open_declaration : OCAML_AST.open_declaration ast_lint_list ;
+    mutable include_description :
+      OCAML_AST.include_description ast_lint_list ;
+    mutable include_declaration :
+      OCAML_AST.include_declaration ast_lint_list ;
+    mutable structure_item : OCAML_AST.structure_item ast_lint_list ;
+    mutable value_binding : OCAML_AST.value_binding ast_lint_list ;
+    mutable module_binding : OCAML_AST.module_binding ast_lint_list ;
+    mutable toplevel_directive : OCAML_AST.toplevel_directive ast_lint_list ;
+    mutable directive_argument : OCAML_AST.directive_argument ast_lint_list ;
+  }
 
   open OCAML_AST
 
@@ -104,9 +134,9 @@ module OCAML_AST_TRAVERSE = struct
     | Node_object_field of object_field
     | Node_open_declaration of open_declaration
     | Node_open_description of open_description
-    (* | Node_signature of signature *)
+    | Node_signature of signature_item list
     | Node_signature_item of signature_item
-    (* | Node_structure of structure *)
+    | Node_structure of structure
     | Node_structure_item of structure_item
     | Node_core_type of core_type
     | Node_type_declaration of type_declaration
@@ -158,9 +188,9 @@ module OCAML_AST_TRAVERSE = struct
     | Node_object_field _ -> "object_field"
     | Node_open_declaration _ -> "open_declaration"
     | Node_open_description _ -> "open_description"
-    (* | Node_signature _ -> "signature" *)
+    | Node_signature _ -> "signature"
     | Node_signature_item _ -> "signature_item"
-    (* | Node_structure _ -> "structure" *)
+    | Node_structure _ -> "structure"
     | Node_structure_item _ -> "structure_item"
     | Node_core_type _ -> "core_type"
     | Node_type_declaration _ -> "type_declaration"
@@ -182,7 +212,7 @@ module OCAML_AST_TRAVERSE = struct
     | Node_toplevel_directive _ -> "toplevel_directive"
     | Node_directive_argument _ -> "directive_argument"
 
-    (* This reference is updated during the AST traversal to contain the
+  (* This reference is updated during the AST traversal to contain the
      path of nodes from the current element to the root of the AST. It
      may be used to check whether something happens under a given
      construction. *)
@@ -200,26 +230,21 @@ end
 
 module OCAML_AST_INTERNAL : sig
 
-  val ast_of_structure : OCAML_AST.structure -> string
-  val ast_of_signature : OCAML_AST.signature -> string
-  val ast_of_expression : OCAML_AST.expression -> string
-  val ast_of_pattern : OCAML_AST.pattern -> string
-
   val structure :
     file:YALO_TYPES.file ->
     (YALO_TYPES.linter *
-       (file:YALO_TYPES.file ->
-        linter:YALO_TYPES.linter -> OCAML_AST_TRAVERSE.t -> unit))
+     (file:YALO_TYPES.file ->
+      linter:YALO_TYPES.linter -> OCAML_AST_TRAVERSE.t -> unit))
       list -> OCAML_AST.structure -> unit
 
   val signature :
     file:YALO_TYPES.file ->
     (YALO_TYPES.linter *
-       (file:YALO_TYPES.file ->
-        linter:YALO_TYPES.linter -> OCAML_AST_TRAVERSE.t -> unit))
+     (file:YALO_TYPES.file ->
+      linter:YALO_TYPES.linter -> OCAML_AST_TRAVERSE.t -> unit))
       list -> OCAML_AST.signature -> unit
 
-  end = struct
+end = struct
 
   open OCAML_AST_TRAVERSE
 
@@ -274,10 +299,10 @@ module OCAML_AST_INTERNAL : sig
 
   let push node =
     OCAML_AST_TRAVERSE.node_stack_ref := node ::
-                                           !OCAML_AST_TRAVERSE.node_stack_ref
+                                         !OCAML_AST_TRAVERSE.node_stack_ref
   let pop () =
     OCAML_AST_TRAVERSE.node_stack_ref := List.tl
-                                           !OCAML_AST_TRAVERSE.node_stack_ref
+        !OCAML_AST_TRAVERSE.node_stack_ref
 
   let binding_op x = Node_binding_op x
   let case x = Node_case x
@@ -531,42 +556,25 @@ module OCAML_AST_INTERNAL : sig
         f ~file ~linter traverse) ast_traverse_linters ;
     traverse
 
-  let config = Ppxlib.Pp_ast.Config.make ~show_attrs:true ()
-  let format_to_string pp x =
-    Buffer.clear Format.stdbuf;
-    Format.fprintf Format.str_formatter "%a@."
-      pp x;
-    Format.flush_str_formatter ()
-
-  (* Print the AST to ease pattern-matching on it *)
-  let ast_of_structure =
-    format_to_string (Ppxlib.Pp_ast.structure ~config)
-  let ast_of_signature =
-    format_to_string (Ppxlib.Pp_ast.signature ~config)
-  let ast_of_expression =
-    format_to_string (Ppxlib.Pp_ast.expression ~config)
-  let ast_of_pattern =
-    format_to_string (Ppxlib.Pp_ast.pattern ~config)
-
   let signature ~file ast_traverse_linters ast =
     if YALO.verbose 4 then
       Printf.eprintf "signature of %S: %s\n%!"
         (YALO_FILE.name file)
-        (ast_of_signature ast);
+        (OCAML_AST.string_of_signature ast);
     let traverse = make_iterator ~file ast_traverse_linters in
-    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
+    OCAML_AST_TRAVERSE.node_stack_ref := [ Node_signature ast ] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#signature ast traverse in
-    assert ( !OCAML_AST_TRAVERSE.node_stack_ref == [] );
+    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     ()
 
   let structure ~file ast_traverse_linters ast =
     if YALO.verbose 4 then
       Printf.eprintf "structure of %S: %s\n%!"
         (YALO_FILE.name file)
-        (ast_of_structure ast);
+        (OCAML_AST.string_of_structure ast);
     let traverse = make_iterator ~file ast_traverse_linters in
-    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
+    OCAML_AST_TRAVERSE.node_stack_ref := [ Node_structure ast ] ;
     let ( _ : OCAML_AST_TRAVERSE.t ) = ast_folder#structure ast traverse in
-    assert ( !OCAML_AST_TRAVERSE.node_stack_ref == [] );
+    OCAML_AST_TRAVERSE.node_stack_ref := [] ;
     ()
 end

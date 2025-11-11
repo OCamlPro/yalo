@@ -18,16 +18,19 @@ let register ns w =
     ("check:typed:" ^ YALO_WARNING.name w)
     ~warnings:[ w ]
     OCAML_TAST.(fun ~file ~linter traverse ->
-    let check_expr ~file:_ ~linter:_ expr =
-      match expr.exp_desc with
-      | Texp_ident (path, _, _) ->
-         begin
-           let path = Path.name path in
-           if EzString.starts_with path ~prefix:"Stdlib.Obj" then
-             let loc = expr.exp_loc in
-             YALO.warn ~loc ~file ~linter w
-         end
-      | _ -> ()
-    in
-    traverse.expr <- (linter, check_expr) :: traverse.expr
-  )
+        let not_menhir_generated =
+          not @@ OCAML_LANG.is_menhir_generated_file() in
+        let check_expr ~file:_ ~linter:_ expr =
+          match expr.exp_desc with
+          | Texp_ident (path, _, _) ->
+              begin
+                let path = Path.name path in
+                if EzString.starts_with path ~prefix:"Stdlib.Obj" &&
+                   not_menhir_generated then
+                  let loc = expr.exp_loc in
+                  YALO.warn ~loc ~file ~linter w
+              end
+          | _ -> ()
+        in
+        traverse.expr <- (linter, check_expr) :: traverse.expr
+      )

@@ -12,7 +12,7 @@
 
 (* We should provide a string based version of Ez_config.
    Load and save should work with an optionnal filename.
- *)
+*)
 
 
 open Yalo_misc.Ez_config.V1
@@ -44,8 +44,8 @@ let create_config_option name ~path =
   EZCONFIG.create_section_option name path
 
 let main_section = EZCONFIG.create_config_section
-                     config_file ["main"]
-                     "Options for Yalo itself"
+    config_file ["main"]
+    "Options for Yalo itself"
 
 let config_load_plugins =
   create_config_option main_section
@@ -80,38 +80,46 @@ module FILEATTR = struct
 
   let of_option = function
     | Module list ->
-       List.map (function
-           | "project", StringValue v ->
-              Project ( EzString.split v ',' )
-           | "project", v ->
-              Project ( EZCONFIG.value_to_list EZCONFIG.value_to_string v )
-           | "skipdir", v ->
-              Skipdir ( EZCONFIG.value_to_bool v )
-           | "tag", v ->
-              Tag ( EZCONFIG.value_to_string v )
-           | s, _ ->
-              Printf.ksprintf failwith
-                "Unknown fileattr name %S" s
-         ) list
+        List.map (function
+            | "project", StringValue v ->
+                Project ( EzString.split v ',' )
+            | "project", v ->
+                Project ( EZCONFIG.value_to_list EZCONFIG.value_to_string v )
+            | "skip", v ->
+                Skip ( EZCONFIG.value_to_bool v )
+            | "tag", v ->
+                Tag ( EZCONFIG.value_to_string v )
+            | "ignore", StringValue v ->
+                Ignore ( EzString.split v ',' )
+            | "ignore", v ->
+                Ignore ( EZCONFIG.value_to_list EZCONFIG.value_to_string v )
+            | s, _ ->
+                Printf.ksprintf failwith
+                  "Unknown fileattr name %S" s
+          ) list
     | _ -> failwith "Parse error"
 
   let to_option fileattrs =
     Module (
-    List.map (function
-        | Project [ name ] ->
-           "project", StringValue name ;
-        | Project list ->
-           "project",
-           EZCONFIG.list_to_value
-             EZCONFIG.string_to_value list
-        | Tag tagname ->
-           "tag",
-           EZCONFIG.string_to_value tagname ;
-        | Skipdir bool ->
-           "skipdir",
-           EZCONFIG.bool_to_value bool ;
-      ) fileattrs
-      )
+      List.map (function
+          | Project [ name ] ->
+              "project", StringValue name ;
+          | Project list ->
+              "project",
+              EZCONFIG.list_to_value
+                EZCONFIG.string_to_value list
+          | Tag tagname ->
+              "tag",
+              EZCONFIG.string_to_value tagname ;
+          | Skip bool ->
+              "skip",
+              EZCONFIG.bool_to_value bool ;
+          | Ignore list ->
+              "ignore",
+              EZCONFIG.list_to_value
+                EZCONFIG.string_to_value list
+        ) fileattrs
+    )
 
   let option =
     EZCONFIG.define_option_class "fileattr"

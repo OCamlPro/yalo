@@ -31,10 +31,10 @@ let default_stdlib_infix =
   ]
 
 let register ns section
-      ?(name="forbidden_infix")
-      ~tags
-      ?(msg = lint_msg)
-      id
+    ?(name="forbidden_infix")
+    ~tags
+    ?(msg = lint_msg)
+    id
   =
   let ns_name = YALO_NS.name ns in
   let w =
@@ -64,9 +64,9 @@ let register ns section
   let allowed_infix_operators =
     StringSet.of_list (!!allowed_infix
                        @
-                         List.map (fun s ->
-                             "Stdlib." ^ s)
-                           !!allowed_stdlib_infix) in
+                       List.map (fun s ->
+                           "Stdlib." ^ s)
+                         !!allowed_stdlib_infix) in
 
   let check_infix ~file ~linter path loc =
     let name = Path.name path in
@@ -82,28 +82,28 @@ let register ns section
     ("check:typed:" ^ YALO_WARNING.name w)
     ~warnings:[ w ]
     OCAML_TAST.(fun ~file ~linter traverse ->
-    let check_expr ~file:_ ~linter:_ expr =
-      match expr.exp_desc with
-      | Texp_ident (p, longident, _) ->
-         begin
-           match Longident.flatten longident.txt with
-           | [ "*sth*" | "*opt*" ] -> ()
-           | [ name ] when
-                  begin
-                    match name.[0] with
-                    | 'a'..'z' | '_' -> false
-                    | _ -> true
-                  end
-             ->
-              check_infix ~file ~linter p expr.exp_loc
-           | _ -> ()
-         end
-      | _ -> ()
-    in
-    let binding_op ~file ~linter bo =
-      check_infix ~file ~linter bo.bop_op_path bo.bop_loc
-    in
-    traverse.expr <- (linter, check_expr) :: traverse.expr ;
-    traverse.binding_op <- (linter, binding_op) :: traverse.binding_op
+        let check_expr ~file:_ ~linter:_ expr =
+          match expr.exp_desc with
+          | Texp_ident (p, longident, _) ->
+              begin
+                match Longident.flatten longident.txt with
+                | [ "*sth*" | "*opt*" ] -> ()
+                | [ name ] when
+                    begin
+                      match name.[0] with
+                      | 'a'..'z' | '_' -> false
+                      | _ -> true
+                    end
+                  ->
+                    check_infix ~file ~linter p expr.exp_loc
+                | _ -> ()
+              end
+          | _ -> ()
+        in
+        let binding_op ~file ~linter bo =
+          check_infix ~file ~linter bo.bop_op_path bo.bop_loc
+        in
+        traverse.expr <- (linter, check_expr) :: traverse.expr ;
+        traverse.binding_op <- (linter, binding_op) :: traverse.binding_op
 
-  )
+      )

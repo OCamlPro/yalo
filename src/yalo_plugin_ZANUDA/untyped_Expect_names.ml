@@ -14,7 +14,7 @@
 (* see
    https://github.com/Kakadu/zanuda/blob/master/src/untyped/Expect_names.ml
    for comparison
- *)
+*)
 
 let lint_id = "expect_tests_no_names"
 let lint_msg =
@@ -37,38 +37,38 @@ open Yalo_plugin_ocaml.V1
 open OCAML_AST
 
 let register
-      ~id
-      ~tags
-      ?(lint_id=lint_id)
-      ?(msg=lint_msg)
-      ?(desc=documentation)
-      ns =
+    ~id
+    ~tags
+    ?(lint_id=lint_id)
+    ?(msg=lint_msg)
+    ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id
-            ~name:lint_id ~tags ~msg ~desc
+      ~name:lint_id ~tags ~msg ~desc
   in
 
   OCAML_LANG.new_ast_impl_traverse_linter
     ns ("check:" ^ lint_id)
     ~warnings:[w]
     (fun ~file:_ ~linter traverse ->
-      let extension ~file ~linter (({ txt ; _ }, payload)) =
-        if String.equal txt "expect_test"
-        then begin
-            match payload with
-            | PStr
-              [ { pstr_desc =
-                    Pstr_value
-                      (Nonrecursive,
-                       [ { pvb_loc = loc;
-                           pvb_pat = { ppat_desc = Ppat_any ;_ }; _ } ]);
-                  _
-                }
-              ] ->
+       let extension ~file ~linter (({ txt ; _ }, payload)) =
+         if String.equal txt "expect_test"
+         then begin
+           match payload with
+           | PStr
+               [ { pstr_desc =
+                     Pstr_value
+                       (Nonrecursive,
+                        [ { pvb_loc = loc;
+                            pvb_pat = { ppat_desc = Ppat_any ;_ }; _ } ]);
+                   _
+                 }
+               ] ->
                YALO.warn ~file ~linter ~loc w
-            | _ -> ()
-          end
+           | _ -> ()
+         end
 
-      in
-      traverse.extension <- (linter, extension) :: traverse.extension
+       in
+       traverse.extension <- (linter, extension) :: traverse.extension
     )

@@ -14,7 +14,7 @@
 (* see
    https://github.com/Kakadu/zanuda/blob/master/src/typed/Ignore.ml
    for comparison
- *)
+*)
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
@@ -51,35 +51,35 @@ let warning_msg typed_exp =
 
 
 let register ~id ~tags
-      ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
-      ns =
+    ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id
-            ~name:lint_id ~tags ~msg ~desc
+      ~name:lint_id ~tags ~msg ~desc
   in
 
   OCAML_LANG.new_tast_impl_traverse_linter
     ns ("check:" ^ lint_id)
     ~warnings:[w]
     OCAML_TAST.(fun ~file ~linter traverse ->
-    let check_expr ~file:_ ~linter:_ exp =
-      match exp.exp_desc with
-      | Texp_apply (
-          { exp_desc = Texp_ident (path, _, _); _ },
-          [ _, arg ] )
-           when (
-        match Path.name path with
-        | "Stdlib.ignore"
-          | "Base.ignore"-> true
-        | _ -> false ) ->
-         begin
-           match OCAML_TAST.extract_arg arg with
-           | None -> assert false
-           | Some arg ->
-              YALO.warn ~loc:exp.exp_loc
-                ~file ~linter w ~msg:(warning_msg arg)
-         end
-      | _ -> ()
-    in
-    traverse.expr <- (linter, check_expr) :: traverse.expr
-  )
+        let check_expr ~file:_ ~linter:_ exp =
+          match exp.exp_desc with
+          | Texp_apply (
+              { exp_desc = Texp_ident (path, _, _); _ },
+              [ _, arg ] )
+            when (
+              match Path.name path with
+              | "Stdlib.ignore"
+              | "Base.ignore"-> true
+              | _ -> false ) ->
+              begin
+                match OCAML_TAST.extract_arg arg with
+                | None -> assert false
+                | Some arg ->
+                    YALO.warn ~loc:exp.exp_loc
+                      ~file ~linter w ~msg:(warning_msg arg)
+              end
+          | _ -> ()
+        in
+        traverse.expr <- (linter, check_expr) :: traverse.expr
+      )

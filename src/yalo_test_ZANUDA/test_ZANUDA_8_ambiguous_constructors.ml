@@ -15,8 +15,8 @@ type 'a a = 'a option = None | Some of 'a
 [@@@yalo.check ""]
 
 type 'a b =
-  None
-| Some of 'a
+    None
+  | Some of 'a
 [@@@yalo.check "ZANUDA+8"]
 [@@@yalo.check "ZANUDA+8"]
 

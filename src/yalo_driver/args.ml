@@ -43,36 +43,36 @@ let parse_initial_args args =
   let rec iter args =
     match args with
       ("-C"|"config-file") :: file :: args ->
-       begin
-         match !arg_config_file with
-         | None ->
-            arg_config_file := Some file;
-            iter args
-         | Some file0 ->
-            Printf.eprintf
-              "Error in arguments: -C <config-file> cannot be used twice\n";
-            Printf.eprintf " - first used with %s\n" file0;
-            Printf.eprintf " - second used with %s\n" file;
-            exit 2
-       end;
+        begin
+          match !arg_config_file with
+          | None ->
+              arg_config_file := Some file;
+              iter args
+          | Some file0 ->
+              Printf.eprintf
+                "Error in arguments: -C <config-file> cannot be used twice\n";
+              Printf.eprintf " - first used with %s\n" file0;
+              Printf.eprintf " - second used with %s\n" file;
+              exit 2
+        end;
     | ("-L"|"--load-plugin") :: file :: args ->
-       arg_load_plugins := !arg_load_plugins @ [ file ];
-       iter args
+        arg_load_plugins := !arg_load_plugins @ [ file ];
+        iter args
     | ("-P"|"--profile") :: file :: args ->
-       arg_profiles := !arg_profiles @ [ file ];
-       iter args
+        arg_profiles := !arg_profiles @ [ file ];
+        iter args
     | ("-I"|"--include-dir") :: dir :: args ->
-       arg_load_dirs := dir :: !arg_load_dirs;
-       iter args
+        arg_load_dirs := dir :: !arg_load_dirs;
+        iter args
     | ("-v"|"--verbose") :: args ->
-       incr arg_verbosity;
-       iter args
+        incr arg_verbosity;
+        iter args
     | "-no-load-plugins" :: args ->
-       arg_no_load_plugins := true;
-       iter args
+        arg_no_load_plugins := true;
+        iter args
     | [] | [ "--help" ] ->
-       arg_no_load_plugins := true;
-       "help", []
+        arg_no_load_plugins := true;
+        "help", []
     | cmd :: args -> cmd, args
   in
   let cmd, args = iter args in
@@ -89,53 +89,53 @@ let initial_arg_too_late name =
 
 let initial_arg_specs = [
 
-    (* Initial arguments *)
+  (* Initial arguments *)
 
-    [ "L" ; "load-plugin" ], EZCMD.String (fun _s ->
-                                 initial_arg_too_late "-L"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"PLUGIN"
-      "Load plugin PLUGIN (a .cmxs or a .ml file)";
+  [ "L" ; "load-plugin" ], EZCMD.String (fun _s ->
+      initial_arg_too_late "-L"),
+  EZCMD.info
+    ~docs:"INITIAL ARGUMENTS"
+    ~docv:"PLUGIN"
+    "Load plugin PLUGIN (a .cmxs or a .ml file)";
 
-    [ "P" ; "profile" ], EZCMD.String (fun _s ->
-                             initial_arg_too_late "-P"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"PROFILE"
-      "Specify profile to load (a yalo-<PROFILE>.conf file)";
-
-
-    [ "I" ; "include-dir" ], EZCMD.String (fun _s ->
-                                 initial_arg_too_late "-I"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"DIR"
-      "Add DIR to the list of directories when plugins should be searched for";
+  [ "P" ; "profile" ], EZCMD.String (fun _s ->
+      initial_arg_too_late "-P"),
+  EZCMD.info
+    ~docs:"INITIAL ARGUMENTS"
+    ~docv:"PROFILE"
+    "Specify profile to load (a yalo-<PROFILE>.conf file)";
 
 
-    [ "C" ; "config-file" ], EZCMD.String (fun _s ->
-                                 initial_arg_too_late "-C"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      ~docv:"CONFIG-FILE"
-      "Load CONFIG-FILE instead of searching for .yalocaml";
+  [ "I" ; "include-dir" ], EZCMD.String (fun _s ->
+      initial_arg_too_late "-I"),
+  EZCMD.info
+    ~docs:"INITIAL ARGUMENTS"
+    ~docv:"DIR"
+    "Add DIR to the list of directories when plugins should be searched for";
 
-    [ "no-load-plugins" ], EZCMD.Unit (fun () ->
-                               initial_arg_too_late "--no-load-plugins"),
-    EZCMD.info
-      ~docs:"INITIAL ARGUMENTS"
-      "Do not load plugins"
-  ]
+
+  [ "C" ; "config-file" ], EZCMD.String (fun _s ->
+      initial_arg_too_late "-C"),
+  EZCMD.info
+    ~docs:"INITIAL ARGUMENTS"
+    ~docv:"CONFIG-FILE"
+    "Load CONFIG-FILE instead of searching for .yalocaml";
+
+  [ "no-load-plugins" ], EZCMD.Unit (fun () ->
+      initial_arg_too_late "--no-load-plugins"),
+  EZCMD.info
+    ~docs:"INITIAL ARGUMENTS"
+    "Do not load plugins"
+]
 
 let common_arg_specs = [
 
-    [ "print-config" ], EZCMD.Set arg_print_config,
-    EZCMD.info "Print configuration";
+  [ "print-config" ], EZCMD.Set arg_print_config,
+  EZCMD.info "Print configuration";
 
-    [ "save-config" ], EZCMD.String (fun file ->
-                           arg_save_config := Some file),
-    EZCMD.info ~docv:"FILE" "Save configuration to FILE";
+  [ "save-config" ], EZCMD.String (fun file ->
+      arg_save_config := Some file),
+  EZCMD.info ~docv:"FILE" "Save configuration to FILE";
 
-  ]
+]
 

@@ -18,18 +18,17 @@ module OCAML_LEX : sig
   val get_STRING : token -> string * string option
 end
 
-module OCAML_AST : (* = Ppxlib.Ast *)
-  module type of Ast_traverse.OCAML_AST
-module OCAML_AST_TRAVERSE :
-  module type of Ast_traverse.OCAML_AST_TRAVERSE
+module OCAML_AST : sig
+  include module type of Ast_traverse.OCAML_AST
+  (* = Ppxlib.Ast + string_of_structure *)
+  module OCAML_TRAVERSE : module type of Ast_traverse.OCAML_AST_TRAVERSE
+  module OCAML_CHECK : module type of Ast_check
+end
 
-module OCAML_TAST :
-  module type of Tast_traverse.OCAML_TAST
-module OCAML_TAST_TRAVERSE :
-  module type of Tast_traverse.OCAML_TAST_TRAVERSE
-
-module OCAML_AST_CHECK :
-  module type of Ast_check
+module OCAML_TAST : sig
+  include module type of Tast_traverse.OCAML_TAST
+  module OCAML_TRAVERSE : module type of Tast_traverse.OCAML_TAST_TRAVERSE
+end
 
 module OCAML_LANG : sig
 
@@ -59,11 +58,16 @@ module OCAML_LANG : sig
   val new_tast_intf_linter : OCAML_TAST.signature new_gen_unit_linter
   val new_tast_impl_linter : OCAML_TAST.structure new_gen_unit_linter
 
-  val new_ast_impl_traverse_linter : OCAML_AST_TRAVERSE.t new_gen_unit_linter
-  val new_ast_intf_traverse_linter : OCAML_AST_TRAVERSE.t new_gen_unit_linter
+  val new_ast_impl_traverse_linter :
+    OCAML_AST.OCAML_TRAVERSE.t new_gen_unit_linter
+  val new_ast_intf_traverse_linter :
+    OCAML_AST.OCAML_TRAVERSE.t new_gen_unit_linter
 
-  val new_tast_impl_traverse_linter : OCAML_TAST_TRAVERSE.t new_gen_unit_linter
-  val new_tast_intf_traverse_linter : OCAML_TAST_TRAVERSE.t new_gen_unit_linter
+  val new_tast_impl_traverse_linter :
+    OCAML_TAST.OCAML_TRAVERSE.t new_gen_unit_linter
+  val new_tast_intf_traverse_linter :
+    OCAML_TAST.OCAML_TRAVERSE.t new_gen_unit_linter
 
+  val is_menhir_generated_file : unit -> bool
 end
 

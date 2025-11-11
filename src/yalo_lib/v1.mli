@@ -35,33 +35,38 @@ module YALO_TYPES : sig
   type filepath = string list
   type fs
 
+  type scan_kind =
+    | Scan_disabled
+    | Scan_forced
+    | Scan_maybe
+
   type position = Lexing.position = {
-      pos_fname : string;
-      pos_lnum : int;
-      pos_bol : int;
-      pos_cnum : int;
-    }
+    pos_fname : string;
+    pos_lnum : int;
+    pos_bol : int;
+    pos_cnum : int;
+  }
 
   type location = Location.t = {
-      loc_start: position;
-      loc_end: position;
-      loc_ghost: bool;
-    }
+    loc_start: position;
+    loc_end: position;
+    loc_ghost: bool;
+  }
 
   type src_line_input = {
-      line_loc : location ;
-      line_line : string ;
-      line_sep : string ;
-    }
+    line_loc : location ;
+    line_line : string ;
+    line_sep : string ;
+  }
 
   type src_file_input = {
-      file_loc : location ;
-    }
+    file_loc : location ;
+  }
 
   type src_content_input = {
-      content_loc : location ;
-      content_string : string ;
-    }
+    content_loc : location ;
+    content_string : string ;
+  }
 
   type ('linter_input, 'linter_output) linter_function =
     file:file -> linter:linter -> 'linter_input -> 'linter_output
@@ -94,10 +99,10 @@ module YALO : sig
 
   val verbose : int -> bool
   val new_plugin : ?version:string ->
-                   ?args:(string list * Ezcmd.V2.EZCMD.spec *
-                            Ezcmd.V2.EZCMD.TYPES.info)
-                   list ->
-                   string -> plugin
+    ?args:(string list * Ezcmd.V2.EZCMD.spec *
+           Ezcmd.V2.EZCMD.TYPES.info)
+        list ->
+    string -> plugin
   val add_plugin_args : plugin ->
     (string list * Ezcmd.V2.EZCMD.spec * Ezcmd.V2.EZCMD.TYPES.info)
       list -> unit
@@ -117,9 +122,9 @@ module YALO : sig
   val tag_danger : tag
 
   val warn : loc:location -> file:file -> linter:linter ->
-             ?msg:string ->
-             ?autofix:(YALO_TYPES.location * string) list ->
-             warning -> unit
+    ?msg:string ->
+    ?autofix:(YALO_TYPES.location * string) list ->
+    warning -> unit
 
   val mkloc :
     bol:int ->
@@ -178,20 +183,21 @@ module YALO_DOC : sig
   val parent : document -> folder
   val basename : document -> string
  *)
+  val set_other_name : document -> string -> unit
 end
 
 module YALO_FOLDER : sig
   val name : folder -> string
   val fs : folder -> fs
   val projects : folder -> project StringMap.t
-  val set_projects : folder -> project StringMap.t -> unit
   val folders : folder -> folder StringMap.t
 (*
   val parent : folder -> t option
   val basename : folder -> string
-
-  val set_project : folder -> project -> unit
  *)
+  val set_scan : folder -> scan_kind -> unit
+  val set_projects : folder -> project StringMap.t -> unit
+  val set_other_name : folder -> string -> unit
 end
 
 module YALO_LANG : sig
@@ -245,15 +251,15 @@ module YALO_LANG : sig
   val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
 
   val warnings_zone : file:file -> loc:location ->
-                      ?mode:zone_mode -> string -> unit
+    ?mode:zone_mode -> string -> unit
   val warnings_check : file:file -> loc:location -> string -> bool -> unit
 
   val temp_set_option : string list -> string -> unit
 
   module Make_source_linters
-           (M:sig
-                val lang : language
-              end) : sig
+      (M:sig
+         val lang : language
+       end) : sig
 
     val lint_src_file : file:YALO_TYPES.file -> unit
 
@@ -266,13 +272,17 @@ module YALO_LANG : sig
       (src_file_input, unit) linter_function -> unit
     val new_src_content_linter : src_content_input new_gen_unit_linter
     val new_src_line_linter : src_line_input new_gen_unit_linter
-    end
+  end
 end
 
 module YALO_INTERNAL : sig
 
+  val doc_kind :
+    file_doc:Types.document ->
+    Types.file_kind option
   val add_file :
     file_doc:Types.document ->
+    file_kind:Types.file_kind ->
     unit
   val new_file : (* used by ppx *)
     file_doc:Types.document ->

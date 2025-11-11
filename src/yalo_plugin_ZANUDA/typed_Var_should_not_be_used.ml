@@ -12,9 +12,9 @@
 (** Copyright 2021-2025, Kakadu. *)
 (** SPDX-License-Identifier: LGPL-3.0-or-later *)
 (* see
-https://github.com/Kakadu/zanuda/blob/master/src/typed/Var_should_not_be_used.ml
-   for comparison
- *)
+   https://github.com/Kakadu/zanuda/blob/master/
+                                      src/typed/Var_should_not_be_used.ml
+   for comparison *)
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
@@ -44,11 +44,11 @@ let warning_msg id =
     id
 
 let register ~id ~tags
-      ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
-      ns =
+    ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id
-            ~name:lint_id ~tags ~msg ~desc
+      ~name:lint_id ~tags ~msg ~desc
   in
 
   OCAML_LANG.new_tast_impl_traverse_linter
@@ -56,16 +56,16 @@ let register ~id ~tags
     ~warnings:[w]
     OCAML_TAST.(fun ~file ~linter traverse ->
 
-    let check_expr ~file:_ ~linter:_ exp =
-      match exp.exp_desc with
-      | Texp_ident (_, lid, _) ->
-         let list = Longident.flatten lid.txt in
-         List.iter (fun id ->
-             if id.[0] = '_' then
-               YALO.warn ~loc:exp.exp_loc
-                 ~file ~linter w ~msg:(warning_msg id)
-           ) list
-      | _ -> ()
-    in
-    traverse.expr <- (linter, check_expr) :: traverse.expr
-  )
+        let check_expr ~file:_ ~linter:_ exp =
+          match exp.exp_desc with
+          | Texp_ident (_, lid, _) ->
+              let list = Longident.flatten lid.txt in
+              List.iter (fun id ->
+                  if id.[0] = '_' then
+                    YALO.warn ~loc:exp.exp_loc
+                      ~file ~linter w ~msg:(warning_msg id)
+                ) list
+          | _ -> ()
+        in
+        traverse.expr <- (linter, check_expr) :: traverse.expr
+      )

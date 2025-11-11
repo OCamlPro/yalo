@@ -16,9 +16,9 @@ open Types
 let new_counter () =
   let r = ref 0 in
   fun () ->
-  let v = !r in
-  incr r;
-  v
+    let v = !r in
+    incr r;
+    v
 
 let new_file_kind_uid = new_counter ()
 let new_file_uid = new_counter ()

@@ -18,10 +18,10 @@ open OCAML_AST
 let lint_msg = "The use of the Obj module is dangerous"
 
 let register ns
-      ?(name="use_obj")
-      ~tags
-      ?(msg = lint_msg)
-      id
+    ?(name="use_obj")
+    ~tags
+    ?(msg = lint_msg)
+    id
   =
   let w =
     YALO.new_warning ns ~name id
@@ -33,23 +33,25 @@ let register ns
     ("check:" ^ name)
     ~warnings:[ w ]
     (fun ~file:_ ~linter traverse ->
-      let check_longident ~file ~linter (loc, l) =
-        let rec check_longident l =
-          match l with
-            Lident s ->
-             if s = "Obj" then
-               YALO.warn ~loc ~file ~linter w
-            | Ldot (l, _) ->
+       let check_longident ~file ~linter (loc, l) =
+         let not_menhir_generated =
+           not @@ OCAML_LANG.is_menhir_generated_file() in
+         let rec check_longident l =
+           match l with
+             Lident s ->
+               if s = "Obj" && not_menhir_generated then
+                 YALO.warn ~loc ~file ~linter w
+           | Ldot (l, _) ->
                check_longident l
-            | Lapply (l1, l2) ->
+           | Lapply (l1, l2) ->
                check_longident l1 ;
                check_longident l2 ;
-        in
-        check_longident l
-      in
-      traverse.longident <- (linter, check_longident) :: traverse.longident
+         in
+         check_longident l
+       in
+       traverse.longident <- (linter, check_longident) :: traverse.longident
     );
 
   w
-    (* We export it to be also used by Typed_use_obj,
-       a typed version of this one *)
+(* We export it to be also used by Typed_use_obj,
+   a typed version of this one *)

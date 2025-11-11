@@ -22,7 +22,7 @@ let tag_lex = YALO.new_tag "lex"
 let tag_immutable = YALO.new_tag "immutable"
 
 let section = YALO.CONFIG.create_section
-                plugin ~short_help:"YALO plugin"
+    plugin ~short_help:"YALO plugin"
 
 let () =
   Line_linters.register ns section
@@ -35,7 +35,7 @@ let () =
     } ;
   let w_use_obj =
     Untyped_use_obj.register ns
-    ~tags:[ tag_untyped ] 7 in
+      ~tags:[ tag_untyped ] 7 in
   Untyped_use_external.register ns
     ~tags:[ tag_untyped ] 8 ;
   Typed_use_obj.register ns w_use_obj ;

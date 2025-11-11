@@ -41,9 +41,9 @@ let find_in_path path name =
     let rec try_dir = function
         [] -> raise Not_found
       | dir::rem ->
-         let fullname = filename_concat dir name in
-         if Sys.file_exists fullname then fullname
-         else try_dir rem
+          let fullname = filename_concat dir name in
+          if Sys.file_exists fullname then fullname
+          else try_dir rem
     in
     try_dir path
 
@@ -63,11 +63,11 @@ let path_of_filename ?(subpath=[]) filename =
     match path with
     | [] -> None, []
     | partition :: right_path ->
-       if String.contains partition ':' then
-         let partition, left_path = EzString.cut_at partition ':' in
-         Some ( partition ^ ":" ), left_path :: right_path
-       else
-         None, path
+        if String.contains partition ':' then
+          let partition, left_path = EzString.cut_at partition ':' in
+          Some ( partition ^ ":" ), left_path :: right_path
+        else
+          None, path
   in
   let is_absolute, path =
     match path with
@@ -78,36 +78,36 @@ let path_of_filename ?(subpath=[]) filename =
     match subpath with
     | [] -> path
     | _ ->
-       if is_absolute || volume <> None then
-         path
-       else
-         subpath @ path
+        if is_absolute || volume <> None then
+          path
+        else
+          subpath @ path
   in
   let rec normalize_path path =
     match path with
       [] -> []
     | dir :: tail ->
-       let dir = dir :: normalize_path tail in
-       match dir with
-       | "" :: path -> path
-       | "." :: path -> path
-       | ".." :: _ -> dir
-       | _ :: ".." :: path -> path
-       | _ -> dir
+        let dir = dir :: normalize_path tail in
+        match dir with
+        | "" :: path -> path
+        | "." :: path -> path
+        | ".." :: _ -> dir
+        | _ :: ".." :: path -> path
+        | _ -> dir
   in
   let path = normalize_path path in
   (if is_absolute then
-    let path = remove_dotdot path in
-    match volume, path with
-    | None, [] -> [ "" ; "" ]
-    | Some volume, [] -> [ volume ; "" ]
-    | None, _ -> "" :: path
-    | Some volume, _ -> volume :: path
-  else
-    match volume, path with
-    | None, _ -> path
-    | Some volume, [] -> [ volume ]
-    | Some volume, x :: path -> (volume ^ x) :: path
+     let path = remove_dotdot path in
+     match volume, path with
+     | None, [] -> [ "" ; "" ]
+     | Some volume, [] -> [ volume ; "" ]
+     | None, _ -> "" :: path
+     | Some volume, _ -> volume :: path
+   else
+     match volume, path with
+     | None, _ -> path
+     | Some volume, [] -> [ volume ]
+     | Some volume, x :: path -> (volume ^ x) :: path
   )
 
 
@@ -122,80 +122,80 @@ let normalize_filename ?subpath filename =
 let rec safe_mkdir dir =
   match Unix.stat dir with
   | exception _ ->
-     let dirdir = Filename.dirname dir in
-     safe_mkdir dirdir;
-     Unix.mkdir dir 0o755
+      let dirdir = Filename.dirname dir in
+      safe_mkdir dirdir;
+      Unix.mkdir dir 0o755
   | st ->
-     match st.st_kind with
-     | S_DIR -> ()
-     | _ ->
-        Printf.ksprintf failwith "Utils.safe_mkdir: %s is a special file" dir
+      match st.st_kind with
+      | S_DIR -> ()
+      | _ ->
+          Printf.ksprintf failwith "Utils.safe_mkdir: %s is a special file" dir
 
 let () =
   let list = [
-      "", "." ;
-      "/", "/" ;
-      "/a", "/a" ;
-      "/a/", "/a" ;
-      "/a/.", "/a" ;
-      "/a/b", "/a/b" ;
-      "/a/b/", "/a/b" ;
-      "/a/b/.", "/a/b" ;
-      "/a/./b", "/a/b" ;
-      "/./a/b", "/a/b" ;
-      "/a/b/c/", "/a/b/c" ;
-      "/a/b/../c/", "/a/c" ;
-      "/../a/b/c/", "/a/b/c" ;
-      "/../../a/b/c/", "/a/b/c" ;
-      "./a/b/c/", "a/b/c" ;
-      "./../a/b/c/", "../a/b/c" ;
-      "../a/b/c/", "../a/b/c" ;
-      "../../a/b/c/", "../../a/b/c" ;
+    "", "." ;
+    "/", "/" ;
+    "/a", "/a" ;
+    "/a/", "/a" ;
+    "/a/.", "/a" ;
+    "/a/b", "/a/b" ;
+    "/a/b/", "/a/b" ;
+    "/a/b/.", "/a/b" ;
+    "/a/./b", "/a/b" ;
+    "/./a/b", "/a/b" ;
+    "/a/b/c/", "/a/b/c" ;
+    "/a/b/../c/", "/a/c" ;
+    "/../a/b/c/", "/a/b/c" ;
+    "/../../a/b/c/", "/a/b/c" ;
+    "./a/b/c/", "a/b/c" ;
+    "./../a/b/c/", "../a/b/c" ;
+    "../a/b/c/", "../a/b/c" ;
+    "../../a/b/c/", "../../a/b/c" ;
 
-      ".",  "." ;
-      "..",  ".." ;
-      "../",  ".." ;
-      "../../",  "../.." ;
-      "/",  "/" ;
-      "/a/b/",  "/a/b" ;
-      "/a/b",  "/a/b" ;
-      "a/",  "a" ;
-      "a",  "a" ;
-      "a/.",  "a" ;
-      "a/./",  "a" ;
-      "a/..",  "." ;
-      "a/../",  "." ;
-      "a/..b",  "a/..b" ;
-      "./a",  "a" ;
-      "../a",  "../a" ;
-      "../../a",  "../../a" ;
-      "./a/..",  "." ;
-      "/a/b/./..",  "/a" ;
-      "/../..",  "/" ;
-      "/a/../..",  "/" ;
-      "./../..",  "../.." ;
-      "../../a/",  "../../a" ;
-      "/a/b/c/./../../g",  "/a/g" ;
-      "/a/b/c/./../../g/",  "/a/g" ;
-      ]
-      in
+    ".",  "." ;
+    "..",  ".." ;
+    "../",  ".." ;
+    "../../",  "../.." ;
+    "/",  "/" ;
+    "/a/b/",  "/a/b" ;
+    "/a/b",  "/a/b" ;
+    "a/",  "a" ;
+    "a",  "a" ;
+    "a/.",  "a" ;
+    "a/./",  "a" ;
+    "a/..",  "." ;
+    "a/../",  "." ;
+    "a/..b",  "a/..b" ;
+    "./a",  "a" ;
+    "../a",  "../a" ;
+    "../../a",  "../../a" ;
+    "./a/..",  "." ;
+    "/a/b/./..",  "/a" ;
+    "/../..",  "/" ;
+    "/a/../..",  "/" ;
+    "./../..",  "../.." ;
+    "../../a/",  "../../a" ;
+    "/a/b/c/./../../g",  "/a/g" ;
+    "/a/b/c/./../../g/",  "/a/g" ;
+  ]
+  in
   List.iter (fun (s1, s2) ->
       let s3 = normalize_filename s1  in
       if s3 <> s2 then begin
-          Printf.eprintf "Developer error:\n%!";
-          Printf.eprintf "normalize_filename(%S) = %S\n%!" s1 s3;
-          Printf.eprintf "         but should be = %S\n%!" s2 ;
-          assert false
-        end;
+        Printf.eprintf "Developer error:\n%!";
+        Printf.eprintf "normalize_filename(%S) = %S\n%!" s1 s3;
+        Printf.eprintf "         but should be = %S\n%!" s2 ;
+        assert false
+      end;
     )
     (* NOT YET SUPPORTED
-      "\\\\?\\UNC\\server\\share\\..",  "\\\\?\\UNC\\server\\share\\" ;
-      "\\\\server\\share\\",  "\\\\server\\share\\" ;
-     *)
+       "\\\\?\\UNC\\server\\share\\..",  "\\\\?\\UNC\\server\\share\\" ;
+       "\\\\server\\share\\",  "\\\\server\\share\\" ;
+    *)
     (
       list
       @ List.map (fun (s1, s2) ->
-            "c:" ^ s1,
-            if s2 = "." then "c:"
-            else "c:" ^ s2) list
+          "c:" ^ s1,
+          if s2 = "." then "c:"
+          else "c:" ^ s2) list
     )

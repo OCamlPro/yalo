@@ -39,29 +39,29 @@ end
 module MAKE_EXPRESSION (M: EXPRESSION) : REGISTER = struct
 
   let register
-        ~id
-        ~tags
-        ?(lint_id = M.lint_id)
-        ?(msg = M.lint_msg)
-        ?(desc = M.lint_doc)
-        ns =
+      ~id
+      ~tags
+      ?(lint_id = M.lint_id)
+      ?(msg = M.lint_msg)
+      ?(desc = M.lint_doc)
+      ns =
 
     let w = YALO.new_warning ns id
-              ~name:lint_id ~tags ~msg ~desc
+        ~name:lint_id ~tags ~msg ~desc
     in
 
     Main.new_ast_impl_traverse_linter
       ns ("check:" ^ lint_id)
       ~warnings:[w]
       (fun ~file:_ ~linter traverse ->
-        let expression ~file ~linter e =
-          let warn ?(loc = e.pexp_loc) ?msg () =
-            YALO.warn ~loc ~file ~linter ?msg w
-          in
-          M.expression warn e
-        in
-        traverse.expression <-
-          (linter, expression) :: traverse.expression
+         let expression ~file ~linter e =
+           let warn ?(loc = e.pexp_loc) ?msg () =
+             YALO.warn ~loc ~file ~linter ?msg w
+           in
+           M.expression warn e
+         in
+         traverse.expression <-
+           (linter, expression) :: traverse.expression
       )
 
 end
@@ -80,29 +80,29 @@ end
 module MAKE_STRUCTURE_ITEM (M: STRUCTURE_ITEM) : REGISTER = struct
 
   let register
-        ~id
-        ~tags
-        ?(lint_id = M.lint_id)
-        ?(msg = M.lint_msg)
-        ?(desc = M.lint_doc)
-        ns =
+      ~id
+      ~tags
+      ?(lint_id = M.lint_id)
+      ?(msg = M.lint_msg)
+      ?(desc = M.lint_doc)
+      ns =
 
     let w = YALO.new_warning ns id
-              ~name:lint_id ~tags ~msg ~desc
+        ~name:lint_id ~tags ~msg ~desc
     in
 
     Main.new_ast_impl_traverse_linter
       ns ("check:" ^ lint_id)
       ~warnings:[w]
       (fun ~file:_ ~linter traverse ->
-        let structure_item ~file ~linter pstr =
-          let warn ?(loc = pstr.pstr_loc) ?msg () =
-            YALO.warn ~loc ~file ~linter ?msg w
-          in
-          M.structure_item warn pstr
-        in
-        traverse.structure_item <-
-          (linter, structure_item) :: traverse.structure_item
+         let structure_item ~file ~linter pstr =
+           let warn ?(loc = pstr.pstr_loc) ?msg () =
+             YALO.warn ~loc ~file ~linter ?msg w
+           in
+           M.structure_item warn pstr
+         in
+         traverse.structure_item <-
+           (linter, structure_item) :: traverse.structure_item
       )
 
 end

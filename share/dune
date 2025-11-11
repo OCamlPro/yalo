@@ -9,4 +9,5 @@
  (section (site (yalo_plugin_ocaml yalo)))
  (files
   (yalo-ocaml.conf as profiles/yalo-ocaml.conf)
+  (yalo-ocp-indent.conf as profiles/yalo-ocp-indent.conf)
   ))
