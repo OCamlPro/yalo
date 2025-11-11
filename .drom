@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-ab114d65609a322a5429886b1d604ab1:.
+b0699f524636c6925eefad56ec7aa738:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -66,7 +66,7 @@ eb5dffdcdfe0cf7252a14f6332d1bf50:Makefile
 
 # begin context for Makefile.drom
 # file Makefile.drom
-ca8f9a8deb69690ac06e0e3e1a0c8335:Makefile.drom
+8a3bf88634ac1841564990524f4265c2:Makefile.drom
 # end context for Makefile.drom
 
 # begin context for README.md
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-cfa8e359ce165c24464730e4c86d3e2e:dune-project
+4d131a769e021ae7f5cbf51729d1b24f:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -158,6 +158,11 @@ b6646d346bde26e2fc632214d8c73f4f:opam/yalo_config.opam
 # file opam/yalo_plugin_FIND.opam
 98ed875a472d507b216f7aafea849839:opam/yalo_plugin_FIND.opam
 # end context for opam/yalo_plugin_FIND.opam
+
+# begin context for opam/yalo_plugin_OCPINDENT.opam
+# file opam/yalo_plugin_OCPINDENT.opam
+cfbc5ac87e2f61ab4d442bc41056ebd8:opam/yalo_plugin_OCPINDENT.opam
+# end context for opam/yalo_plugin_OCPINDENT.opam
 
 # begin context for opam/yalo_plugin_YALO.opam
 # file opam/yalo_plugin_YALO.opam
@@ -399,6 +404,21 @@ e67acd393945e9add39745bb9f145dee:src/yalo_plugin_FIND/index.mld
 fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_FIND/version.mlt
 # end context for src/yalo_plugin_FIND/version.mlt
 
+# begin context for src/yalo_plugin_OCPINDENT/dune
+# file src/yalo_plugin_OCPINDENT/dune
+352dfc125072b8febad26e97b567d488:src/yalo_plugin_OCPINDENT/dune
+# end context for src/yalo_plugin_OCPINDENT/dune
+
+# begin context for src/yalo_plugin_OCPINDENT/index.mld
+# file src/yalo_plugin_OCPINDENT/index.mld
+7ad7e8e759935d9f35e66dadfa44532f:src/yalo_plugin_OCPINDENT/index.mld
+# end context for src/yalo_plugin_OCPINDENT/index.mld
+
+# begin context for src/yalo_plugin_OCPINDENT/version.mlt
+# file src/yalo_plugin_OCPINDENT/version.mlt
+fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_OCPINDENT/version.mlt
+# end context for src/yalo_plugin_OCPINDENT/version.mlt
+
 # begin context for src/yalo_plugin_YALO/dune
 # file src/yalo_plugin_YALO/dune
 0b315669349d7a145f7ce5fd84162444:src/yalo_plugin_YALO/dune
@@ -501,7 +521,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/expect-tests/dune.drom
 # file test/expect-tests/dune.drom
-25489055523db00ae7b9e608a929922f:test/expect-tests/dune.drom
+c9ae1c53de9b3ba0a299d3ef9a603bce:test/expect-tests/dune.drom
 # end context for test/expect-tests/dune.drom
 
 # begin context for test/expect-tests/test.ml
@@ -516,7 +536,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/inline-tests/dune.drom
 # file test/inline-tests/dune.drom
-b2457c471052ea80a161e488446d44b6:test/inline-tests/dune.drom
+41033217c418009fc5d22def0445978d:test/inline-tests/dune.drom
 # end context for test/inline-tests/dune.drom
 
 # begin context for test/inline-tests/test.ml
@@ -531,7 +551,7 @@ b2457c471052ea80a161e488446d44b6:test/inline-tests/dune.drom
 
 # begin context for test/output-tests/dune.drom
 # file test/output-tests/dune.drom
-d0257d73a60e34e3ace54a1774137967:test/output-tests/dune.drom
+69b9376b1e18187a5ff07ef307ccfba2:test/output-tests/dune.drom
 # end context for test/output-tests/dune.drom
 
 # begin context for test/output-tests/test1.expected

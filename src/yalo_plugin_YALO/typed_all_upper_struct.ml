@@ -10,6 +10,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
+open EzCompat (* for StringSet *)
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
@@ -21,25 +22,25 @@ open OCAML_TAST
 let module_expr check ~file ~linter me =
   match me.mod_desc with
   | Tmod_functor (_id, name_op_loc, Some mty, _) ->
-     check ~file ~linter name_op_loc mty.mty_type
+      check ~file ~linter name_op_loc mty.mty_type
   | _ -> ()
 
 let module_type check ~file ~linter mty =
   match mty.mty_desc with
   | Tmty_functor (_id, name_op_loc, Some mty, _) ->
-     check ~file ~linter name_op_loc mty.mty_type
+      check ~file ~linter name_op_loc mty.mty_type
   | _ -> ()
 [%%else]
 let module_expr check ~file ~linter me =
   match me.mod_desc with
   | Tmod_functor (Named (_id, name_op_loc, mty), _) ->
-     check ~file ~linter name_op_loc mty.mty_type
+      check ~file ~linter name_op_loc mty.mty_type
   | _ -> ()
 
 let module_type check ~file ~linter mty =
   match mty.mty_desc with
   | Tmty_functor (Named (_id, name_op_loc, mty), _) ->
-     check ~file ~linter name_op_loc mty.mty_type
+      check ~file ~linter name_op_loc mty.mty_type
   | _ -> ()
 [%%endif]
 
@@ -51,24 +52,26 @@ let uppercase s =
       let c = s.[i] in
       match c with
       | 'a'..'z' ->
-         Buffer.add_char b (Char.uppercase_ascii c);
-         iter true (i+1)
+          Buffer.add_char b (Char.uppercase_ascii c);
+          iter true (i+1)
       | 'A'..'Z' ->
-         if need_underscore then Buffer.add_char b '_';
-         Buffer.add_char b c ;
-         iter false (i+1)
+          if need_underscore then Buffer.add_char b '_';
+          Buffer.add_char b c ;
+          iter false (i+1)
       | _ ->
-         Buffer.add_char b c ;
-         iter true (i+1)
+          Buffer.add_char b c ;
+          iter true (i+1)
   in
   iter false 0;
   Buffer.contents b
 
+let menhir_modules = StringSet.of_list [ "Incremental" ; "Recovery" ]
+
 let register ns
-      ?(name="all_upper_struct")
-      ~tags
-      ?(msg = lint_msg)
-      id
+    ?(name="all_upper_struct")
+    ~tags
+    ?(msg = lint_msg)
+    id
   =
   let w =
     YALO.new_warning ns ~name id
@@ -81,44 +84,48 @@ let register ns
     ~warnings:[ w ]
     OCAML_TAST.(fun ~file:_ ~linter traverse ->
 
-    let check ~file ~linter mb_name mty =
-      match (OCAML_TAST.module_binding_name mb_name).Location.txt with
-      | None -> ()
-      | Some name ->
-         let upname = String.uppercase_ascii name in
-         if upname <> name then
-           match mty with
-           | Types.Mty_signature _ ->
-              let loc = mb_name.loc in
-              YALO.warn ~loc ~file ~linter w
-                ~msg:(Printf.sprintf
-                        "Inner module %S should be fully uppercase \
-                         (%S here)" name
-                        (uppercase name))
+        let check ~file ~linter mb_name mty =
+          match (OCAML_TAST.module_binding_name mb_name).Location.txt with
+          | None -> ()
+          | Some name ->
+              let upname = String.uppercase_ascii name in
+              if upname <> name &&
+                 not (OCAML_LANG.is_menhir_generated_file()
+                      &&
+                      StringSet.mem name menhir_modules)
+              then
+                match mty with
+                | Types.Mty_signature _ ->
+                    let loc = mb_name.loc in
+                    YALO.warn ~loc ~file ~linter w
+                      ~msg:(Printf.sprintf
+                              "Inner module %S should be fully uppercase \
+                               (%S here)" name
+                              (uppercase name))
 
-           | Mty_ident _id -> ()
-           | Mty_functor _ -> ()
+                | Mty_ident _id -> ()
+                | Mty_functor _ -> ()
 
-           (* Aliases should follow this rule too, but only for user
-              defined aliases *)
-           | Mty_alias _ -> ()
-    in
+                (* Aliases should follow this rule too, but only for user
+                   defined aliases *)
+                | Mty_alias _ -> ()
+        in
 
-    let module_binding ~file ~linter mb =
-      check ~file ~linter mb.mb_name mb.mb_expr.mod_type
-    in
-    let expression ~file ~linter exp =
-      match exp.exp_desc with
-      | Texp_letmodule (_mb_id, mb_name, _mb_presence, mb_expr, _exp) ->
-         check ~file ~linter mb_name mb_expr.mod_type
-      | _ -> ()
-    in
-    traverse.module_binding <- (linter, module_binding) ::
-                                 traverse.module_binding ;
-    traverse.expr <- (linter, expression) ::
-                       traverse.expr ;
-    traverse.module_expr <- (linter, module_expr check) ::
-                              traverse.module_expr ;
-    traverse.module_type <- (linter, module_type check) ::
-                              traverse.module_type ;
-  )
+        let module_binding ~file ~linter mb =
+          check ~file ~linter mb.mb_name mb.mb_expr.mod_type
+        in
+        let expression ~file ~linter exp =
+          match exp.exp_desc with
+          | Texp_letmodule (_mb_id, mb_name, _mb_presence, mb_expr, _exp) ->
+              check ~file ~linter mb_name mb_expr.mod_type
+          | _ -> ()
+        in
+        traverse.module_binding <- (linter, module_binding) ::
+                                   traverse.module_binding ;
+        traverse.expr <- (linter, expression) ::
+                         traverse.expr ;
+        traverse.module_expr <- (linter, module_expr check) ::
+                                traverse.module_expr ;
+        traverse.module_type <- (linter, module_type check) ::
+                                traverse.module_type ;
+      )

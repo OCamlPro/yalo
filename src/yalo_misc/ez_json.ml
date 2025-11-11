@@ -29,40 +29,40 @@ let to_string_compact json =
   let rec iter_json b json =
     match json with
     | OBJECT assocs ->
-       Printf.bprintf b  "{";
-       let rec iter assocs =
-         match assocs with
-         | [] -> ()
-         | [ name, v ] ->
-            Printf.bprintf b  "%S: " name; iter_json b v
-         | (name, v ) :: assocs ->
-            Printf.bprintf b  "%S: " name; iter_json b v ;
-            Printf.bprintf b  ",";
-            iter assocs
-       in
-       iter assocs ;
-       Printf.bprintf b  "}";
+        Printf.bprintf b  "{";
+        let rec iter assocs =
+          match assocs with
+          | [] -> ()
+          | [ name, v ] ->
+              Printf.bprintf b  "%S: " name; iter_json b v
+          | (name, v ) :: assocs ->
+              Printf.bprintf b  "%S: " name; iter_json b v ;
+              Printf.bprintf b  ",";
+              iter assocs
+        in
+        iter assocs ;
+        Printf.bprintf b  "}";
     | LIST list ->
-       Printf.bprintf b  "[";
-       let rec iter list =
-         match list with
-         | [] -> ()
-         | [ v ] ->
-            iter_json b v
-         | v :: list ->
-            iter_json b v ; Printf.bprintf b  ",";
-            iter list
-       in
-       iter list ;
-       Printf.bprintf b  "]";
+        Printf.bprintf b  "[";
+        let rec iter list =
+          match list with
+          | [] -> ()
+          | [ v ] ->
+              iter_json b v
+          | v :: list ->
+              iter_json b v ; Printf.bprintf b  ",";
+              iter list
+        in
+        iter list ;
+        Printf.bprintf b  "]";
     | STRING s ->
-       Printf.bprintf b  "%S" s
+        Printf.bprintf b  "%S" s
     | INT n ->
-       Printf.bprintf b  "%d" n
+        Printf.bprintf b  "%d" n
     | BOOL bool ->
-       Printf.bprintf b  "%b" bool
+        Printf.bprintf b  "%b" bool
     | NULL ->
-       Printf.bprintf b  "null"
+        Printf.bprintf b  "null"
   in
   iter_json b json;
   Buffer.contents b
@@ -72,47 +72,47 @@ let to_string_indented json =
   let rec iter_json b indent json =
     match json with
     | OBJECT assocs ->
-       Printf.bprintf b  "%s{\n" indent;
-       let rec iter assocs =
-         match assocs with
-         | [] -> ()
-         | [ name, v ] ->
-            Printf.bprintf b  "%s%S: " indent name;
-            iter_json b (indent ^ "  ") v;
-            Printf.bprintf b "\n"
-         | (name, v ) :: assocs ->
-            Printf.bprintf b  "%s%S: " indent name;
-            iter_json b (indent ^ "  ") v ;
-            Printf.bprintf b  ",\n";
-            iter assocs
-       in
-       iter assocs ;
-       Printf.bprintf b  "%s}" indent;
+        Printf.bprintf b  "%s{\n" indent;
+        let rec iter assocs =
+          match assocs with
+          | [] -> ()
+          | [ name, v ] ->
+              Printf.bprintf b  "%s%S: " indent name;
+              iter_json b (indent ^ "  ") v;
+              Printf.bprintf b "\n"
+          | (name, v ) :: assocs ->
+              Printf.bprintf b  "%s%S: " indent name;
+              iter_json b (indent ^ "  ") v ;
+              Printf.bprintf b  ",\n";
+              iter assocs
+        in
+        iter assocs ;
+        Printf.bprintf b  "%s}" indent;
     | LIST list ->
-       Printf.bprintf b  "%s[\n" indent;
-       let rec iter list =
-         match list with
-         | [] -> ()
-         | [ v ] ->
-            Printf.bprintf b  "%s" indent;
-            iter_json b (indent ^ "  ") v;
-            Printf.bprintf b "\n"
-         | v :: list ->
-            Printf.bprintf b "%s" indent;
-            iter_json b (indent ^ "  ") v ;
-            Printf.bprintf b  ",\n";
-            iter list
-       in
-       iter list ;
-       Printf.bprintf b  "%s]" indent;
+        Printf.bprintf b  "%s[\n" indent;
+        let rec iter list =
+          match list with
+          | [] -> ()
+          | [ v ] ->
+              Printf.bprintf b  "%s" indent;
+              iter_json b (indent ^ "  ") v;
+              Printf.bprintf b "\n"
+          | v :: list ->
+              Printf.bprintf b "%s" indent;
+              iter_json b (indent ^ "  ") v ;
+              Printf.bprintf b  ",\n";
+              iter list
+        in
+        iter list ;
+        Printf.bprintf b  "%s]" indent;
     | STRING s ->
-       Printf.bprintf b  "%S" s
+        Printf.bprintf b  "%S" s
     | INT n ->
-       Printf.bprintf b  "%d" n
+        Printf.bprintf b  "%d" n
     | BOOL bool ->
-       Printf.bprintf b  "%b" bool
+        Printf.bprintf b  "%b" bool
     | NULL ->
-       Printf.bprintf b  "null"
+        Printf.bprintf b  "null"
   in
   iter_json b "" json;
   Buffer.contents b

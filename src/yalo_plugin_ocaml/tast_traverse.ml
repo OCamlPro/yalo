@@ -41,6 +41,12 @@ module OCAML_TAST = struct
   [%%endif]
 
   [%%if ocaml_version < (4, 10, 0)]
+  let module_binding_id id = Some id
+  [%%else]
+  let module_binding_id id = id
+  [%%endif]
+
+  [%%if ocaml_version < (4, 10, 0)]
   let module_binding_name name = Location.{ name with txt = Some name.txt }
   [%%else]
   let module_binding_name name = name
@@ -55,6 +61,35 @@ module OCAML_TAST = struct
 
   end
 
+  let format_to_string pp x =
+    Buffer.clear Format.stdbuf;
+    Format.fprintf Format.str_formatter "%a@."
+      pp x;
+    Format.flush_str_formatter ()
+
+  let string_of_structure = format_to_string Printtyped.implementation
+  let string_of_signature = format_to_string Printtyped.interface
+
+
+  let is_menhir_generated_file ast =
+
+    let rec iter str_items =
+      match str_items with
+      | [] -> true
+      | item :: str_items ->
+          match item.str_desc with
+          | Tstr_attribute _ -> iter str_items
+          | Tstr_module mb ->
+              begin match module_binding_id mb.mb_id with
+                | None -> false
+                | Some id ->
+                    let id = Ident.name id in
+                    id = "MenhirBasics"
+              end
+          | _ -> false
+    in
+    iter ast.str_items
+
 end
 
 module OCAML_TAST_TRAVERSE = struct
@@ -65,75 +100,75 @@ module OCAML_TAST_TRAVERSE = struct
 
   [%%if ocaml_version < (4, 11, 0)]
   type case_by_version = { mutable version_case :
-                                     OCAML_TAST.case ast_lint_list }
+                             OCAML_TAST.case ast_lint_list }
   type case_checker = { f : (OCAML_TAST.case -> unit) }
   [%%else]
   type case_by_version = { mutable version_case :
-                                     'k. 'k OCAML_TAST.case ast_lint_list }
+                             'k. 'k OCAML_TAST.case ast_lint_list }
   type case_checker = { f : 'k.'k OCAML_TAST.case -> unit }
   [%%endif]
 
   [%%if ocaml_version < (4, 11, 0)]
   type pat_by_version = { mutable version_pat :
-                                    OCAML_TAST.pattern ast_lint_list }
+                            OCAML_TAST.pattern ast_lint_list }
   type pat_checker = { f : (OCAML_TAST.pattern -> unit) }
   [%%else]
   type pat_by_version = { mutable version_pat :
-                                    'k. 'k OCAML_TAST.general_pattern
-                                          ast_lint_list }
+                            'k. 'k OCAML_TAST.general_pattern
+                              ast_lint_list }
   type pat_checker = { f : 'k. 'k OCAML_TAST.general_pattern -> unit }
   [%%endif]
 
   type t = {
-      file : YALO_TYPES.file ;
-      mutable binding_op: OCAML_TAST.binding_op ast_lint_list;
-      mutable case: case_by_version;
-      mutable class_declaration: OCAML_TAST.class_declaration ast_lint_list;
-      mutable class_description: OCAML_TAST.class_description ast_lint_list;
-      mutable class_expr: OCAML_TAST.class_expr ast_lint_list;
-      mutable class_field: OCAML_TAST.class_field ast_lint_list;
-      mutable class_signature: OCAML_TAST.class_signature ast_lint_list;
-      mutable class_structure: OCAML_TAST.class_structure ast_lint_list;
-      mutable class_type: OCAML_TAST.class_type ast_lint_list;
-      mutable class_type_declaration:
-                OCAML_TAST.class_type_declaration ast_lint_list;
-      mutable class_type_field: OCAML_TAST.class_type_field ast_lint_list;
-      mutable expr: OCAML_TAST.expression ast_lint_list;
-      mutable extension_constructor:
-                OCAML_TAST.extension_constructor ast_lint_list;
-      mutable module_binding: OCAML_TAST.module_binding ast_lint_list;
-      mutable module_coercion: OCAML_TAST.module_coercion ast_lint_list;
-      mutable module_declaration: OCAML_TAST.module_declaration ast_lint_list;
-      mutable module_substitution: OCAML_TAST.module_substitution ast_lint_list;
-      mutable module_expr: OCAML_TAST.module_expr ast_lint_list;
-      mutable module_type: OCAML_TAST.module_type ast_lint_list;
-      mutable module_type_declaration:
-                OCAML_TAST.module_type_declaration ast_lint_list;
-      mutable package_type: OCAML_TAST.package_type ast_lint_list;
-      (* since 4.11.0 *)
-      mutable pat: pat_by_version;
-      mutable row_field: OCAML_TAST.row_field ast_lint_list;
-      mutable object_field: OCAML_TAST.object_field ast_lint_list;
-      mutable open_declaration: OCAML_TAST.open_declaration ast_lint_list;
-      mutable open_description: OCAML_TAST.open_description ast_lint_list;
-      mutable signature: OCAML_TAST.signature ast_lint_list;
-      mutable signature_item: OCAML_TAST.signature_item ast_lint_list;
-      mutable structure: OCAML_TAST.structure ast_lint_list;
-      mutable structure_item: OCAML_TAST.structure_item ast_lint_list;
-      mutable typ: OCAML_TAST.core_type ast_lint_list;
-      mutable type_declaration: OCAML_TAST.type_declaration ast_lint_list;
-      mutable type_declarations:
-                (OCAML_TAST.rec_flag *
-                   OCAML_TAST.type_declaration list) ast_lint_list;
-      mutable type_extension: OCAML_TAST.type_extension ast_lint_list;
-      mutable type_exception: OCAML_TAST.type_exception ast_lint_list;
-      mutable type_kind: OCAML_TAST.type_kind ast_lint_list;
-      mutable value_binding: OCAML_TAST.value_binding ast_lint_list;
-      mutable value_bindings: (OCAML_TAST.rec_flag *
-                                 OCAML_TAST.value_binding list) ast_lint_list;
-      mutable value_description: OCAML_TAST.value_description ast_lint_list;
-      mutable with_constraint: OCAML_TAST.with_constraint ast_lint_list;
-    }
+    file : YALO_TYPES.file ;
+    mutable binding_op: OCAML_TAST.binding_op ast_lint_list;
+    mutable case: case_by_version;
+    mutable class_declaration: OCAML_TAST.class_declaration ast_lint_list;
+    mutable class_description: OCAML_TAST.class_description ast_lint_list;
+    mutable class_expr: OCAML_TAST.class_expr ast_lint_list;
+    mutable class_field: OCAML_TAST.class_field ast_lint_list;
+    mutable class_signature: OCAML_TAST.class_signature ast_lint_list;
+    mutable class_structure: OCAML_TAST.class_structure ast_lint_list;
+    mutable class_type: OCAML_TAST.class_type ast_lint_list;
+    mutable class_type_declaration:
+      OCAML_TAST.class_type_declaration ast_lint_list;
+    mutable class_type_field: OCAML_TAST.class_type_field ast_lint_list;
+    mutable expr: OCAML_TAST.expression ast_lint_list;
+    mutable extension_constructor:
+      OCAML_TAST.extension_constructor ast_lint_list;
+    mutable module_binding: OCAML_TAST.module_binding ast_lint_list;
+    mutable module_coercion: OCAML_TAST.module_coercion ast_lint_list;
+    mutable module_declaration: OCAML_TAST.module_declaration ast_lint_list;
+    mutable module_substitution: OCAML_TAST.module_substitution ast_lint_list;
+    mutable module_expr: OCAML_TAST.module_expr ast_lint_list;
+    mutable module_type: OCAML_TAST.module_type ast_lint_list;
+    mutable module_type_declaration:
+      OCAML_TAST.module_type_declaration ast_lint_list;
+    mutable package_type: OCAML_TAST.package_type ast_lint_list;
+    (* since 4.11.0 *)
+    mutable pat: pat_by_version;
+    mutable row_field: OCAML_TAST.row_field ast_lint_list;
+    mutable object_field: OCAML_TAST.object_field ast_lint_list;
+    mutable open_declaration: OCAML_TAST.open_declaration ast_lint_list;
+    mutable open_description: OCAML_TAST.open_description ast_lint_list;
+    mutable signature: OCAML_TAST.signature ast_lint_list;
+    mutable signature_item: OCAML_TAST.signature_item ast_lint_list;
+    mutable structure: OCAML_TAST.structure ast_lint_list;
+    mutable structure_item: OCAML_TAST.structure_item ast_lint_list;
+    mutable typ: OCAML_TAST.core_type ast_lint_list;
+    mutable type_declaration: OCAML_TAST.type_declaration ast_lint_list;
+    mutable type_declarations:
+      (OCAML_TAST.rec_flag *
+       OCAML_TAST.type_declaration list) ast_lint_list;
+    mutable type_extension: OCAML_TAST.type_extension ast_lint_list;
+    mutable type_exception: OCAML_TAST.type_exception ast_lint_list;
+    mutable type_kind: OCAML_TAST.type_kind ast_lint_list;
+    mutable value_binding: OCAML_TAST.value_binding ast_lint_list;
+    mutable value_bindings: (OCAML_TAST.rec_flag *
+                             OCAML_TAST.value_binding list) ast_lint_list;
+    mutable value_description: OCAML_TAST.value_description ast_lint_list;
+    mutable with_constraint: OCAML_TAST.with_constraint ast_lint_list;
+  }
 
   open OCAML_TAST
 
@@ -242,15 +277,15 @@ module OCAML_TAST_INTERNAL : sig
   val structure :
     file:YALO_TYPES.file ->
     (YALO_TYPES.linter *
-       (file:YALO_TYPES.file ->
-        linter:YALO_TYPES.linter -> OCAML_TAST_TRAVERSE.t -> unit))
+     (file:YALO_TYPES.file ->
+      linter:YALO_TYPES.linter -> OCAML_TAST_TRAVERSE.t -> unit))
       list -> OCAML_TAST.structure -> unit
 
   val signature :
     file:YALO_TYPES.file ->
     (YALO_TYPES.linter *
-       (file:YALO_TYPES.file ->
-        linter:YALO_TYPES.linter -> OCAML_TAST_TRAVERSE.t -> unit))
+     (file:YALO_TYPES.file ->
+      linter:YALO_TYPES.linter -> OCAML_TAST_TRAVERSE.t -> unit))
       list -> OCAML_TAST.signature -> unit
 
 end = struct
@@ -303,10 +338,10 @@ end = struct
 
   let push node =
     OCAML_TAST_TRAVERSE.node_stack_ref := node ::
-                                            !OCAML_TAST_TRAVERSE.node_stack_ref
+                                          !OCAML_TAST_TRAVERSE.node_stack_ref
   let pop () =
     OCAML_TAST_TRAVERSE.node_stack_ref := List.tl
-                                            !OCAML_TAST_TRAVERSE.node_stack_ref
+        !OCAML_TAST_TRAVERSE.node_stack_ref
 
   let binding_op x = Node_binding_op x
   let case x = Node_case (fun f -> f.f x)
@@ -382,15 +417,15 @@ end = struct
           traverse.binding_op ~file
           binding_op;
       case  = (fun sub x ->
-        List.iter (fun (linter, f) ->
-            f ~file ~linter x
-          )
-          traverse.case.version_case;
-        push (case x) ;
-        let ctx = default.case sub x in
-        pop ();
-        ctx
-      );
+          List.iter (fun (linter, f) ->
+              f ~file ~linter x
+            )
+            traverse.case.version_case;
+          push (case x) ;
+          let ctx = default.case sub x in
+          pop ();
+          ctx
+        );
       class_declaration  =
         apply_lints default.class_declaration traverse.class_declaration
           ~file class_declaration;
@@ -453,15 +488,15 @@ end = struct
           ~file package_type;
 
       pat  = (fun sub x ->
-        List.iter (fun (linter, f) ->
-            f ~file ~linter x
-          )
-          traverse.pat.version_pat;
-        push (pat x);
-        let ctx = default.pat sub x in
-        pop ();
-        ctx
-      );
+          List.iter (fun (linter, f) ->
+              f ~file ~linter x
+            )
+            traverse.pat.version_pat;
+          push (pat x);
+          let ctx = default.pat sub x in
+          pop ();
+          ctx
+        );
 
       row_field  =
         apply_lints default.row_field traverse.row_field

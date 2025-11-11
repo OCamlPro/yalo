@@ -14,11 +14,11 @@ open Ez_file.V1
 
 module TYPES = struct
   type replacement = {
-      repl_pos1 : int ; (* first char to replace *)
-      repl_pos2 : int ; (* position after the place to replace *)
-      repl_text : string ;
-      repl_file : string ;
-    }
+    repl_pos1 : int ; (* first char to replace *)
+    repl_pos2 : int ; (* position after the place to replace *)
+    repl_text : string ;
+    repl_file : string ;
+  }
 end
 open TYPES
 
@@ -28,9 +28,9 @@ let apply ?(destdir="") ?(suffix=".autofix") repls =
       let repls =
         match Hashtbl.find h repl.repl_file with
         | exception Not_found ->
-           let repls = ref [] in
-           Hashtbl.add h repl.repl_file repls ;
-           repls
+            let repls = ref [] in
+            Hashtbl.add h repl.repl_file repls ;
+            repls
         | repls -> repls
       in
       repls := repl :: !repls
@@ -54,24 +54,24 @@ let apply ?(destdir="") ?(suffix=".autofix") repls =
         (* Printf.eprintf "ez_autofix: pos=%d/%d\n%!" pos len ; *)
         match repls with
         | [] ->
-           Buffer.add_substring b str pos (len-pos)
+            Buffer.add_substring b str pos (len-pos)
         | r :: repls ->
-           (* Printf.eprintf "ez_autofix: repl=%d-%d %S\n%!"
-              r.repl_pos1 r.repl_pos2
-              (String.sub str r.repl_pos1 (r.repl_pos2-r.repl_pos1));
+            (* Printf.eprintf "ez_autofix: repl=%d-%d %S\n%!"
+               r.repl_pos1 r.repl_pos2
+               (String.sub str r.repl_pos1 (r.repl_pos2-r.repl_pos1));
             *)
-           if pos > r.repl_pos1 || len < r.repl_pos2 then
-             begin
-               skipped := r :: !skipped ;
-               iter pos repls
-             end else
-             begin
-               applied := r :: !applied ;
-               if pos < r.repl_pos1 then
-                 Buffer.add_substring b str pos (r.repl_pos1-pos);
-               Buffer.add_string b r.repl_text ;
-               iter r.repl_pos2 repls
-             end
+            if pos > r.repl_pos1 || len < r.repl_pos2 then
+              begin
+                skipped := r :: !skipped ;
+                iter pos repls
+              end else
+              begin
+                applied := r :: !applied ;
+                if pos < r.repl_pos1 then
+                  Buffer.add_substring b str pos (r.repl_pos1-pos);
+                Buffer.add_string b r.repl_text ;
+                iter r.repl_pos2 repls
+              end
       in
       iter 0 repls;
 
@@ -79,9 +79,9 @@ let apply ?(destdir="") ?(suffix=".autofix") repls =
       (* Printf.eprintf "AFTER FILE %S\n%!" str ; *)
       let dest_name = Utils.filename_concat destdir @@ file_name ^ suffix in
       if !applied <> [] then begin
-          Utils.safe_mkdir (Filename.dirname dest_name);
-          EzFile.write_file dest_name str ;
-        end;
+        Utils.safe_mkdir (Filename.dirname dest_name);
+        EzFile.write_file dest_name str ;
+      end;
       files := (dest_name, !applied, !skipped) :: !files
     ) h;
 

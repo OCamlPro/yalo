@@ -16,10 +16,10 @@ open Yalo_plugin_ocaml.V1
 let lint_msg = "Mutable fields in records are forbidden in this project"
 
 let register ns
-      ?(name="no_mutable_fields")
-      ~tags
-      ?(msg = lint_msg)
-      id
+    ?(name="no_mutable_fields")
+    ~tags
+    ?(msg = lint_msg)
+    id
   =
   let w =
     YALO.new_warning ns ~name id
@@ -31,27 +31,27 @@ let register ns
     ("check:typed:" ^ YALO_WARNING.name w)
     ~warnings:[ w ]
     OCAML_TAST.(fun ~file ~linter traverse ->
-    let label_declaration ld =
-      match ld.ld_mutable with
-      | Mutable ->
-         let loc = ld.ld_loc in
-         YALO.warn ~loc ~file ~linter w
-      | Immutable -> ()
-    in
-    let type_declaration ~file:_ ~linter:_ t =
-      match t.typ_kind with
-      | Ttype_record labels ->
-         List.iter label_declaration labels
-      | Ttype_abstract
-        | Ttype_open -> ()
-      | Ttype_variant constructors ->
-         List.iter (fun cd ->
-             match cd.cd_args with
-             | Cstr_tuple _ -> ()
-             | Cstr_record labels ->
-                List.iter label_declaration labels
-           ) constructors
-    in
-    traverse.type_declaration <- (linter, type_declaration) ::
-                                    traverse.type_declaration
-  )
+        let label_declaration ld =
+          match ld.ld_mutable with
+          | Mutable ->
+              let loc = ld.ld_loc in
+              YALO.warn ~loc ~file ~linter w
+          | Immutable -> ()
+        in
+        let type_declaration ~file:_ ~linter:_ t =
+          match t.typ_kind with
+          | Ttype_record labels ->
+              List.iter label_declaration labels
+          | Ttype_abstract
+          | Ttype_open -> ()
+          | Ttype_variant constructors ->
+              List.iter (fun cd ->
+                  match cd.cd_args with
+                  | Cstr_tuple _ -> ()
+                  | Cstr_record labels ->
+                      List.iter label_declaration labels
+                ) constructors
+        in
+        traverse.type_declaration <- (linter, type_declaration) ::
+                                     traverse.type_declaration
+      )

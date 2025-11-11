@@ -51,13 +51,13 @@ end = struct
           compile re
         with
         | exception exn ->
-           Printf.eprintf "Error with regexp %S\n%!" re;
-           Printf.eprintf "Exception %s\n%!" (Printexc.to_string exn);
-           ()
+            Printf.eprintf "Error with regexp %S\n%!" re;
+            Printf.eprintf "Exception %s\n%!" (Printexc.to_string exn);
+            ()
         | re ->
-           let mark, group = Re.mark re in
-           map := MARK_MAP.add mark value !map ;
-           groups := group :: !groups
+            let mark, group = Re.mark re in
+            map := MARK_MAP.add mark value !map ;
+            groups := group :: !groups
       ) list;
 
     let re = Re.alt (List.rev !groups) in
@@ -82,24 +82,24 @@ end = struct
     match Re.exec re str with
     | exception Not_found -> None
     | group ->
-       let marks = Re.Mark.all group in
-       let min = Re.Mark.Set.min_elt marks in
-       Some (Re.Group.start group 0,
-             Re.Group.stop group 0,
-             MARK_MAP.find min map)
+        let marks = Re.Mark.all group in
+        let min = Re.Mark.Set.min_elt marks in
+        Some (Re.Group.start group 0,
+              Re.Group.stop group 0,
+              MARK_MAP.find min map)
 
   let find_all (re,map) str =
     match Re.exec re str with
     | exception Not_found -> None
     | group ->
-       let list = ref [] in
-       let marks = Re.Mark.all group in
-       Re.Mark.Set.iter (fun mark ->
-           list := MARK_MAP.find mark map :: !list
-         ) marks ;
-       Some (Re.Group.start group 0,
-             Re.Group.stop group 0,
-             List.rev !list)
+        let list = ref [] in
+        let marks = Re.Mark.all group in
+        Re.Mark.Set.iter (fun mark ->
+            list := MARK_MAP.find mark map :: !list
+          ) marks ;
+        Some (Re.Group.start group 0,
+              Re.Group.stop group 0,
+              List.rev !list)
 
 end
 

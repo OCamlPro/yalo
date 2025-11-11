@@ -12,9 +12,10 @@
 (** Copyright 2021-2025, Kakadu. *)
 (** SPDX-License-Identifier: LGPL-3.0-or-later *)
 (* see
-https://github.com/Kakadu/zanuda/blob/master/src/typed/Ambiguous_constructors.ml
+   https://github.com/Kakadu/zanuda/blob/master/
+                                  src/typed/Ambiguous_constructors.ml
    for comparison
- *)
+*)
 
 open EzCompat
 open Yalo.V1
@@ -47,8 +48,8 @@ let format_msg cd_name =
     cd_name
 
 let register ~id ~tags
-      ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
-      ns =
+    ?(lint_id=lint_id) ?(msg=lint_msg) ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id ~name:lint_id ~tags ~msg ~desc in
 
@@ -58,26 +59,26 @@ let register ~id ~tags
     ns ("check:" ^ lint_id)
     ~warnings:[w]
     OCAML_TAST.(fun ~file ~linter traverse ->
-    let type_declaration ~file:_ ~linter:_ typ =
-      match typ.typ_manifest with
-      | Some ctyp when
-             (match TYPES.get_desc ctyp.ctyp_type with
-             | Tconstr (p, _, _) when
-                    (match Path.name p with
+        let type_declaration ~file:_ ~linter:_ typ =
+          match typ.typ_manifest with
+          | Some ctyp when
+              (match TYPES.get_desc ctyp.ctyp_type with
+               | Tconstr (p, _, _) when
+                   (match Path.name p with
                     | "Stdlib.result" | "option" -> true
                     | _ -> false)
-               -> true
-             | _ -> false) -> ()
-      | _ ->
-         match typ.typ_kind with
-         | Ttype_variant cds ->
-            List.iter (fun { cd_name ; cd_loc = loc ; _ } ->
-                let cd_name = cd_name.txt in
-                if StringSet.mem cd_name bad_cstr_names then
-                  YALO.warn ~loc ~file ~linter w ~msg:(format_msg cd_name)
-              ) cds
-         | _ -> ()
-    in
-    traverse.type_declaration <- (linter, type_declaration) ::
-                                   traverse.type_declaration
-  )
+                 -> true
+               | _ -> false) -> ()
+          | _ ->
+              match typ.typ_kind with
+              | Ttype_variant cds ->
+                  List.iter (fun { cd_name ; cd_loc = loc ; _ } ->
+                      let cd_name = cd_name.txt in
+                      if StringSet.mem cd_name bad_cstr_names then
+                        YALO.warn ~loc ~file ~linter w ~msg:(format_msg cd_name)
+                    ) cds
+              | _ -> ()
+        in
+        traverse.type_declaration <- (linter, type_declaration) ::
+                                     traverse.type_declaration
+      )

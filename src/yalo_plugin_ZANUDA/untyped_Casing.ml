@@ -13,8 +13,7 @@
 (** SPDX-License-Identifier: LGPL-3.0-or-later *)
 (* see
    https://github.com/Kakadu/zanuda/blob/master/src/untyped/Casing.ml
-   for comparison
- *)
+   for comparison *)
 
 let lint_id = "camel_cased_types"
 let lint_msg = "Identifiers in camel case are discouraged"
@@ -42,27 +41,27 @@ open Yalo_plugin_ocaml.V1
 open OCAML_AST
 
 let register
-      ~id
-      ~tags
-      ?(lint_id=lint_id)
-      ?(msg=lint_msg)
-      ?(desc=documentation)
-      ns =
+    ~id
+    ~tags
+    ?(lint_id=lint_id)
+    ?(msg=lint_msg)
+    ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id
-            ~name:lint_id ~tags ~msg ~desc
+      ~name:lint_id ~tags ~msg ~desc
   in
 
   OCAML_LANG.new_ast_impl_traverse_linter
     ns ("check:" ^ lint_id)
     ~warnings:[w]
     (fun ~file:_ ~linter traverse ->
-      let type_declaration ~file ~linter tdecl =
-        let tname = tdecl.ptype_name.txt in
-        let loc = tdecl.ptype_loc in
-        if not (is_good_name tname) then
-          YALO.warn ~file ~linter ~loc w
-      in
-      traverse.type_declaration <-
-        (linter, type_declaration) :: traverse.type_declaration
+       let type_declaration ~file ~linter tdecl =
+         let tname = tdecl.ptype_name.txt in
+         let loc = tdecl.ptype_loc in
+         if not (is_good_name tname) then
+           YALO.warn ~file ~linter ~loc w
+       in
+       traverse.type_declaration <-
+         (linter, type_declaration) :: traverse.type_declaration
     )

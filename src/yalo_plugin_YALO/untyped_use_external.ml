@@ -18,10 +18,10 @@ open OCAML_AST
 let lint_msg = "The use of external values is dangerous"
 
 let register ns
-      ?(name="use_external")
-      ~tags
-      ?(msg = lint_msg)
-      id
+    ?(name="use_external")
+    ~tags
+    ?(msg = lint_msg)
+    id
   =
   let w =
     YALO.new_warning ns ~name id
@@ -34,13 +34,13 @@ let register ns
     ~warnings:[ w ]
 
     (fun ~file:_ ~linter traverse ->
-      let str_item ~file ~linter str =
-        match str.pstr_desc with
-        | Pstr_primitive { pval_prim ; _ } when pval_prim <> [] ->
-           let loc = str.pstr_loc in
-           YALO.warn ~loc ~file ~linter w
-        | _ -> ()
-      in
-      traverse.structure_item <-
-        (linter, str_item) :: traverse.structure_item ;
+       let str_item ~file ~linter str =
+         match str.pstr_desc with
+         | Pstr_primitive { pval_prim ; _ } when pval_prim <> [] ->
+             let loc = str.pstr_loc in
+             YALO.warn ~loc ~file ~linter w
+         | _ -> ()
+       in
+       traverse.structure_item <-
+         (linter, str_item) :: traverse.structure_item ;
     )

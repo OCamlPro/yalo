@@ -15,31 +15,31 @@ open Ezcmd.V2
 module MAIN =
   EZCMD.MAKE(struct
 
-      let command = "yalo"
-      let about = {|yalo [INITIAL_ARGS] [SUBCOMMAND] [SUBCOMMAND_ARGUMENTS]|}
-      let set_verbosity n = Args.arg_verbosity := n
-      let get_verbosity () = !Args.arg_verbosity
+    let command = "yalo"
+    let about = {|yalo [INITIAL_ARGS] [SUBCOMMAND] [SUBCOMMAND_ARGUMENTS]|}
+    let set_verbosity n = Args.arg_verbosity := n
+    let get_verbosity () = !Args.arg_verbosity
 
-      let backtrace_var = Some "YALO_BACKTRACE"
-      let usage =
-        {|
+    let backtrace_var = Some "YALO_BACKTRACE"
+    let usage =
+      {|
          Plugin-based project linter
          |}
-      let version = Version.version
+    let version = Version.version
 
-      exception Error of string
+    exception Error of string
 
-    end)
+  end)
 
 type command_kind =
   | LOAD_PLUGINS
   | NO_PLUGINS
 
 let commands = [
-    "lint", LOAD_PLUGINS, Command_lint.cmd ;
-    "lint-no-plugins", NO_PLUGINS, Command_lint.cmd ;
-    "doc", LOAD_PLUGINS, Command_doc.cmd ;
-  ]
+  "lint", LOAD_PLUGINS, Command_lint.cmd ;
+  "lint-no-plugins", NO_PLUGINS, Command_lint.cmd ;
+  "doc", LOAD_PLUGINS, Command_doc.cmd ;
+]
 
 
 let main () =
@@ -56,10 +56,10 @@ let main () =
   let subcmd, args = Args.parse_initial_args args in
 
   if String.length subcmd > 0 && subcmd.[0] = '-' then begin
-      Printf.eprintf
-        "Execution error: a subcommand is needed before argument %S\n%!" cmd;
-      exit 2
-    end;
+    Printf.eprintf
+      "Execution error: a subcommand is needed before argument %S\n%!" cmd;
+    exit 2
+  end;
 
   let argv = Array.of_list (cmd :: subcmd :: args) in
 
@@ -86,11 +86,11 @@ let main () =
     commands
   ;
 
-    begin match !Args.arg_save_config with
+  begin match !Args.arg_save_config with
     | None -> ()
     | Some filename ->
-       Yalo.Config.save filename;
-       Printf.eprintf "Config saved to file %S\n%!" filename
-    end;
+        Yalo.Config.save filename;
+        Printf.eprintf "Config saved to file %S\n%!" filename
+  end;
 
   ()

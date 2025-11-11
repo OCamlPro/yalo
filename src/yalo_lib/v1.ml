@@ -31,18 +31,23 @@ module YALO_TYPES = struct
   type filepath = Types.filepath
   type fs = Types.fs
 
+  type scan_kind = Types.scan_kind =
+    | Scan_disabled
+    | Scan_forced
+    | Scan_maybe
+
   type position = Lexing.position = {
-      pos_fname : string;
-      pos_lnum : int;
-      pos_bol : int;
-      pos_cnum : int;
-    }
+    pos_fname : string;
+    pos_lnum : int;
+    pos_bol : int;
+    pos_cnum : int;
+  }
 
   type location = Location.t = {
-      loc_start: position;
-      loc_end: position;
-      loc_ghost: bool;
-    }
+    loc_start: position;
+    loc_end: position;
+    loc_ghost: bool;
+  }
 
   type ('linter_input, 'linter_output) linter_function =
     file:file -> linter:linter -> 'linter_input -> 'linter_output
@@ -55,8 +60,8 @@ module YALO_TYPES = struct
     ?on_open : (file:file -> linter:linter -> unit) ->
     ?on_close : (file:file -> linter:linter -> unit) ->
     ?on_end : (unit -> unit) ->
-              ('linter_input, 'linter_output) linter_function ->
-              unit
+    ('linter_input, 'linter_output) linter_function ->
+    unit
 
   type 'linter_input new_gen_unit_linter =
     ('linter_input,unit) new_gen_linter
@@ -65,19 +70,19 @@ module YALO_TYPES = struct
     ( linter * ('a, 'b) linter_function ) list
 
   type src_line_input = Types.src_line_input = {
-      line_loc : location ;
-      line_line : string ;
-      line_sep : string ;
-    }
+    line_loc : location ;
+    line_line : string ;
+    line_sep : string ;
+  }
 
   type src_file_input = Types.src_file_input = {
-      file_loc : location ;
-    }
+    file_loc : location ;
+  }
 
   type src_content_input = Types.src_content_input = {
-      content_loc : location ;
-      content_string : string ;
-    }
+    content_loc : location ;
+    content_string : string ;
+  }
 
   type zone_mode = Types.zone_mode =
     | Zone_begin
@@ -110,9 +115,9 @@ module YALO = struct
   let string_of_loc = Engine.string_of_loc
   let eprintf ?loc fmt =
     begin
-    match loc with
-    | Some loc -> Printf.eprintf "%s\n" (string_of_loc loc)
-    | None -> ()
+      match loc with
+      | Some loc -> Printf.eprintf "%s\n" (string_of_loc loc)
+      | None -> ()
     end;
     Printf.eprintf fmt
 end
@@ -154,10 +159,18 @@ module YALO_FOLDER = struct
   let folders folder = folder.folder_folders
 
   (* modifier *)
+  let set_scan folder scan =
+    folder.folder_scan <- scan
   let set_projects folder p = folder.folder_projects <- p
+  let set_other_name folder name =
+    if Engine.verbose 2 then
+      Printf.eprintf "set_other_name %S for %S\n%!"
+        name folder.folder_name ;
+    folder.folder_other_names <- name :: folder.folder_other_names
 end
 
 module YALO_INTERNAL = struct
+  let doc_kind = Engine.doc_kind
   let new_file = Engine.new_file (* don't use *)
   let add_file = Engine.add_file
   let get_document = Engine.get_document
@@ -173,6 +186,11 @@ end
 
 module YALO_DOC = struct
   let name doc = doc.doc_name
+  let set_other_name doc name =
+    if Engine.verbose 2 then
+      Printf.eprintf "set_other_name %S for %S\n%!"
+        name doc.doc_name ;
+    doc.doc_other_names <- name :: doc.doc_other_names
 (*
   val parent : t -> folder
   val basename : t -> string

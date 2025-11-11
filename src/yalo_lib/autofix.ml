@@ -18,20 +18,20 @@ let apply ~inplace messages =
   let repls = ref [] in
   List.iter (fun m ->
       List.iter (fun ( loc, repl_text ) ->
-         let start = loc.loc_start in
-         let stop = loc.loc_end in
-         let repl = {
-             repl_file = start.pos_fname ;
-             repl_pos1 = start.pos_cnum ;
-             repl_pos2 = stop.pos_cnum ;
-             repl_text ;
-           } in
-         repls := repl :: !repls
+          let start = loc.loc_start in
+          let stop = loc.loc_end in
+          let repl = {
+            repl_file = start.pos_fname ;
+            repl_pos1 = start.pos_cnum ;
+            repl_pos2 = stop.pos_cnum ;
+            repl_text ;
+          } in
+          repls := repl :: !repls
         ) m.msg_autofix
     ) messages ;
   let files = Yalo_misc.Ez_autofix.apply
-                ~destdir:(if inplace then "" else "_yalo")
-                ~suffix:"" !repls in
+      ~destdir:(if inplace then "" else "_yalo")
+      ~suffix:"" !repls in
 
   List.iter (fun (file, applied, skipped) ->
       let napplied = List.length applied in
@@ -40,10 +40,10 @@ let apply ~inplace messages =
         Printf.eprintf "File %S not created because %d patches were skipped\n%!"
           file nskipped
       else begin
-          Printf.eprintf "File %S created with %d patches applied"
-            file napplied;
-          if nskipped > 0 then
-            Printf.eprintf " and %d patches skipped" nskipped;
-          Printf.eprintf "\n%!"
-        end
+        Printf.eprintf "File %S created with %d patches applied"
+          file napplied;
+        if nskipped > 0 then
+          Printf.eprintf " and %d patches skipped" nskipped;
+        Printf.eprintf "\n%!"
+      end
     ) files

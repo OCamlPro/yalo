@@ -326,7 +326,10 @@ let rec value_to_string v =
   | IntValue i -> string_of_int i
   | FloatValue f -> string_of_float f
   | OnceValue v -> value_to_string v
-  | _ -> failwith "Not a string option"
+  | Module _ -> failwith "Module is not a string option"
+  | List _ -> failwith "List is not a string option"
+  | SmallList _ -> failwith "SmallList is not a string option"
+  | DelayedValue _ -> failwith "DelayedValue is not a string option"
 
 let safe_value_to_string v =
   match v with

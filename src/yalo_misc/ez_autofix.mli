@@ -12,11 +12,11 @@
 
 module TYPES : sig
   type replacement = {
-      repl_pos1 : int ; (* first char to replace *)
-      repl_pos2 : int ; (* position after the place to replace *)
-      repl_text : string ;
-      repl_file : string ;
-    }
+    repl_pos1 : int ; (* first char to replace *)
+    repl_pos2 : int ; (* position after the place to replace *)
+    repl_text : string ;
+    repl_file : string ;
+  }
 end
 
 val apply :
@@ -25,7 +25,7 @@ val apply :
   TYPES.replacement list -> (* to replace *)
 
   (string *
-     TYPES.replacement list * (* applied *)
-       TYPES.replacement list (* skipped *)
+   TYPES.replacement list * (* applied *)
+   TYPES.replacement list (* skipped *)
   ) list
 

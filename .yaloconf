@@ -9,22 +9,25 @@
 (*************************************)
 
 (* List of plugins to load *)
-plugins = [ "yalo_plugin_ZANUDA";  "yalo_plugin_CAMELOT" ]
+plugins = [
+  "yalo_plugin_ZANUDA";
+  "yalo_plugin_CAMELOT";
+]
 
 (* List of directories to search for plugin files *)
 search_path = [
 	  "yalo_config" ;
 ]
 
-profiles = [ "ocaml" "ocamlpro" ]
+profiles = [ "ocaml" "ocamlpro" "ocp-indent" ]
 
-warnings = [ "YALO" ; "ZANUDA" ; "?CAMELOT" ]
+warnings = [ "YALO" ; "ZANUDA" ; "?CAMELOT" ; "OCPINDENT+1" ]
 
 project = "yalo"
 default_target = "yalo_test"
 
 fileattrs = [
- "_YALO", { skipdir = true } ;
+ "_YALO", { skip = true } ;
  "src/yalo_test_YALO", { project = "yalo_test" } ;
  "src/yalo_test_ZANUDA", { project = "yalo_test" } ;
  "src/yalo_test_CAMELOT", { project = "yalo_test" } ;
@@ -33,8 +36,8 @@ fileattrs = [
  "src/yalo_plugin_YALO", { project = [ yalo ; yalo_plugin_YALO ] } ;
  "src/yalo_plugin_FIND", { project = [ yalo ; yalo_plugin_FIND ] } ;
  "src/yalo_plugin_ZANUDA", { project = [ yalo ; yalo_plugin_ZANUDA ] } ;
- "src/yalo_plugin_ZANUDA/typed", { skipdir = true } ;
- "src/yalo_plugin_ZANUDA/untyped", { skipdir = true } ;
+ "src/yalo_plugin_ZANUDA/typed", { skip = true } ;
+ "src/yalo_plugin_ZANUDA/untyped", { skip = true } ;
  "test/ocaml", { project = "yalo_test" } ;
 ]
 

@@ -11,16 +11,16 @@
 (**************************************************************************)
 
 type applicability = {
-    is_multi_part_suggestion : bool ;
-    applicability : string ; (* "Unresolved" *)
-  }  [@@deriving yojson]
+  is_multi_part_suggestion : bool ;
+  applicability : string ; (* "Unresolved" *)
+}  [@@deriving yojson]
 
 [@@@yalo.warning "YALO-9"]
 type rule = {
-    id : string ;
-    namespace : string ;
-    group : string;
-    tags : string list;
+  id : string ;
+  namespace : string ;
+  group : string;
+  tags : string list;
 (*
   | "correctness"
   | "style"
@@ -32,17 +32,17 @@ type rule = {
   | "suspicious"
   | "nursery"
  *)
-    level : string ;
+  level : string ;
     (*
        | "allow"
        | "warn"
        | "deny"
        | "deprecated"
      *)
-    impl : string ;
-    docs : string ; (* markdown *)
-    applicability : applicability ;
-  } [@@deriving yojson]
+  impl : string ;
+  docs : string ; (* markdown *)
+  applicability : applicability ;
+} [@@deriving yojson]
 
 type rules = rule list [@@deriving yojson]
 [@@@yalo.warning "YALO+9"]

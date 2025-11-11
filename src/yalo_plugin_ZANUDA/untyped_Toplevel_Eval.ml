@@ -14,7 +14,7 @@
 (* see
    https://github.com/Kakadu/zanuda/blob/master/src/untyped/Toplevel_eval.ml
    for comparison
- *)
+*)
 
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
@@ -36,15 +36,15 @@ add `;;`. Rewrite using `let () = ...`
 let is_doc_attribute attr = String.equal "ocaml.doc" attr.attr_name.txt
 
 let register
-      ~id
-      ~tags
-      ?(lint_id=lint_id)
-      ?(msg=lint_msg)
-      ?(desc=documentation)
-      ns =
+    ~id
+    ~tags
+    ?(lint_id=lint_id)
+    ?(msg=lint_msg)
+    ?(desc=documentation)
+    ns =
 
   let w = YALO.new_warning ns id
-            ~name:lint_id ~tags ~msg ~desc
+      ~name:lint_id ~tags ~msg ~desc
   in
 
   OCAML_LANG.new_ast_impl_traverse_linter
@@ -52,20 +52,20 @@ let register
     ~warnings:[w]
     (fun ~file:_ ~linter traverse ->
 
-      let structure_item ~file ~linter pstr =
-        match pstr.pstr_desc with
-        | Pstr_eval (_, _) ->
-           let stack = OCAML_AST_TRAVERSE.node_stack () in
-           (* OCAML_AST_TRAVERSE.print_node_stack (); *)
-           begin
-             match stack with
-             | OCAML_AST_TRAVERSE.Node_payload _ :: _ -> ()
-             | _ ->
-                let loc = pstr.pstr_loc in
-                YALO.warn ~loc ~file ~linter w
-           end
-        | _ -> ()
-      in
-      traverse.structure_item <-
-        (linter, structure_item) :: traverse.structure_item
+       let structure_item ~file ~linter pstr =
+         match pstr.pstr_desc with
+         | Pstr_eval (_, _) ->
+             let stack = OCAML_TRAVERSE.node_stack () in
+             (* OCAML_AST_TRAVERSE.print_node_stack (); *)
+             begin
+               match stack with
+               | OCAML_TRAVERSE.Node_payload _ :: _ -> ()
+               | _ ->
+                   let loc = pstr.pstr_loc in
+                   YALO.warn ~loc ~file ~linter w
+             end
+         | _ -> ()
+       in
+       traverse.structure_item <-
+         (linter, structure_item) :: traverse.structure_item
     )
