@@ -273,6 +273,45 @@
     }
   },
   {
+    "id": "OCPINDENT+1 bad_indent",
+    "namespace": "OCPINDENT",
+    "group": "content",
+    "tags": [ "content" ],
+    "level": "warn",
+    "impl": "yalo_plugin_OCPINDENT",
+    "docs": "### Message\nWrong indentation on this line (first warning)\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "OCPINDENT+2 bad_indent_2_to_5",
+    "namespace": "OCPINDENT",
+    "group": "content",
+    "tags": [ "content" ],
+    "level": "allow",
+    "impl": "yalo_plugin_OCPINDENT",
+    "docs": "### Message\nWrong indentation on this line (more than 2 warnings)\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "OCPINDENT+3 bad_indent_above_6",
+    "namespace": "OCPINDENT",
+    "group": "content",
+    "tags": [ "content" ],
+    "level": "allow",
+    "impl": "yalo_plugin_OCPINDENT",
+    "docs": "### Message\nWrong indentation on this line (more than 6 warnings)\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
     "id": "ZANUDA+1 camel_cased_types",
     "namespace": "ZANUDA",
     "group": "readability:fpcourse:untyped",
