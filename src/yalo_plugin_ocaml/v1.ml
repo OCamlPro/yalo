@@ -15,20 +15,19 @@ open Yalo.V1
 
 module OCAML_LEX = struct
   include Parser
-  let get_STRING = Main.get_STRING
+  let extract_STRING = Annotations.LEX.extract_STRING
 end
 
 module OCAML_AST = struct
-  include Ast_traverse.OCAML_AST
-  module OCAML_TRAVERSE = Ast_traverse.OCAML_AST_TRAVERSE
+  include Ast_types.OCAML_AST
+  module OCAML_TRAVERSE = Ast_types.OCAML_AST_TRAVERSE
   module OCAML_CHECK = Ast_check
 end
 
 module OCAML_TAST = struct
-  include Tast_traverse.OCAML_TAST
-  module OCAML_TRAVERSE = Tast_traverse.OCAML_TAST_TRAVERSE
+  include Tast_types.OCAML_TAST
+  module OCAML_TRAVERSE = Tast_types.OCAML_TAST_TRAVERSE
 end
-
 
 module OCAML_LANG = struct
 

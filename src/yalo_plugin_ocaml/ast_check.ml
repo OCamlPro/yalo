@@ -14,7 +14,8 @@
 open Yalo.V1
 open Yalo.V1.YALO_TYPES
 
-open Ast_traverse.OCAML_AST
+open Ast_types
+open OCAML_AST
 
 type warner = ?loc:location -> ?msg:string -> unit -> unit
 
@@ -73,7 +74,7 @@ module type STRUCTURE_ITEM = sig
   val lint_doc : string
   val structure_item :
     warner ->
-    Ast_traverse.OCAML_AST.structure_item ->
+    OCAML_AST.structure_item ->
     unit
 end
 

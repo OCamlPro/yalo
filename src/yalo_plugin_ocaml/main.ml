@@ -15,7 +15,11 @@ open Yalo.V1.YALO_TYPES
 open Yalo.V1
 open YALO_INFIX
 
+open Tast_types  (* for OCAML_TAST* modules *)
 open Tast_traverse (* for OCAML_TAST* modules *)
+
+
+open Ast_types  (* for OCAML_AST* modules *)
 open Ast_traverse  (* for OCAML_AST* modules *)
 
 let active_src_lex_linters =
@@ -221,122 +225,6 @@ let set_lexbuf_filename lexbuf fname =
 let set_lexbuf_filename = Lexing.set_filename
 [%%endif]
 
-[%%if ocaml_version < (4,11,0)]
-let get_STRING tok =
-  match tok with
-  | Parser.STRING (s, delim) -> s, delim
-  |  _ -> assert false
-[%%else]
-let get_STRING tok =
-  match tok with
-  | Parser.STRING (s, _, delim) -> s, delim
-  |  _ -> assert false
-[%%endif]
-
-let with_string ~loc f tokens =
-  match tokens with
-  | (Parser.STRING _ as tok, loc) :: tokens ->
-      let s, _delim = get_STRING tok in
-      f ~loc s tokens
-  | _ ->
-      YALO.eprintf ~loc
-        "Expecting string after this token in yalo \
-         annotation\n%!" ;
-      tokens
-
-let with_value ~loc f tokens =
-  match tokens with
-  | (Parser.STRING _ as tok, loc) :: tokens ->
-      let s, _delim = get_STRING tok in
-      f ~loc s tokens
-  | (Parser.INT (s, _), loc) :: tokens ->
-      f ~loc s tokens
-  | (Parser.FLOAT (s, _), loc) :: tokens ->
-      f ~loc s tokens
-  |  _ ->
-      YALO.eprintf ~loc
-        "Expecting string after this token in yalo \
-         annotation\n%!";
-      tokens
-
-let rec with_path ~loc path f tokens =
-  match tokens with
-  | (Parser.STRING _ as tok, _) :: (DOT, loc) :: tokens ->
-      let ident, _delim = get_STRING tok in
-      let subpath = EzString.split ident '.' in
-      with_path ~loc (List.rev subpath @ path) f tokens
-  | (Parser.LIDENT ident, _) :: (DOT, loc) :: tokens ->
-      with_path ~loc (ident :: path) f tokens
-  | (Parser.UIDENT ident, _) :: (DOT, loc) :: tokens ->
-      with_path ~loc (ident :: path) f tokens
-  | (Parser.STRING _ as tok, loc) :: tokens ->
-      let ident, _delim = get_STRING tok in
-      let subpath = EzString.split ident '.' in
-      f ~loc (List.rev path @ subpath) tokens
-  | (Parser.LIDENT ident, loc) :: tokens ->
-      f ~loc (List.rev (ident :: path)) tokens
-  | (Parser.UIDENT ident, loc) :: tokens ->
-      f ~loc (List.rev (ident :: path)) tokens
-  |  _ ->
-      YALO.eprintf ~loc
-        "Expecting path after this token in \
-         yalo annotation\n%!" ;
-      tokens
-
-let extract_yalo_annotations ~file tokens =
-  let check_yalo_annot ~loc ident tokens =
-    match ident with
-    | "warning" ->
-        with_string ~loc (fun ~loc yalo_spec tokens ->
-            YALO_LANG.warnings_zone ~file ~loc
-              ~mode:Zone_begin yalo_spec ;
-            tokens
-          ) tokens
-    | "check" ->
-        with_string ~loc (fun ~loc spec tokens ->
-            YALO_LANG.warnings_check ~file ~loc spec true;
-            tokens
-          ) tokens
-    | "check_before" ->
-        with_string ~loc (fun ~loc spec tokens ->
-            YALO_LANG.warnings_check ~file ~loc spec false;
-            tokens
-          ) tokens
-    | "option" ->
-        with_path ~loc []
-          (fun ~loc path tokens ->
-             with_value ~loc (fun ~loc value tokens ->
-                 match
-                   YALO_LANG.temp_set_option path value
-                 with
-                 | exception exn ->
-                     YALO.eprintf ~loc
-                       "Configuration error: exception %s in \
-                        yalo.set\n%!"
-                       (Printexc.to_string exn);
-                     tokens
-                 | () -> tokens
-               )
-               tokens
-          ) tokens
-    | ident ->
-        YALO.eprintf ~loc "Unknown annotation \"yalo.%s\"\n%!"
-          ident;
-        tokens
-  in
-  let rec iter tokens =
-    match tokens with
-    | [] -> ()
-    | (
-      (Parser.LBRACKETATATAT | LBRACKETAT | LBRACKETATAT)
-    , _) :: (LIDENT "yalo", loc) ::
-      (DOT, _) :: (LIDENT ident, _) :: tokens ->
-        check_yalo_annot ~loc ident tokens |> iter
-    | _ :: tokens -> iter tokens
-
-  in
-  iter tokens
-
 let check_ml_source ~file =
   let file_name = YALO_FILE.name file in
 
@@ -356,7 +244,6 @@ let check_ml_source ~file =
         | content ->
             let lexbuf = Lexing.from_string content in
             set_lexbuf_filename lexbuf (YALO_FILE.name file) ;
-
             let rec iter lexbuf rev_tokens =
               let token = Lexer.token lexbuf in
               match token with
@@ -366,9 +253,7 @@ let check_ml_source ~file =
                                 :: rev_tokens)
             in
             let tokens = iter lexbuf [] in
-
-            extract_yalo_annotations ~file tokens ;
-
+            Annotations.LEX.check_tokens ~file tokens ;
             YALO_LANG.iter_linters_open ~file lex_linters ;
             YALO_LANG.iter_linters ~file lex_linters tokens ;
             YALO_LANG.iter_linters_close ~file lex_linters ;
