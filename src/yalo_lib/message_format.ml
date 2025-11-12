@@ -116,6 +116,80 @@ let display_human ~format messages =
     ) messages ;
   ()
 
+let display_summary messages =
+
+  Printf.eprintf "Yalo: Summary by warning\n%!";
+  let warnings = ref StringMap.empty in
+  List.iter (fun m ->
+      let w = m.msg_warning in
+      let nbr, map =
+        match StringMap.find w.w_idstr !warnings with
+        | exception Not_found ->
+            let nbr = ref 0 in
+            let map = ref StringMap.empty in
+            warnings := StringMap.add w.w_idstr (w, nbr, map) !warnings ;
+            nbr, map
+        | (_w, nbr, map) -> nbr, map
+      in
+      incr nbr ;
+      let target = m.msg_target in
+      match StringMap.find target.target_name !map with
+      | exception Not_found ->
+          map := StringMap.add target.target_name (ref 1) !map
+      | r -> incr r
+    ) messages ;
+  StringMap.iter (fun w_idstr (w, nbr, map) ->
+      Printf.eprintf "- %d %s(%s)" !nbr w_idstr w.w_name ;
+      StringMap.iter (fun target_name nbr ->
+          Printf.eprintf " %s(%d)" target_name !nbr
+        ) !map;
+      Printf.eprintf "\n%!"
+    ) !warnings ;
+
+  Printf.eprintf "\nYalo: Summary by file\n%!";
+  let targets = ref StringMap.empty in
+  List.iter (fun m ->
+      if not @@ StringMap.mem m.msg_target.target_name !targets then
+        targets := StringMap.add m.msg_target.target_name m.msg_target !targets
+    ) messages ;
+
+  StringMap.iter (fun _ target ->
+      let nwarnings = ref 0 in
+      let warnings = ref StringMap.empty in
+      let nerrors = ref 0 in
+      let errors = ref StringMap.empty in
+      List.iter (fun m ->
+          let w = m.msg_warning in
+          let map = if w.w_level_error then begin
+              incr nerrors ;
+              errors
+            end
+            else begin
+              incr nwarnings ;
+              warnings
+            end
+          in
+          match StringMap.find w.w_idstr !map with
+          | exception Not_found ->
+              let r = ref 1 in
+              map := StringMap.add w.w_idstr (w,r) !map;
+          | (_w, r) -> incr r
+        ) target.target_messages ;
+      let print_map name n map =
+        Printf.eprintf " %d %ss {" n name;
+        StringMap.iter (fun idstr (w,n) ->
+            Printf.eprintf " %d %s(%s)" !n idstr w.w_name
+          ) map;
+        Printf.eprintf "}%!"
+      in
+      Printf.eprintf "- %s%!" target.target_name;
+      if !nerrors > 0 then print_map "error" !nerrors !errors;
+      if !nwarnings > 0 then print_map "warning" !nwarnings !warnings;
+      Printf.eprintf "\n%!";
+    ) !targets ;
+
+  ()
+
 let sarif_schema =
   "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"
 
@@ -231,7 +305,8 @@ let display_sarif ?output messages =
   end;
   ()
 
-let display_messages ~on_error ?(format=Format_Human) ?output messages =
+let display_messages ~on_error ?(summary=Some 10)
+    ?(format=Format_Human) ?output messages =
   begin
     match format with
     | Format_Human
@@ -247,6 +322,18 @@ let display_messages ~on_error ?(format=Format_Human) ?output messages =
       else
         incr nwarnings ;
     ) messages ;
+  begin
+    match summary with
+    | None -> ()
+    | Some n ->
+        match format with
+        | Format_Human
+        | Format_Context
+        | Format_Short ->
+            if !nwarnings + !nerrors > n then
+              display_summary messages
+        | Format_Sarif -> ()
+  end;
   begin
     match !nwarnings, !nerrors with
     | 0, n ->

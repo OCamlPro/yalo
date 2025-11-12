@@ -83,33 +83,33 @@ let lint_ast
     active_traverse_linters
     ?before
     traverser
-  = fun ~file ast ->
-    let ast_linters = YALO_LANG.filter_linters ~file !active_linters in
-    let ast_traverse_linters =
-      YALO_LANG.filter_linters ~file !active_traverse_linters in
+    ~file ast =
+  let ast_linters = YALO_LANG.filter_linters ~file !active_linters in
+  let ast_traverse_linters =
+    YALO_LANG.filter_linters ~file !active_traverse_linters in
 
-    match ast_linters, ast_traverse_linters with
-    | [], [] -> ()
-    | _ ->
-        (* We must do the next steps even without any active linters,
-           because we must collect [@@@yalo.warning "..."] attributes.
-           TODO remove this when we use LEX linters to read attributes.
-        *)
+  match ast_linters, ast_traverse_linters with
+  | [], [] -> ()
+  | _ ->
+      (* We must do the next steps even without any active linters,
+         because we must collect [@@@yalo.warning "..."] attributes.
+         TODO remove this when we use LEX linters to read attributes.
+      *)
 
-        begin
-          match before with
-          | None -> ()
-          | Some f -> f ast
-        end;
-        YALO_LANG.iter_linters_open ~file ast_linters ;
-        YALO_LANG.iter_linters_open ~file ast_traverse_linters ;
+      begin
+        match before with
+        | None -> ()
+        | Some f -> f ast
+      end;
+      YALO_LANG.iter_linters_open ~file ast_linters ;
+      YALO_LANG.iter_linters_open ~file ast_traverse_linters ;
 
-        YALO_LANG.iter_linters ~file ast_linters ast ;
-        traverser ~file ast_traverse_linters ast ;
+      YALO_LANG.iter_linters ~file ast_linters ast ;
+      traverser ~file ast_traverse_linters ast ;
 
-        YALO_LANG.iter_linters_close ~file ast_traverse_linters ;
-        YALO_LANG.iter_linters_close ~file ast_linters ;
-        ()
+      YALO_LANG.iter_linters_close ~file ast_traverse_linters ;
+      YALO_LANG.iter_linters_close ~file ast_linters ;
+      ()
 
 let is_menhir_generated_file_ref = ref false
 

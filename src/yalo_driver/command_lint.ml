@@ -69,6 +69,14 @@ let arg_specs = [
   EZCMD.String (fun s -> Args.arg_output := Some s),
   EZCMD.info ~docv:"FILE" "File for JSON output";
 
+  [ "summary" ],
+  EZCMD.Int (fun i -> Args.arg_summary := Some i),
+  EZCMD.info ~docv:"NUMBER" "Print summary when warnings exceed $(NUMBER)";
+
+  [ "no-summary" ],
+  EZCMD.Unit (fun () -> Args.arg_summary := None),
+  EZCMD.info "Never print any summary";
+
 ]
 
 let cmd command_name =
@@ -120,6 +128,7 @@ let cmd command_name =
          ~format:!Args.arg_message_format
          ?autofix: !Args.arg_autofix_inplace
          ?output
+         ~summary:!Args.arg_summary
          ();
 
     )

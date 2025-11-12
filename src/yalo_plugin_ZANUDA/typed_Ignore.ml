@@ -81,5 +81,5 @@ let register ~id ~tags
               end
           | _ -> ()
         in
-        traverse.expr <- (linter, check_expr) :: traverse.expr
+        traverse.expression <- (linter, check_expr) :: traverse.expression
       )

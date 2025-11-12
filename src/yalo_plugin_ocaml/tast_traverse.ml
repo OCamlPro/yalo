@@ -47,7 +47,7 @@ end = struct
       class_type = [] ;
       class_type_declaration = [] ;
       class_type_field = [] ;
-      expr = [] ;
+      expression = [] ;
       extension_constructor = [] ;
       module_binding = [] ;
       module_coercion = [] ;
@@ -197,7 +197,7 @@ end = struct
         apply_lints default.class_type_field traverse.class_type_field
           ~file class_type_field;
       expr  =
-        apply_lints default.expr traverse.expr ~file expression;
+        apply_lints default.expr traverse.expression ~file expression;
       extension_constructor  =
         apply_lints default.extension_constructor
           traverse.extension_constructor

@@ -122,8 +122,8 @@ let register ns
         in
         traverse.module_binding <- (linter, module_binding) ::
                                    traverse.module_binding ;
-        traverse.expr <- (linter, expression) ::
-                         traverse.expr ;
+        traverse.expression <- (linter, expression) ::
+                               traverse.expression ;
         traverse.module_expr <- (linter, module_expr check) ::
                                 traverse.module_expr ;
         traverse.module_type <- (linter, module_type check) ::

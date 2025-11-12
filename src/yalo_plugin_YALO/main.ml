@@ -44,9 +44,18 @@ let () =
   Typed_all_upper_struct.register ns
     ~tags:[ tag_typed ] 10;
   Lex_no_semisemi.register ns
-    ~tags:[ tag_lex ] 11;
+    ~tags:[ tag_lex ] {
+    w_id_no_semisemi = 11;
+    w_id_begin_fun = 16 ;
+  };
   Typed_forbidden_infix.register ns section
     ~tags: [ tag_typed ] 12;
   Typed_no_mutable_fields.register ns
     ~tags: [ tag_typed ; tag_immutable ] 13;
+  Untyped_string_concat.register ns
+    ~tags:[ tag_untyped ] 14 ;
+  Typed_fun_fun.register ns
+    ~tags: [ tag_typed ] 15;
+  Lex_paren_semi.register ns
+    ~tags: [ tag_lex ] 17;
   ()

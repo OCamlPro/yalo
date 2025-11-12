@@ -273,18 +273,17 @@ let rec new_linter
           StringMap.add l.linter_idstr l w.w_linters)
       warnings
 
-let new_gen_linter lang active_linters_ref =
-  fun
+let new_gen_linter lang active_linters_ref
     ns
     name
     ~warnings
     ?on_begin ?on_open ?on_close ?on_end
-    f ->
-    let linter_install l =
-      active_linters_ref := (l, f) :: !active_linters_ref ;
-    in
-    new_linter lang ns name ~warnings ?on_begin ?on_open ?on_close ?on_end
-      linter_install
+    f =
+  let linter_install l =
+    active_linters_ref := (l, f) :: !active_linters_ref ;
+  in
+  new_linter lang ns name ~warnings ?on_begin ?on_open ?on_close ?on_end
+    linter_install
 
 exception LocalExit
 let local_exit = LocalExit
@@ -385,7 +384,6 @@ let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
   | Warning_disabled -> ()
   | Warning_sleeping
   | Warning_enabled ->
-
       if verbose 2 then
         Printf.eprintf "Warning %S in %s:%d set by linter %S scanning %S\n%!"
           w.w_idstr loc.loc_start.pos_fname loc.loc_start.pos_lnum
@@ -403,6 +401,8 @@ let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
           loc.loc_start.pos_cnum
           (Marshal.to_string (loc,w.w_idstr,msg) [])
       in
+      let target_name = loc.loc_start.pos_fname in
+      let target = get_target target_name in
       let m = {
         msg_loc = loc ;
         msg_string ;
@@ -411,12 +411,11 @@ let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
         msg_linter = linter ;
         msg_idstr ;
         msg_autofix = autofix ;
+        msg_target = target ;
       } in
       file.file_messages <- StringMap.add msg_idstr m file.file_messages ;
       GState.messages := m :: !GState.messages ;
 
-      let target_name = loc.loc_start.pos_fname in
-      let target = get_target target_name in
       target.target_messages <- m :: target.target_messages ;
       GState.message_targets := IntMap.add target.target_uid target
           !GState.message_targets;
@@ -494,8 +493,7 @@ let rec filter_linters ~file linters =
       else
         filter_linters ~file linters
 
-let lint_with_active_linters active_linters_ref =
-  fun ~file x ->
+let lint_with_active_linters active_linters_ref ~file x =
   match filter_linters ~file !active_linters_ref with
   | [] -> ()
   | linters ->
@@ -716,7 +714,7 @@ let apply_zone z revert_warning_changes =
     );
   !revert_warning_changes
 
-let target_messages target =
+let filter_target_messages target =
 
   let messages = Array.of_list target.target_messages in
   Array.sort compare_message_start messages;
@@ -857,14 +855,24 @@ let target_messages target =
               );
             iter checks messages rev_messages
       in
-      iter checks messages []
+      let messages = iter checks messages [] in
+      messages
+
 
 let get_messages () =
   let messages = ref [] in
   Hashtbl.iter (fun _ target ->
       (* We don't print message on non-existant files *)
-      if Sys.file_exists target.target_name then
-        messages := target_messages target @ !messages
+      if Sys.file_exists target.target_name then begin
+        let target_messages = filter_target_messages target in
+        messages := target_messages @ !messages ;
+
+        (* clean everything *)
+        target.target_zones <- [] ;
+        target.target_checks <- [] ;
+        target.target_messages <- target_messages ;
+
+      end;
     )
     GState.all_targets ;
   !messages

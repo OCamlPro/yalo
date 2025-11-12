@@ -13,24 +13,40 @@
 open Yalo.V1
 open Yalo_plugin_ocaml.V1
 
-let register ns w =
-  OCAML_LANG.new_tast_impl_traverse_linter ns
-    ("check:typed:" ^ YALO_WARNING.name w)
+open OCAML_AST
+
+let lint_msg =
+  {|(a ^ b ^ c) should be replaced by Printf.sprintf "%s%s%s" a b c|}
+
+let register ns
+    ?(name="string_concat")
+    ~tags
+    ?(msg = lint_msg)
+    id
+  =
+  let w =
+    YALO.new_warning ns ~name id
+      ~tags
+      ~msg
+  in
+
+  OCAML_LANG.new_ast_impl_traverse_linter ns
+    ("check:" ^ name)
     ~warnings:[ w ]
-    OCAML_TAST.(fun ~file ~linter traverse ->
-        let not_menhir_generated =
-          not @@ OCAML_LANG.is_menhir_generated_file() in
-        let check_expr ~file:_ ~linter:_ expr =
-          match expr.exp_desc with
-          | Texp_ident (path, _, _) ->
-              begin
-                let path = Path.name path in
-                if EzString.starts_with path ~prefix:"Stdlib.Obj" &&
-                   not_menhir_generated then
-                  let loc = expr.exp_loc in
-                  YALO.warn ~loc ~file ~linter w
-              end
-          | _ -> ()
-        in
-        traverse.expression <- (linter, check_expr) :: traverse.expression
-      )
+    (fun ~file:_ ~linter traverse ->
+       let expression ~file ~linter e =
+         match e.pexp_desc with
+         | Pexp_apply(
+             { pexp_desc = Pexp_ident { txt = Lident "^"; _ } ; _ },
+             [ _, _ ;
+               _,
+               { pexp_desc = Pexp_apply (
+                     { pexp_desc = Pexp_ident { txt = Lident "^" ; _ } ; _ },
+                     _ ) ; _ } ]
+           ) ->
+             YALO.warn ~loc:e.pexp_loc ~file ~linter w
+         | _ -> ()
+       in
+       traverse.expression <- (linter, expression) :: traverse.expression
+    );
+  ()

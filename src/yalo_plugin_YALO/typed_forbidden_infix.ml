@@ -103,7 +103,7 @@ let register ns section
         let binding_op ~file ~linter bo =
           check_infix ~file ~linter bo.bop_op_path bo.bop_loc
         in
-        traverse.expr <- (linter, check_expr) :: traverse.expr ;
+        traverse.expression <- (linter, check_expr) :: traverse.expression ;
         traverse.binding_op <- (linter, binding_op) :: traverse.binding_op
 
       )

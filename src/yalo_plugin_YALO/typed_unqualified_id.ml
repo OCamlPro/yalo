@@ -74,7 +74,9 @@ let register ns
                            not (List.exists (fun node ->
                                match node_is_letopen node with
                                | Some open_path ->
-                                   Path.name open_path ^ "." ^ name = path
+                                   Printf.sprintf "%s.%s"
+                                     (Path.name open_path) name
+                                   = path
                                | None -> false
                              )
                                (OCAML_TRAVERSE.node_stack ())
@@ -94,5 +96,5 @@ let register ns
               end
           | _ -> ()
         in
-        traverse.expr <- (linter, check_expr) :: traverse.expr
+        traverse.expression <- (linter, check_expr) :: traverse.expression
       )

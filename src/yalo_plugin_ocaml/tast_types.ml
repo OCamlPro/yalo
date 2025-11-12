@@ -150,7 +150,7 @@ module OCAML_TAST_TRAVERSE = struct
     mutable class_type_declaration:
       OCAML_TAST.class_type_declaration ast_lint_list;
     mutable class_type_field: OCAML_TAST.class_type_field ast_lint_list;
-    mutable expr: OCAML_TAST.expression ast_lint_list;
+    mutable expression: OCAML_TAST.expression ast_lint_list;
     mutable extension_constructor:
       OCAML_TAST.extension_constructor ast_lint_list;
     mutable module_binding: OCAML_TAST.module_binding ast_lint_list;
