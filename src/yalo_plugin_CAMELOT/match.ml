@@ -45,7 +45,8 @@ module MakeExpressionCheck (M: EXPRESSION_CHECK) =
 
 (* TODO: add this to EzList. Appeared in Stdlib.List in 4.10.0 *)
 let list_concat_map f l =
-  let rec aux f acc = function
+  let rec aux f acc l =
+    match l with
     | [] -> List.rev acc
     | x :: l ->
         let xs = f x in
@@ -104,9 +105,10 @@ module MATCH_INT =
   MakeExpressionCheck(struct
     let lint_id = "match_int"
     let fix = "using an if statement and `=`"
-    let violation = (* TODO: should be replaced by Printf !!! *)
-      "using integer pattern matching on fewer than " ^
-      (string_of_int long_pattern_match) ^ " cases"
+    let violation =
+      Printf.sprintf
+        "using integer pattern matching on fewer than %d cases"
+        long_pattern_match
     let expression = make_check Astutils.is_case_const
         long_pattern_match
         false
@@ -118,8 +120,10 @@ module MATCH_RECORD =
   MakeExpressionCheck(struct
     let lint_id = "match_record"
     let fix = "using a let statement to extract record fields"
-    let violation = "using pattern matching on a record (for fewer than "
-                    ^ (string_of_int long_pattern_match) ^ " cases)"
+    let violation =
+      Printf.sprintf
+        "using pattern matching on a record (for fewer than %d cases"
+        long_pattern_match
     let expression = make_check (fun pat -> Astutils.is_pat_record pat)
         long_pattern_match
         false
@@ -132,8 +136,10 @@ module MATCH_TUPLE =
   MakeExpressionCheck(struct
     let lint_id = "match_tuple"
     let fix = "using a let statement to extract tuple fields"
-    let violation = "using pattern matching on a tuple (for fewer than "
-                    ^ (string_of_int short_pattern_match) ^ " cases)"
+    let violation =
+      Printf.sprintf
+        "using pattern matching on a tuple (for fewer than %d cases"
+        short_pattern_match
     let expression = make_check (fun pat -> Astutils.is_pat_tuple pat)
         short_pattern_match
         false

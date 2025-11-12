@@ -387,6 +387,7 @@ let main
     ?format
     ?autofix
     ?output
+    ~summary
     () =
 
   scan_projects
@@ -405,6 +406,7 @@ let main
 
   let nerrors = ref 0 in
   Message_format.display_messages
+    ~summary
     ~on_error:(fun n -> nerrors := n) ?format ?output messages;
 
   Printf.eprintf

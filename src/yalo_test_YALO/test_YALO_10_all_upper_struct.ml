@@ -1,4 +1,3 @@
-
 [@@@yalo.check ""]
 module Error = struct end
 [@@@yalo.check "YALO+10"]
@@ -6,16 +5,16 @@ module Error = struct end
 
 let x =
   let module[@yalo.check ""]
-              AnotherError = struct let x = 1 end
-  [@yalo.check "YALO+10"]
+    AnotherError = struct let x = 1 end
   in
   AnotherError.x
+[@@@yalo.check "YALO+10"]
 
 [@@@yalo.check ""]
 module NO_ERROR (ButErrorHere: sig end) = struct
-  [@@@yalo.check "YALO+10"]
   include ButErrorHere
 end
+[@@@yalo.check "YALO+10"]
 
 [@@@yalo.check ""]
 

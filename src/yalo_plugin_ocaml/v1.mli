@@ -15,19 +15,19 @@ open Yalo.V1.YALO_TYPES
 module OCAML_LEX : sig
   include (module type of Parser)
   (* extract info from STRING token, version compatible *)
-  val get_STRING : token -> string * string option
+  val extract_STRING : token -> string * string option
 end
 
 module OCAML_AST : sig
-  include module type of Ast_traverse.OCAML_AST
+  include module type of Ast_types.OCAML_AST
   (* = Ppxlib.Ast + string_of_structure *)
-  module OCAML_TRAVERSE : module type of Ast_traverse.OCAML_AST_TRAVERSE
+  module OCAML_TRAVERSE : module type of Ast_types.OCAML_AST_TRAVERSE
   module OCAML_CHECK : module type of Ast_check
 end
 
 module OCAML_TAST : sig
-  include module type of Tast_traverse.OCAML_TAST
-  module OCAML_TRAVERSE : module type of Tast_traverse.OCAML_TAST_TRAVERSE
+  include module type of Tast_types.OCAML_TAST
+  module OCAML_TRAVERSE : module type of Tast_types.OCAML_TAST_TRAVERSE
 end
 
 module OCAML_LANG : sig

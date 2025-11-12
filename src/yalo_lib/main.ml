@@ -19,6 +19,9 @@ let load_plugin file =
     Dynlink.loadfile file
   with
     Dynlink.Error (Module_already_loaded _) -> ()
+  | exn ->
+      Printf.eprintf "Exception raised in load_plugin %S\n%!" file;
+      raise exn
 
 
 let bin_dir = Sys.executable_name |> Filename.dirname

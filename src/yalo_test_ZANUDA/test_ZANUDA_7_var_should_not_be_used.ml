@@ -12,7 +12,7 @@
 
 let () =
   print_int @@
-    match (1,2,3) with
-    | (_one, _two, 3) -> _one
-    | _ -> 2
+  match (1,2,3) with
+  | (_one, _two, 3) -> _one
+  | _ -> 2
 [@@@yalo.check "ZANUDA+7"]

@@ -5,15 +5,15 @@
 [@@@yalo.warning "YALO+13"]
 
 type point = {
-    x : int ;
-    mutable y : int ;
-  }
+  x : int ;
+  mutable y : int ;
+}
 [@@@yalo.check "YALO+13"]
 
 type point_option =
-  NoPoint
-| SomePoint of {
-    x : int ;
-    mutable y : int ;
-  }
+    NoPoint
+  | SomePoint of {
+      x : int ;
+      mutable y : int ;
+    }
 [@@@yalo.check "YALO+13"]

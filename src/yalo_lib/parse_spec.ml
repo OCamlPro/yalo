@@ -258,8 +258,10 @@ let parse_spec spec (set_function : warning_state -> warning -> unit) =
 
   and set_function_default w =
     let set =
-      if w.w_set_by_default then Warning_enabled
-      else Warning_sleeping
+      if w.w_set_by_default then
+        Warning_enabled
+      else
+        Warning_sleeping
     in
     set_function set w
 

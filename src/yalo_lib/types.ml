@@ -168,6 +168,7 @@ and message = {
   msg_loc : location ;
   msg_string : string ;
   msg_autofix : ( location * string ) list ;
+  msg_target : target ;
 }
 
 and linter = {
@@ -185,6 +186,29 @@ and linter = {
   linter_close : (file:file -> linter:linter -> unit) ;
   linter_end : (unit -> unit);
 }
+
+(* what the provided loc means for the warnings zone *)
+and zone_mode =
+  | Zone_begin
+  | Zone_all
+
+and zone = {
+  zone_loc : location ;
+  zone_rev_zone : zone option ;
+  zone_target : target ;
+  zone_spec : string ;
+  zone_creator : file ;
+  mutable zone_rev_changes : (warning * warning_state) list ;
+}
+
+and target = {
+  target_name : string ; (* normalized version *)
+  target_uid : int ;
+  mutable target_zones : zone list ;
+  mutable target_checks : (string * location * bool (* after? *)) list ;
+  mutable target_messages : message list ;
+}
+
 
 type src_line_input = {
   line_loc : Location.t ;
@@ -212,25 +236,3 @@ type message_format =
   | Format_Context
   | Format_Sarif
   | Format_Short
-
-(* what the provided loc means for the warnings zone *)
-type zone_mode =
-  | Zone_begin
-  | Zone_all
-
-type zone = {
-  zone_loc : location ;
-  zone_rev_zone : zone option ;
-  zone_target : target ;
-  zone_spec : string ;
-  zone_creator : file ;
-  mutable zone_rev_changes : (warning * warning_state) list ;
-}
-
-and target = {
-  target_name : string ; (* normalized version *)
-  target_uid : int ;
-  mutable target_zones : zone list ;
-  mutable target_checks : (string * location * bool (* after? *)) list ;
-  mutable target_messages : message list ;
-}

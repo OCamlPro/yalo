@@ -1,4 +1,5 @@
 
+[@@@yalo.warning "-OCPINDENT"]
 (* This should trigger YALO+3 tab-used *)
 [@@@yalo.check ""]
 	       let x = 1
