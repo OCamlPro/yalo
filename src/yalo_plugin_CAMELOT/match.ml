@@ -69,7 +69,7 @@ let make_check (pred: OCAML_AST.pattern -> bool) override_len enable_unwrap
 
   begin match e.pexp_desc with
     | Pexp_match (_, cases) ->
-        if List.length cases >= override_len then ()
+        if List.compare_length_with cases override_len >= 0 then ()
         else if enable_unwrap then
           list_concat_map (fun (c: OCAML_AST.case) ->
               unwrap_tuple c.pc_lhs) cases |>

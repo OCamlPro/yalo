@@ -260,6 +260,58 @@
     }
   },
   {
+    "id": "YALO+23 list_length_comp_any",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l <=> _\" should be replaced by \"List.compare_length_with \\\nl =/<=> _\"\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+24 list_length_comp_list_length",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l1 <=> List.length l2\" should be replaced by \\\n\"List.compare_lengths l1 l2 <=> 0\"\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+25 then_bool_else_bool",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"if then bool else bool\" should be simplified\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+26 then_or_else_bool",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nbool in then/else should be simplified with && or ||\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
     "id": "YALO+15 fun_fun",
     "namespace": "YALO",
     "group": "typed",
