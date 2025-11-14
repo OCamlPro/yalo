@@ -41,6 +41,8 @@ module OCAML_AST = struct
       ->
         id = "MenhirBasics"
     | _ -> false
+
+  let longident_name = Ppxlib.Longident.name
 end
 
 module OCAML_AST_TRAVERSE = struct

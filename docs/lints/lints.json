@@ -156,6 +156,19 @@
     }
   },
   {
+    "id": "YALO+21 useless_paren",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThis expression does not need to be between parenthesis\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
     "id": "YALO+12 forbidden_infix",
     "namespace": "YALO",
     "group": "typed",
@@ -189,6 +202,58 @@
     "level": "warn",
     "impl": "yalo_plugin_YALO",
     "docs": "### Message\n(a ^ b ^ c) should be replaced by Printf.sprintf \"%s%s%s\" a b c\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+18 incr_decr",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"x := !x +/- 1\" should be replaced by \"incr/decr x\"\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+20 comp_boolean",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\ncomparison with a boolean should always be simplified\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+19 failwith_sprintf",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"failwith (sprintf [...])\" should be replaced by \"Printf.ksprintf failwith [...]\"\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+22 list_length_comp_zero",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l =/<> 0\" should be replaced by \"l =/<> []\"\n### Description\n",
     "applicability": {
       "is_multi_part_suggestion": false,
       "applicability": "Unresolved"
