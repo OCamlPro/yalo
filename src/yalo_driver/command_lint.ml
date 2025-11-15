@@ -33,12 +33,13 @@ let arg_specs = [
   EZCMD.info ~docv:"SPEC"
     "Set errors according to SPEC-ification";
 
-  [ "message-format" ],
+  [ "f"; "message-format" ],
   EZCMD.String (function
       | "context" -> Args.arg_message_format := Format_Context
       | "human" -> Args.arg_message_format := Format_Human
       | "sarif" -> Args.arg_message_format := Format_Sarif
       | "short" -> Args.arg_message_format := Format_Short
+      | "summary" -> Args.arg_message_format := Format_Summary
       (* TODO Clippy: human, short, json, json-diagnostic-short,
          json-diagnostic-rendered-ansi, json-render-diagnostics *)
       | s ->
@@ -69,7 +70,7 @@ let arg_specs = [
   EZCMD.String (fun s -> Args.arg_output := Some s),
   EZCMD.info ~docv:"FILE" "File for JSON output";
 
-  [ "summary" ],
+  [ "summary-from" ],
   EZCMD.Int (fun i -> Args.arg_summary := Some i),
   EZCMD.info ~docv:"NUMBER" "Print summary when warnings exceed $(NUMBER)";
 

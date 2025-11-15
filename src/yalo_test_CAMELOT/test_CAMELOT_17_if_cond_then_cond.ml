@@ -1,4 +1,4 @@
-[@@@yalo.warning "CAMELOT+17"]
+[@@@yalo.warning "CAMELOT+17,YALO-26"]
 
 [@@@yalo.check ""]
 let f1 x = if x then x else true

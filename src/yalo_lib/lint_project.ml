@@ -467,7 +467,7 @@ let activate_warnings_and_linters
 
   Engine.activate_linters ();
 
-  if List.length !GState.active_linters = 0 then begin
+  if !GState.active_linters = [] then begin
     Printf.eprintf "Configuration error: no active linters\n%!";
     Engine.eprint_config ();
     exit 2
