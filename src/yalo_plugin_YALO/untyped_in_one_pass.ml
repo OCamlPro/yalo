@@ -16,38 +16,69 @@ open Yalo_plugin_ocaml.V1
 open OCAML_AST
 
 type 'a warning_config = {
-  w_string_concat : 'a option ;
-  w_incr_decr : 'a option ;
-  w_comp_boolean : 'a option ;
-  w_failwith_sprintf : 'a option ;
-  w_list_length_comp_zero : 'a option ;
-  w_list_length_comp_list_length : 'a option ;
-  w_list_length_comp_any : 'a option ;
-  w_then_bool_else_bool : 'a option ;
-  w_then_or_else_bool : 'a option ;
+  w_string_concat : 'a ;
+  w_incr_decr : 'a ;
+  w_comp_boolean : 'a ;
+  w_failwith_sprintf : 'a ;
+  w_list_length_comp_zero : 'a ;
+  w_list_length_comp_list_length : 'a ;
+  w_list_length_comp_any : 'a ;
+  w_then_bool_else_bool : 'a ;
+  w_then_or_else_bool : 'a ;
+  w_else_unit : 'a ;
+  w_try_catch_all : 'a ;
+  w_list_append_for_one : 'a ;
+  w_useless_sprintf : 'a ;
+  w_suspicious_for_zero_to_len : 'a ;
 }
 
-let msg_string_concat =
-  {|(a ^ b ^ c) should be replaced by Printf.sprintf "%s%s%s" a b c|}
-let msg_incr_decr =
-  {|"x := !x +/- 1" should be replaced by "incr/decr x"|}
-let msg_comp_boolean =
-  {|comparison with a boolean should always be simplified|}
-let msg_failwith_sprintf =
-  "\"failwith (sprintf [...])\" should be replaced by \
-   \"Printf.ksprintf failwith [...]\""
-let msg_list_length_comp_zero =
-  {|"String.length l =/<> 0" should be replaced by "l =/<> []"|}
-let msg_list_length_comp_any =
-  {|"String.length l <=> _" should be replaced by "List.compare_length_with \
-l =/<=> _"|}
-let msg_list_length_comp_list_length =
-  {|"String.length l1 <=> List.length l2" should be replaced by \
-"List.compare_lengths l1 l2 <=> 0"|}
-let msg_then_bool_else_bool =
-  {|"if then bool else bool" should be simplified|}
-let msg_then_or_else_bool =
-  {|bool in then/else should be simplified with && or |||}
+let msg = {
+  w_string_concat =
+    {|(a ^ b ^ c) should be replaced by Printf.sprintf "%s%s%s" a b c|} ;
+  w_incr_decr =
+    {|"x := !x +/- 1" should be replaced by "incr/decr x"|} ;
+  w_comp_boolean =
+    {|comparison with a boolean should always be simplified|} ;
+  w_failwith_sprintf =
+    "\"failwith (sprintf [...])\" should be replaced by \
+     \"Printf.ksprintf failwith [...]\"" ;
+  w_list_length_comp_zero =
+    {|"String.length l =/<> 0" should be replaced by "l =/<> []"|} ;
+  w_list_length_comp_any =
+    {|"String.length l <=> _" should be replaced by "List.compare_length_with \
+l =/<=> _"|};
+  w_list_length_comp_list_length =
+    {|"String.length l1 <=> List.length l2" should be replaced by \
+"List.compare_lengths l1 l2 <=> 0"|} ;
+  w_then_bool_else_bool =
+    {|"if then bool else bool" should be simplified|} ;
+  w_then_or_else_bool =
+    {|bool in then/else should be simplified with && or |||} ;
+  w_else_unit =
+    {|"else unit" is useless here|} ;
+  w_try_catch_all =
+    {|"try with _" is dangerous, raised exceptions should be used or printed|} ;
+  w_list_append_for_one =
+    {|"[e]@list" should be replaced by "e :: list"|} ;
+  w_useless_sprintf =
+    {|'Printf.sprintf "%s"' is identify for string|} ;
+  w_suspicious_for_zero_to_len =
+    {|'for 0 to len do' is suspicious, should be 'len-1'|};
+}
+
+let no_nested_ifthenelse () =
+  List.for_all (function
+      | OCAML_AST.OCAML_TRAVERSE.Node_expression {
+          pexp_desc = Pexp_ifthenelse _ ; _} -> false
+      | _ -> true) (OCAML_AST.OCAML_TRAVERSE.node_stack ())
+
+
+let rec catch_all cases =
+  match cases with
+  | [] -> false
+  | { pc_lhs = { ppat_desc = Ppat_any; _ };
+      pc_guard = None ; _ } :: _ -> true
+  | _ :: cases -> catch_all cases
 
 (* to prevent some patterns from hiding other warnings, find_warning
    returns a new config without the warning it has found, so that it
@@ -251,8 +282,93 @@ let find_warning config e =
     ->
       Some (w, None, { config with w_then_or_else_bool = None; })
 
-  | _ -> None
+  | { w_else_unit = Some w ; _},
+    (
+      Pexp_ifthenelse (_, _,
+                       Some
+                         { pexp_desc =
+                             Pexp_construct (
+                               { txt = Lident "()";_},_);_})
+    )
+    when no_nested_ifthenelse ()
+    ->
+      Some (w, None, { config with w_else_unit = None; })
 
+  | { w_try_catch_all = Some w ; _},
+    Pexp_try (_, cases)
+    when catch_all cases
+    ->
+      Some (w, None, { config with w_try_catch_all = None; })
+
+  | { w_list_append_for_one = Some w ; _},
+    Pexp_apply (
+      { pexp_desc = Pexp_ident { txt = Lident "@";_};_},
+      [
+        Nolabel,
+        { pexp_desc =
+            Pexp_construct (
+              { txt = Lident "::";_},
+              Some
+                { pexp_desc = Pexp_tuple
+                      [
+                        _;
+                        { pexp_desc =
+                            Pexp_construct (
+                              { txt = Lident "[]";_},
+                              None);_}
+                      ];_}
+            );_};
+        Nolabel,_
+      ])
+    ->
+      Some (w, None, { config with w_list_append_for_one = None; })
+
+  | { w_useless_sprintf = Some w ; _ },
+    Pexp_apply (
+      { pexp_desc = Pexp_ident { txt = printf_sprintf ; _};_},
+      (
+        Nolabel,
+        { pexp_desc = Pexp_constant(
+              Pconst_string("%s",_,_));_})::
+      _)
+    when OCAML_AST.longident_name printf_sprintf = "Printf.sprintf"
+    ->
+      Some (w, None, { config with w_useless_sprintf = None; })
+
+  | { w_useless_sprintf = Some w ; _ },
+    Pexp_apply (
+      { pexp_desc = Pexp_ident { txt = printf_sprintf ; _};_},
+      (
+        Nolabel,
+        { pexp_desc = Pexp_constant(
+              Pconst_string("%s",_,_));_})::
+      _)
+    when OCAML_AST.longident_name printf_sprintf = "Printf.printf"
+    ->
+      let msg =
+        {|'Printf.printf "%s"' should be replaced by 'print_string'|}
+      in
+      Some (w, Some msg, { config with w_useless_sprintf = None; })
+
+  (* Note that we could also warn to use an iterator instead *)
+  | { w_suspicious_for_zero_to_len = Some w ; _ },
+    Pexp_for( _,
+              { pexp_desc =
+                  Pexp_constant (Pconst_integer ("0",_));_},
+              { pexp_desc =
+                  Pexp_apply (
+                    { pexp_desc = Pexp_ident { txt = length;_};_},
+                    [_]);_},
+              _,
+              _)
+    when
+      match OCAML_AST.longident_name length with
+      | "Array.length" | "String.length" -> true
+      | _ -> false
+    ->
+      Some (w, None, { config with w_suspicious_for_zero_to_len = None; })
+
+  | _ -> None
 
 let register ns
     ~tags
@@ -268,7 +384,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"string_concat"
-          id ~tags ~msg: msg_string_concat
+          id ~tags ~msg: msg.w_string_concat
   in
 
   let w_incr_decr =
@@ -276,7 +392,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"incr_decr"
-          id ~tags ~msg: msg_incr_decr
+          id ~tags ~msg: msg.w_incr_decr
   in
 
   let w_comp_boolean =
@@ -284,7 +400,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"comp_boolean"
-          id ~tags ~msg: msg_comp_boolean
+          id ~tags ~msg: msg.w_comp_boolean
   in
 
   let w_failwith_sprintf =
@@ -292,7 +408,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"failwith_sprintf"
-          id ~tags ~msg: msg_failwith_sprintf
+          id ~tags ~msg: msg.w_failwith_sprintf
   in
 
   let w_list_length_comp_zero =
@@ -300,7 +416,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"list_length_comp_zero"
-          id ~tags ~msg: msg_list_length_comp_zero
+          id ~tags ~msg: msg.w_list_length_comp_zero
   in
 
   let w_list_length_comp_any =
@@ -308,7 +424,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"list_length_comp_any"
-          id ~tags ~msg: msg_list_length_comp_any
+          id ~tags ~msg: msg.w_list_length_comp_any
   in
 
   let w_list_length_comp_list_length =
@@ -316,7 +432,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"list_length_comp_list_length"
-          id ~tags ~msg: msg_list_length_comp_list_length
+          id ~tags ~msg: msg.w_list_length_comp_list_length
   in
 
   let w_then_bool_else_bool =
@@ -324,7 +440,7 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"then_bool_else_bool"
-          id ~tags ~msg: msg_then_bool_else_bool
+          id ~tags ~msg: msg.w_then_bool_else_bool
   in
 
   let w_then_or_else_bool =
@@ -332,7 +448,47 @@ let register ns
     | None -> None
     | Some id -> some @@
         YALO.new_warning ns ~name:"then_or_else_bool"
-          id ~tags ~msg: msg_then_or_else_bool
+          id ~tags ~msg: msg.w_then_or_else_bool
+  in
+
+  let w_else_unit =
+    match config.w_else_unit with
+    | None -> None
+    | Some id -> some @@
+        YALO.new_warning ns ~name:"else_unit"
+          id ~tags ~msg: msg.w_else_unit
+  in
+
+  let w_try_catch_all =
+    match config.w_try_catch_all with
+    | None -> None
+    | Some id -> some @@
+        YALO.new_warning ns ~name:"try_catch_all"
+          id ~tags ~msg: msg.w_try_catch_all
+  in
+
+  let w_list_append_for_one =
+    match config.w_list_append_for_one with
+    | None -> None
+    | Some id -> some @@
+        YALO.new_warning ns ~name:"list_append_for_one"
+          id ~tags ~msg: msg.w_list_append_for_one
+  in
+
+  let w_useless_sprintf =
+    match config.w_useless_sprintf with
+    | None -> None
+    | Some id -> some @@
+        YALO.new_warning ns ~name:"useless_sprintf"
+          id ~tags ~msg: msg.w_useless_sprintf
+  in
+
+  let w_suspicious_for_zero_to_len =
+    match config.w_suspicious_for_zero_to_len with
+    | None -> None
+    | Some id -> some @@
+        YALO.new_warning ns ~name:"suspicious_for_zero_to_len"
+          id ~tags ~msg: msg.w_suspicious_for_zero_to_len
   in
 
   let config = {
@@ -345,6 +501,11 @@ let register ns
     w_list_length_comp_list_length ;
     w_then_bool_else_bool ;
     w_then_or_else_bool ;
+    w_else_unit ;
+    w_try_catch_all ;
+    w_list_append_for_one ;
+    w_useless_sprintf ;
+    w_suspicious_for_zero_to_len ;
   } in
 
   OCAML_LANG.new_ast_impl_traverse_linter ns

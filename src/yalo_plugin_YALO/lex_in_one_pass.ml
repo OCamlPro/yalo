@@ -78,21 +78,25 @@ let register ns
     (fun ~file ~linter tokens ->
        let rec iter tokens =
          match config, tokens with
+
          | { w_no_semisemi = Some w ;_},
            (SEMISEMI, loc) :: _ ->
              YALO.warn ~loc ~file ~linter w ;
              iter2 tokens
+
          | { w_begin_fun = Some w ;_},
            (BEGIN, loc) :: ( (FUN | FUNCTION) , _) :: _ ->
              YALO.warn ~loc ~file ~linter w ;
              iter2 tokens
+
          | { w_useless_paren = Some w ;_},
            (LPAREN, loc) ::
-           ( (TRUE | FALSE | STRING _)  , _) ::
+           ( (TRUE | FALSE | UNDERSCORE | STRING _)  , _) ::
            (RPAREN, _) ::
            _ ->
              YALO.warn ~loc ~file ~linter w ;
              iter2 tokens
+
          | _, _ :: tokens -> iter tokens
          | _, [] -> ()
 

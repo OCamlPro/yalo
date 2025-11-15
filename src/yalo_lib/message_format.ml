@@ -59,7 +59,7 @@ let show_context loc =
     in
     iter 0 lines;
     Printf.eprintf "\n%!";
-  with _ -> ()
+  with _exn -> ()
 
 let short_location loc =
   Printf.sprintf "%s:%d:%d[%d]"
@@ -313,6 +313,7 @@ let display_messages ~on_error ?(summary=Some 10)
     | Format_Context -> display_human ~format messages
     | Format_Sarif -> display_sarif ?output messages
     | Format_Short -> display_human ~format messages
+    | Format_Summary -> ()
   end;
   let nwarnings = ref 0 in
   let nerrors = ref 0 in
@@ -323,9 +324,11 @@ let display_messages ~on_error ?(summary=Some 10)
         incr nwarnings ;
     ) messages ;
   begin
-    match summary with
-    | None -> ()
-    | Some n ->
+    match summary, format with
+    | _, Format_Summary ->
+        display_summary messages
+    | None, _ -> ()
+    | Some n, _ ->
         match format with
         | Format_Human
         | Format_Context
@@ -333,6 +336,7 @@ let display_messages ~on_error ?(summary=Some 10)
             if !nwarnings + !nerrors > n then
               display_summary messages
         | Format_Sarif -> ()
+        | Format_Summary -> assert false
   end;
   begin
     match !nwarnings, !nerrors with

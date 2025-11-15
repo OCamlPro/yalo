@@ -173,7 +173,7 @@ let init
     () =
 
   let fs_root =
-    try Sys.getcwd () with _ ->
+    try Sys.getcwd () with _exn ->
       Printf.eprintf
         "Current directory does not exist anymore. Move back up.\n%!";
       exit 2

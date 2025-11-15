@@ -64,10 +64,15 @@ let () =
     w_list_length_comp_list_length = Some 24 ;
     w_then_bool_else_bool = Some 25 ;
     w_then_or_else_bool = Some 26 ;
+    w_else_unit = Some 27 ;
+    w_try_catch_all = Some 28 ;
+    w_list_append_for_one = Some 29 ;
+    w_useless_sprintf = Some 30 ;
+    w_suspicious_for_zero_to_len = Some 31 ;
   };
   Typed_fun_fun.register ns
     ~tags: [ tag_typed ] 15;
   Lex_paren_semi.register ns
     ~tags: [ tag_lex ] 17;
-  (* next one: 27 *)
+  (* next one: 32 *)
   ()

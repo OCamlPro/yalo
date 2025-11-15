@@ -236,3 +236,4 @@ type message_format =
   | Format_Context
   | Format_Sarif
   | Format_Short
+  | Format_Summary
