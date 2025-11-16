@@ -12,10 +12,12 @@
 
 open EzCompat
 
+module YALO_CONFIG = Yalo_misc.Ez_config.V1.EZCONFIG
+
 module YALO_INFIX : sig
   val (//) : string -> string -> string
-  val ( !! ) : 'a EzConfig__SimpleConfig.config_option -> 'a
-  val ( =:= ) : 'a EzConfig__SimpleConfig.config_option -> 'a -> unit
+  val ( !! ) : 'a YALO_CONFIG.config_option -> 'a
+  val ( =:= ) : 'a YALO_CONFIG.config_option -> 'a -> unit
 end
 
 module YALO_TYPES : sig
@@ -142,8 +144,8 @@ module YALO : sig
       short_help:string ->
       ?long_help:string list ->
       ?level:int ->
-      'a EzConfig.option_class ->
-      'a -> 'a EzConfig.config_option
+      'a YALO_CONFIG.option_class ->
+      'a -> 'a YALO_CONFIG.config_option
   end
 
   module STORE : sig
@@ -179,10 +181,9 @@ end
 
 module YALO_DOC : sig
   val name : document -> string
-(*
-  val parent : document -> folder
   val basename : document -> string
- *)
+  val parent : document -> folder
+
   val set_other_name : document -> string -> unit
 end
 
@@ -191,10 +192,8 @@ module YALO_FOLDER : sig
   val fs : folder -> fs
   val projects : folder -> project StringMap.t
   val folders : folder -> folder StringMap.t
-(*
-  val parent : folder -> t option
+  val parent : folder -> folder
   val basename : folder -> string
- *)
   val set_scan : folder -> scan_kind -> unit
   val set_projects : folder -> project StringMap.t -> unit
   val set_other_name : folder -> string -> unit
@@ -273,6 +272,7 @@ module YALO_LANG : sig
     val new_src_content_linter : src_content_input new_gen_unit_linter
     val new_src_line_linter : src_line_input new_gen_unit_linter
   end
+  val set_lexbuf_filename : Lexing.lexbuf -> string -> unit
 end
 
 module YALO_INTERNAL : sig
@@ -289,7 +289,6 @@ module YALO_INTERNAL : sig
     file_kind:file_kind ->
     file_crc:Digest.t -> string -> file
   val get_document : Types.folder -> string -> Types.document
-
 end
 
 val init : unit -> unit

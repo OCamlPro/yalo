@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-b0699f524636c6925eefad56ec7aa738:.
+44da6e208adfa09386c7e03de40b3e91:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -194,11 +194,6 @@ df05da908abbff9a42e6304830b093bc:opam/yalo_test_YALO.opam
 1c824d286e80484e4a97d50ceb2b7a62:opam/yalo_test_ZANUDA.opam
 # end context for opam/yalo_test_ZANUDA.opam
 
-# begin context for opam/yalo_tests.opam
-# file opam/yalo_tests.opam
-3468345b547cd90fe6532476170104c7:opam/yalo_tests.opam
-# end context for opam/yalo_tests.opam
-
 # begin context for scripts/after.sh
 # file scripts/after.sh
 62c6489217feef26dac343e709b89c1a:scripts/after.sh
@@ -336,7 +331,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_driver/version.mlt
 
 # begin context for src/yalo_lib/dune
 # file src/yalo_lib/dune
-73a43878094b6b20d26fc8d5ae438316:src/yalo_lib/dune
+80def34663694c76ae0d8c544f397fd1:src/yalo_lib/dune
 # end context for src/yalo_lib/dune
 
 # begin context for src/yalo_lib/index.mld
@@ -421,7 +416,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_plugin_OCPINDENT/version.mlt
 
 # begin context for src/yalo_plugin_YALO/dune
 # file src/yalo_plugin_YALO/dune
-0b315669349d7a145f7ce5fd84162444:src/yalo_plugin_YALO/dune
+8be81ab0f8db08ec735c29830c5af16c:src/yalo_plugin_YALO/dune
 # end context for src/yalo_plugin_YALO/dune
 
 # begin context for src/yalo_plugin_YALO/index.mld

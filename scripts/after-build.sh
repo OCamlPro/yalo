@@ -4,4 +4,9 @@ INCLUDES="-I ./_build/install/default/lib/yalo_plugin_ocaml -I ./_build/install/
 
 set -x
 
-opam exec -- ./_build/default/src/yalo/main.exe ${INCLUDES} doc --dir docs/lints
+case "$1,$2" in
+    ,|yalo)
+	opam exec -- ./_build/default/src/yalo/main.exe ${INCLUDES} doc --dir docs/lints
+	;;
+    *) echo  "$1,$2"
+esac

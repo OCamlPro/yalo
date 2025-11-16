@@ -403,6 +403,19 @@
     }
   },
   {
+    "id": "YALO+32 forbidden_keyword",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nKeyword is forbidden by project configuration\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
     "id": "FIND+0 lint_src_file",
     "namespace": "FIND",
     "group": "find",

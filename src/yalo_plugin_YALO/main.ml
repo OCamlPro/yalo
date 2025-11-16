@@ -74,5 +74,7 @@ let () =
     ~tags: [ tag_typed ] 15;
   Lex_paren_semi.register ns
     ~tags: [ tag_lex ] 17;
-  (* next one: 32 *)
+  Lex_forbidden_keyword.register ns section
+    ~tags:[ tag_lex ] 32;
+  (* next one: 33 *)
   ()
