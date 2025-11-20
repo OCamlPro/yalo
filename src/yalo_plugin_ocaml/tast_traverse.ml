@@ -37,7 +37,7 @@ end = struct
     {
       file ;
       binding_op = [] ;
-      case = { version_case = [] } ;
+      case = [];
       class_declaration = [] ;
       class_description = [] ;
       class_expr = [] ;
@@ -57,7 +57,7 @@ end = struct
       module_type = [] ;
       module_type_declaration = [] ;
       package_type  = [] ;
-      pat = { version_pat = [] } ;
+      pat = [] ;
       row_field = [] ;
       object_field = [] ;
       open_declaration = [] ;
@@ -160,9 +160,9 @@ end = struct
           binding_op;
       case  = (fun sub x ->
           List.iter (fun (linter, f) ->
-              f ~file ~linter x
+              f.version_case ~file ~linter x
             )
-            traverse.case.version_case;
+            traverse.case;
           push (case x) ;
           let ctx = default.case sub x in
           pop ();
@@ -231,9 +231,9 @@ end = struct
 
       pat  = (fun sub x ->
           List.iter (fun (linter, f) ->
-              f ~file ~linter x
+              f.version_pat ~file ~linter x
             )
-            traverse.pat.version_pat;
+            traverse.pat;
           push (pat x);
           let ctx = default.pat sub x in
           pop ();

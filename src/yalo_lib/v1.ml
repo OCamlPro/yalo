@@ -110,7 +110,15 @@ module YALO = struct
     let create_option = Config.create_config_option
   end
 
-  module STORE = File_store
+  module DOC_STORE = File_store
+  module FILE_STORE = struct
+    type 'a t = 'a DOC_STORE.t
+    let create = DOC_STORE.create
+    let put t file x = DOC_STORE.put t file.file_doc x
+    let check t file = DOC_STORE.check t file.file_doc
+    let get t file = DOC_STORE.get t file.file_doc
+
+  end
 
   let verbose = Engine.verbose
   let string_of_loc = Engine.string_of_loc

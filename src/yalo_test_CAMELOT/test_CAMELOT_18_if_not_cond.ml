@@ -1,4 +1,4 @@
-[@@@yalo.warning "+CAMELOT"]
+[@@@yalo.warning "+CAMELOT,-YALO"]
 
 let f c x y = if not c then x else y
 

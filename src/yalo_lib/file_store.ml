@@ -23,9 +23,10 @@ let create store_plugin =
     store_plugin ;
   }
 
-let put t file x =
+let put t doc x =
+  let uid = doc.doc_uid in
   let size = Array.length t.store in
-  if size <= file.file_uid then begin
+  if size <= uid then begin
     let old_store = t.store in
     let new_size =
       let rec iter size pos =
@@ -34,24 +35,25 @@ let put t file x =
         else
           size
       in
-      iter (2* size) file.file_uid
+      iter (2* size) uid
     in
     t.store <- Array.make new_size None;
     Array.blit old_store 0 t.store 0 size ;
   end;
-  t.store.( file.file_uid ) <- Some x
+  t.store.( uid ) <- Some x
 
-let check t file =
-  if Array.length t.store > file.file_uid then
-    t.store.( file.file_uid )
+let check t doc =
+  let uid = doc.doc_uid in
+  if Array.length t.store > uid then
+    t.store.( uid )
   else
     None
 
 exception No_data_in_store of string * string
 
-let get t file =
-  match check t file with
+let get t doc =
+  match check t doc with
   | None ->
-      raise @@ No_data_in_store (file.file_name, t.store_plugin.plugin_name)
+      raise @@ No_data_in_store (doc.doc_name, t.store_plugin.plugin_name)
   | Some x -> x
 

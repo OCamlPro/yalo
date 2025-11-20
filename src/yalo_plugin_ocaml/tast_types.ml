@@ -116,30 +116,37 @@ module OCAML_TAST_TRAVERSE = struct
     (YALO_TYPES.location * 'a, unit) YALO_TYPES.active_linters
 
   [%%if ocaml_version < (4, 11, 0)]
-  type case_by_version = { mutable version_case :
-                             OCAML_TAST.case ast_lint_list }
+  type case_by_version = { version_case :
+                             file:YALO_TYPES.file ->
+                             linter:YALO_TYPES.linter ->
+                             OCAML_TAST.case -> unit }
   type case_checker = { f : (OCAML_TAST.case -> unit) }
   [%%else]
-  type case_by_version = { mutable version_case :
-                             'k. 'k OCAML_TAST.case ast_lint_list }
+  type case_by_version = { version_case :
+                             'k. file:YALO_TYPES.file ->
+                             linter:YALO_TYPES.linter ->
+                             'k OCAML_TAST.case -> unit }
   type case_checker = { f : 'k.'k OCAML_TAST.case -> unit }
   [%%endif]
 
   [%%if ocaml_version < (4, 11, 0)]
-  type pat_by_version = { mutable version_pat :
-                            OCAML_TAST.pattern ast_lint_list }
+  type pat_by_version = { version_pat :
+                            file:YALO_TYPES.file ->
+                            linter:YALO_TYPES.linter ->
+                            OCAML_TAST.pattern -> unit }
   type pat_checker = { f : (OCAML_TAST.pattern -> unit) }
   [%%else]
-  type pat_by_version = { mutable version_pat :
-                            'k. 'k OCAML_TAST.general_pattern
-                              ast_lint_list }
+  type pat_by_version = { version_pat :
+                            'k. file:YALO_TYPES.file ->
+                            linter:YALO_TYPES.linter ->
+                            'k OCAML_TAST.general_pattern -> unit }
   type pat_checker = { f : 'k. 'k OCAML_TAST.general_pattern -> unit }
   [%%endif]
 
   type t = {
     file : YALO_TYPES.file ;
     mutable binding_op: OCAML_TAST.binding_op ast_lint_list;
-    mutable case: case_by_version;
+    mutable case: ( YALO_TYPES.linter * case_by_version ) list;
     mutable class_declaration: OCAML_TAST.class_declaration ast_lint_list;
     mutable class_description: OCAML_TAST.class_description ast_lint_list;
     mutable class_expr: OCAML_TAST.class_expr ast_lint_list;
@@ -163,7 +170,7 @@ module OCAML_TAST_TRAVERSE = struct
       OCAML_TAST.module_type_declaration ast_lint_list;
     mutable package_type: OCAML_TAST.package_type ast_lint_list;
     (* since 4.11.0 *)
-    mutable pat: pat_by_version;
+    mutable pat: (YALO_TYPES.linter * pat_by_version) list;
     mutable row_field: OCAML_TAST.row_field ast_lint_list;
     mutable object_field: OCAML_TAST.object_field ast_lint_list;
     mutable open_declaration: OCAML_TAST.open_declaration ast_lint_list;

@@ -503,10 +503,8 @@ let lint_with_active_linters active_linters_ref ~file x =
       ()
 
 let new_file ~file_doc ~file_kind ~file_crc file_name =
-  let file_uid = GState.new_file_uid () in
   {
     file_name ;
-    file_uid ;
     file_crc ;
     file_kind ;
     file_doc ;
@@ -629,8 +627,10 @@ let get_document doc_parent basename =
   match StringMap.find basename doc_parent.folder_docs with
   | doc -> doc
   | exception Not_found ->
+      let doc_uid = GState.new_doc_uid () in
       let file_doc = {
         doc_parent ;
+        doc_uid ;
         doc_basename = basename ;
         doc_name = doc_parent.folder_name // basename;
         doc_other_names = [];
@@ -728,7 +728,7 @@ let filter_target_messages target =
   Array.sort compare_check_start checks ;
   let checks = Array.to_list checks in
 
-  let rec iter messages zones kept_messages revert_warning_changes =
+  let rec iter ~messages zones kept_messages revert_warning_changes =
     match messages with
     | [] ->
         StringMap.iter (fun _ (w,state) -> w.w_state <- state)
@@ -745,7 +745,7 @@ let filter_target_messages target =
               | Warning_sleeping ->
                   kept_messages
             in
-            iter rem_messages zones kept_messages
+            iter ~messages:rem_messages zones kept_messages
               revert_warning_changes
         | z :: rem_zones ->
             if m.msg_loc.loc_start.pos_cnum <
@@ -759,7 +759,7 @@ let filter_target_messages target =
                     kept_messages
               in
               iter
-                rem_messages zones
+                ~messages:rem_messages zones
                 kept_messages revert_warning_changes
             else
               match z.zone_rev_zone with
@@ -767,17 +767,17 @@ let filter_target_messages target =
                   List.iter (fun (w,state) -> w.w_state <- state)
                     z.zone_rev_changes ;
                   iter
-                    messages rem_zones kept_messages
+                    ~messages rem_zones kept_messages
                     revert_warning_changes
               | None ->
                   let revert_warning_changes =
                     apply_zone z revert_warning_changes
                   in
                   iter
-                    messages rem_zones
+                    ~messages rem_zones
                     kept_messages revert_warning_changes
   in
-  let messages = iter messages zones [] StringMap.empty in
+  let messages = iter ~messages zones [] StringMap.empty in
 
   let parse_check ~loc spec f =
     match
@@ -795,7 +795,7 @@ let filter_target_messages target =
   match checks with
   | [] -> messages
   | _ ->
-      let rec iter checks messages rev_messages =
+      let rec iter checks ~messages rev_messages =
         match checks, messages with
         | [], _ -> List.rev rev_messages @ messages
         | (spec, loc, _after) :: checks, [] ->
@@ -805,7 +805,7 @@ let filter_target_messages target =
                     "Check yalo annotation %s FAILED with no warning\n%!"
                     spec
                 );
-            iter checks messages []
+            iter checks ~messages []
         | ("", loc, _after) :: checks, m :: _ ->
             if loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum
             then begin
@@ -822,7 +822,7 @@ let filter_target_messages target =
                    loc.loc_start.pos_fname
                    loc.loc_start.pos_lnum ;
                    end *);
-            iter checks messages rev_messages
+            iter checks ~messages rev_messages
         | (spec, loc, after) :: checks, m :: messages ->
             parse_check ~loc spec (fun ~loc ns w_num ->
                 let w = m.msg_warning in
@@ -853,9 +853,9 @@ let filter_target_messages target =
                       m.msg_loc.loc_start.pos_lnum
                   end
               );
-            iter checks messages rev_messages
+            iter checks ~messages rev_messages
       in
-      let messages = iter checks messages [] in
+      let messages = iter checks ~messages [] in
       messages
 
 

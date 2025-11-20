@@ -21,7 +21,7 @@ let new_counter () =
     v
 
 let new_file_kind_uid = new_counter ()
-let new_file_uid = new_counter ()
+let new_doc_uid = new_counter ()
 let new_target_uid = new_counter ()
 
 let verbosity = ref 0

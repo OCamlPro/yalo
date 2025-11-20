@@ -148,8 +148,15 @@ module YALO : sig
       'a -> 'a YALO_CONFIG.config_option
   end
 
-  module STORE : sig
+  module DOC_STORE : sig
     type 'a t
+    val create : plugin -> 'a t
+    val put : 'a t -> document -> 'a -> unit
+    val check : 'a t -> document -> 'a option
+    val get : 'a t -> document -> 'a
+  end
+  module FILE_STORE : sig
+    type 'a t = 'a DOC_STORE.t
     val create : plugin -> 'a t
     val put : 'a t -> file -> 'a -> unit
     val check : 'a t -> file -> 'a option

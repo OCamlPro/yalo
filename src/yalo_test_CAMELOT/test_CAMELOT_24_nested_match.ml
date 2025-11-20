@@ -1,4 +1,4 @@
-[@@@yalo.warning "+CAMELOT"]
+[@@@yalo.warning "+CAMELOT,-YALO"]
 
 let f x y z =
   match x with

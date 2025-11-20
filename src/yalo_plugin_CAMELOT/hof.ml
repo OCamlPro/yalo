@@ -65,7 +65,7 @@ module USE_MAP =
                   c_empty.pc_rhs =| "[]" in
                 let tail_binding = Astutils.binding_of_lcase c_cons in
                 let uses_func_ok =
-                  Astutils.uses_func_recursively_list c_cons func_name
+                  Astutils.uses_func_recursively_list c_cons ~func_name
                     tail_binding in
                 if empty_case_ok && uses_func_ok then
                   warn ()
@@ -100,7 +100,7 @@ module USE_FOLD =
                                     not (c_empty.pc_rhs =| "()") in
                 let tail_binding = Astutils.binding_of_lcase c_cons in
                 let uses_func_ok = Astutils.uses_func_recursively_list_any
-                    c_cons func_name tail_binding in
+                    c_cons ~func_name tail_binding in
                 if empty_case_ok && uses_func_ok then
                   warn ()
             | _ -> ()
@@ -131,7 +131,7 @@ module USE_ITER =
                                     c_empty.pc_rhs =| "()" in
                 let tail_binding = Astutils.binding_of_lcase c_cons in
                 let uses_func_ok = Astutils.uses_func_recursively_seq c_cons
-                    func_name tail_binding in
+                    ~func_name tail_binding in
                 if empty_case_ok && uses_func_ok then
                   warn ()
             | _ -> ()

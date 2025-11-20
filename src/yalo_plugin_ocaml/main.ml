@@ -425,7 +425,7 @@ let check_in_artefact_dir ~file_doc =
               let other_path =
                 List.rev rev_path @ clean_and_rev rev_sub_path [] in
               let other_path = String.concat "/" other_path in
-              let rec iter modname other_path exts =
+              let rec iter ~modname other_path exts =
                 match exts with
                 | [] -> None
                 | ext :: exts ->
@@ -443,9 +443,9 @@ let check_in_artefact_dir ~file_doc =
                       if Sys.file_exists other_name then
                         Some other_name
                       else
-                        iter modname other_name exts
+                        iter ~modname other_name exts
               in
-              iter modname other_path exts
+              iter ~modname other_path exts
         in
         begin
           match other_name with
