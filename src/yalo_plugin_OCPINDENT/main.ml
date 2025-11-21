@@ -100,13 +100,13 @@ let () =
        in
 
        let n_warnings = ref 0 in
-       let rec iter n indents ~lnum i =
+       let rec iter ~expected indents ~lnum i =
 
-         if not (check_indent i n) then begin
+         if not (check_indent i expected) then begin
            incr n_warnings ;
            let loc = YALO.mkloc ~file ~lnum ~bol:i () in
            let msg = Printf.sprintf
-               "Wrong indentation on this line (should be %d)" n
+               "Wrong indentation on this line (should be %d)" expected
            in
            if !n_warnings = 1 then
              YALO.warn ~loc ~file ~linter w1 ~msg
@@ -119,12 +119,12 @@ let () =
 
          match indents with
          | [] -> ()
-         | n :: indents ->
+         | expected :: indents ->
              let i = String.index_from content.content_string i '\n' in
-             iter n indents ~lnum:(lnum+1) (i+1)
+             iter ~expected indents ~lnum:(lnum+1) (i+1)
        in
        match indents with
        | [] -> ()
-       | n :: indents ->
-           iter n indents ~lnum:1 0
+       | expected :: indents ->
+           iter ~expected indents ~lnum:1 0
     )

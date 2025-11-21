@@ -18,7 +18,7 @@ let plugin = YALO.new_plugin "yalo_plugin_FIND"
 
 let ns = YALO.new_namespace plugin "FIND"
 
-let store = YALO.STORE.create plugin
+let store = YALO.FILE_STORE.create plugin
 
 let tag_find = YALO.new_tag "find"
 
@@ -81,11 +81,11 @@ let () =
   OCAML_LANG.new_src_line_linter ns "src-line-linter"
     ~warnings:[w_src_line]
     ~on_open:(fun ~file ~linter:_ ->
-        YALO.STORE.put store file true
+        YALO.FILE_STORE.put store file true
       )
     (fun ~file ~linter { line_loc ; _ } ->
-       if YALO.STORE.get store file then begin
-         YALO.STORE.put store file false;
+       if YALO.FILE_STORE.get store file then begin
+         YALO.FILE_STORE.put store file false;
          YALO.warn ~loc:line_loc ~file ~linter w_src_line
        end
     ) ;

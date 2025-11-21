@@ -16,6 +16,9 @@ module OCAML_LEX : sig
   include (module type of Parser)
   (* extract info from STRING token, version compatible *)
   val extract_STRING : token -> string * string option
+  val tokens_of_string :
+    ?filename:string -> string -> (token * Location.t) list
+
 end
 
 module OCAML_AST : sig

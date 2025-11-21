@@ -134,7 +134,7 @@ let binding_of_lcase (case: OCAML_AST.case) : string =
   end
 
 let uses_func_recursively_list
-    (case: OCAML_AST.case) func_name tail_binding : bool =
+    (case: OCAML_AST.case) ~func_name tail_binding : bool =
   begin match case.pc_rhs.pexp_desc with
     | Pexp_construct ({txt = Lident "::"; loc = _},
                       Some bound) ->
@@ -153,7 +153,7 @@ let uses_func_recursively_list
 
 
 let uses_func_recursively_list_any (case: OCAML_AST.case)
-    func_name tail_binding : bool =
+    ~func_name tail_binding : bool =
   let skipped = case.pc_rhs |> skip_seq_let in
   let contains_recursive_call : OCAML_AST.expression -> bool = fun e ->
     match e.pexp_desc with
@@ -194,7 +194,7 @@ let rec body_of_fun (exp: OCAML_AST.expression) : OCAML_AST.expression =
 [%%endif]
 
 let uses_func_recursively_seq (case: OCAML_AST.case)
-    func_name tail_binding : bool =
+    ~func_name tail_binding : bool =
   let rhs = case.pc_rhs in
   let rhs_fixpoint = rhs |> body_of_fun |> skip_seq_let in
   match rhs_fixpoint.pexp_desc with

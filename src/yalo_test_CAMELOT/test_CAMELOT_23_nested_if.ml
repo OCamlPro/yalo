@@ -1,4 +1,4 @@
-[@@@yalo.warning "+CAMELOT"]
+[@@@yalo.warning "+CAMELOT,-YALO"]
 
 let f1 x y z =
   if x then

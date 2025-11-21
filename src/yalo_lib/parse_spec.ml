@@ -115,7 +115,7 @@ let parse_spec spec (set_function : warning_state -> warning -> unit) =
     else
       match spec.[i] with
       | 'A'..'Z' | '0'..'9' | '_' -> iter_ns ?set pos0 (i+1)
-      | ' ' -> iter_plugin_space ?set pos0 i (i+1)
+      | ' ' -> iter_plugin_space ?set ~pos0 ~pos1:i (i+1)
       | ',' ->
           set_ns ?set pos0 i;
           iter0 (i+1)
@@ -130,13 +130,13 @@ let parse_spec spec (set_function : warning_state -> warning -> unit) =
           iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
-  and iter_plugin_space ?set pos0 pos1 i =
+  and iter_plugin_space ?set ~pos0 ~pos1 i =
     (* Printf.eprintf "iter_plugin_space %d\n%!" i; *)
     if i = len then
       set_ns ?set pos0 pos1
     else
       match spec.[i] with
-      | ' ' -> iter_plugin_space ?set pos0 pos1 (i+1)
+      | ' ' -> iter_plugin_space ?set ~pos0 ~pos1 (i+1)
       | ',' ->
           set_ns ?set pos0 pos1;
           iter0 (i+1)
@@ -170,63 +170,63 @@ let parse_spec spec (set_function : warning_state -> warning -> unit) =
       match spec.[i] with
       | ',' -> unexpected_end spec i
       | ' ' -> iter_ns1 ns ~set (i+1)
-      | '#' -> iter_plugin_tag ns ~set (i+1) (i+1)
-      | '0'..'9' -> iter_plugin_num ns ~set i (i+1)
+      | '#' -> iter_plugin_tag ns ~set ~pos0:(i+1) (i+1)
+      | '0'..'9' -> iter_plugin_num ns ~set ~pos0:i (i+1)
       | _ -> unexpected_char spec i
 
-  and iter_plugin_tag ns ~set pos0 i =
+  and iter_plugin_tag ns ~set ~pos0 i =
     (* Printf.eprintf "iter_plugin_tag %d\n%!" i; *)
     if i = len then
-      set_plugin_tag ns ~set pos0 i
+      set_plugin_tag ns ~set ~pos0 i
     else
       match spec.[i] with
       | ' ' ->
-          set_plugin_tag ns ~set pos0 i;
+          set_plugin_tag ns ~set ~pos0 i;
           iter_ns0 ns (i+1)
       | ',' ->
-          set_plugin_tag ns ~set pos0 i;
+          set_plugin_tag ns ~set ~pos0 i;
           iter0 (i+1)
-      | 'a'..'z' | '0'..'9' | '_' -> iter_plugin_tag ns ~set pos0 (i+1)
+      | 'a'..'z' | '0'..'9' | '_' -> iter_plugin_tag ns ~set ~pos0 (i+1)
       | '#' ->
-          set_plugin_tag ns ~set pos0 i;
-          iter_plugin_tag ns ~set (i+1) (i+1)
+          set_plugin_tag ns ~set ~pos0 i;
+          iter_plugin_tag ns ~set ~pos0:(i+1) (i+1)
       | '+' ->
-          set_plugin_tag ns ~set pos0 i;
+          set_plugin_tag ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_enabled (i+1)
       | '?' ->
-          set_plugin_tag ns ~set pos0 i;
+          set_plugin_tag ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
-          set_plugin_tag ns ~set pos0 i;
+          set_plugin_tag ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
-  and iter_plugin_num ns ~set pos0 i =
+  and iter_plugin_num ns ~set ~pos0 i =
     (* Printf.eprintf "iter_plugin_num %d\n%!" i; *)
     if i = len then
-      set_plugin_num ns ~set pos0 i
+      set_plugin_num ns ~set ~pos0 i
     else
       match spec.[i] with
       | ' ' ->
-          set_plugin_num ns ~set pos0 i;
+          set_plugin_num ns ~set ~pos0 i;
           iter_ns0 ns (i+1)
       | ',' ->
-          set_plugin_num ns ~set pos0 i;
+          set_plugin_num ns ~set ~pos0 i;
           iter0 (i+1)
-      | '0'..'9' -> iter_plugin_num ns ~set pos0 (i+1)
+      | '0'..'9' -> iter_plugin_num ns ~set ~pos0 (i+1)
       | '+' ->
-          set_plugin_num ns ~set pos0 i;
+          set_plugin_num ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_enabled (i+1)
       | '?' ->
-          set_plugin_num ns ~set pos0 i;
+          set_plugin_num ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_sleeping (i+1)
       | '-' ->
-          set_plugin_num ns ~set pos0 i;
+          set_plugin_num ns ~set ~pos0 i;
           iter_ns1 ns ~set:Warning_disabled (i+1)
       | _c -> unexpected_char spec i
 
-  and set_plugin_tag ns ~set pos i =
-    let tag_name = String.sub spec pos (i-pos) in
+  and set_plugin_tag ns ~set ~pos0 i =
+    let tag_name = String.sub spec pos0 (i-pos0) in
     let nstag = Printf.sprintf "%s:%s" ns.ns_name tag_name in
     match Hashtbl.find GState.all_nstags nstag with
     | exception Not_found ->
@@ -237,8 +237,8 @@ let parse_spec spec (set_function : warning_state -> warning -> unit) =
     | r ->
         List.iter (set_function set) !r
 
-  and set_plugin_num ns ~set pos i =
-    let num = String.sub spec pos (i-pos) in
+  and set_plugin_num ns ~set ~pos0 i =
+    let num = String.sub spec pos0 (i-pos0) in
     let num =
       try int_of_string num
       with exn ->

@@ -12,6 +12,7 @@
 
 open Types
 
+module YALO_CONFIG = Yalo_misc.Ez_config.V1.EZCONFIG
 module YALO_INFIX = Yalo_misc.Infix
 
 module YALO_TYPES = struct
@@ -109,7 +110,15 @@ module YALO = struct
     let create_option = Config.create_config_option
   end
 
-  module STORE = File_store
+  module DOC_STORE = File_store
+  module FILE_STORE = struct
+    type 'a t = 'a DOC_STORE.t
+    let create = DOC_STORE.create
+    let put t file x = DOC_STORE.put t file.file_doc x
+    let check t file = DOC_STORE.check t file.file_doc
+    let get t file = DOC_STORE.get t file.file_doc
+
+  end
 
   let verbose = Engine.verbose
   let string_of_loc = Engine.string_of_loc
@@ -145,6 +154,14 @@ module YALO_LANG = struct
 
   module Make_source_linters = Source_linters.Make
 
+  [%%if ocaml_version < (4,11,0)]
+  let set_lexbuf_filename lexbuf fname =
+    lexbuf.Lexing.lex_curr_p <-
+      {lexbuf.Lexing.lex_curr_p with pos_fname = fname}
+  [%%else]
+  let set_lexbuf_filename = Lexing.set_filename
+  [%%endif]
+
 end
 
 module YALO_FS = struct
@@ -154,7 +171,9 @@ end
 
 module YALO_FOLDER = struct
   let name folder = folder.folder_name
+  let basename folder = folder.folder_basename
   let fs folder = folder.folder_fs
+  let parent folder = folder.folder_parent
   let projects folder = folder.folder_projects
   let folders folder = folder.folder_folders
 
@@ -186,6 +205,8 @@ end
 
 module YALO_DOC = struct
   let name doc = doc.doc_name
+  let basename doc = doc.doc_basename
+  let parent doc = doc.doc_parent
   let set_other_name doc name =
     if Engine.verbose 2 then
       Printf.eprintf "set_other_name %S for %S\n%!"

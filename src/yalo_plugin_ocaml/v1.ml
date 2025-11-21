@@ -16,6 +16,7 @@ open Yalo.V1
 module OCAML_LEX = struct
   include Parser
   let extract_STRING = Annotations.LEX.extract_STRING
+  let tokens_of_string = Main.tokens_of_string
 end
 
 module OCAML_AST = struct

@@ -43,7 +43,7 @@ gen-version = "version.ml"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 
-preprocess = "pps ppx_optcomp"
+preprocess = "pps ppx_optcomp ppxlib.metaquot"
 
 # files to skip while updating at package level
 # skip = []

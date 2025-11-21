@@ -218,12 +218,23 @@ let with_info kind ~source_file f =
 
 [%%endif]
 
-[%%if ocaml_version < (4,11,0)]
-let set_lexbuf_filename lexbuf fname =
-  lexbuf.Lexing.lex_curr_p <- {lexbuf.Lexing.lex_curr_p with pos_fname = fname}
-[%%else]
-let set_lexbuf_filename = Lexing.set_filename
-[%%endif]
+let tokens_of_string ?filename content =
+  let lexbuf = Lexing.from_string content in
+  begin
+    match filename with
+    | None -> ()
+    | Some filename ->
+        YALO_LANG.set_lexbuf_filename lexbuf filename;
+  end;
+  let rec iter lexbuf rev_tokens =
+    let token = Lexer.token lexbuf in
+    match token with
+    | Parser.EOF -> List.rev rev_tokens
+    | _ ->
+        iter lexbuf ( (token, Location.curr lexbuf)
+                      :: rev_tokens)
+  in
+  iter lexbuf []
 
 let check_ml_source ~file =
   let file_name = YALO_FILE.name file in
@@ -242,17 +253,9 @@ let check_ml_source ~file =
               "Configuration error: could not read file %S, exception %s\n%!"
               file_name (Printexc.to_string exn)
         | content ->
-            let lexbuf = Lexing.from_string content in
-            set_lexbuf_filename lexbuf (YALO_FILE.name file) ;
-            let rec iter lexbuf rev_tokens =
-              let token = Lexer.token lexbuf in
-              match token with
-              | Parser.EOF -> List.rev rev_tokens
-              | _ ->
-                  iter lexbuf ( (token, Location.curr lexbuf)
-                                :: rev_tokens)
+            let tokens = tokens_of_string content
+                ~filename:(YALO_FILE.name file)
             in
-            let tokens = iter lexbuf [] in
             Annotations.LEX.check_tokens ~file tokens ;
             YALO_LANG.iter_linters_open ~file lex_linters ;
             YALO_LANG.iter_linters ~file lex_linters tokens ;
@@ -422,7 +425,7 @@ let check_in_artefact_dir ~file_doc =
               let other_path =
                 List.rev rev_path @ clean_and_rev rev_sub_path [] in
               let other_path = String.concat "/" other_path in
-              let rec iter modname other_path exts =
+              let rec iter ~modname other_path exts =
                 match exts with
                 | [] -> None
                 | ext :: exts ->
@@ -440,9 +443,9 @@ let check_in_artefact_dir ~file_doc =
                       if Sys.file_exists other_name then
                         Some other_name
                       else
-                        iter modname other_name exts
+                        iter ~modname other_name exts
               in
-              iter modname other_path exts
+              iter ~modname other_path exts
         in
         begin
           match other_name with

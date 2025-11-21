@@ -120,6 +120,7 @@ and scan_kind =
 
 and document = {
   doc_parent : folder ;
+  doc_uid : int ;
 
   doc_basename : string ;
   doc_name : string ; (* name till fs_root *)
@@ -130,7 +131,6 @@ and document = {
 
 and file = {
   file_kind : file_kind ; (* first field for polymorphic compare *)
-  file_uid : int ;
 
   file_doc : document ;
   file_name : string ; (* same as file_doc.doc_name ! *)
