@@ -147,5 +147,3 @@ dir = "src/yalo_test_CAMELOT"
 
 [[package]]
 dir = "src/yalo_plugin_OCPINDENT"
-
-

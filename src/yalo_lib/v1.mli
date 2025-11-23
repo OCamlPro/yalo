@@ -294,7 +294,7 @@ module YALO_INTERNAL : sig
   val new_file : (* used by ppx *)
     file_doc:Types.document ->
     file_kind:file_kind ->
-    file_crc:Digest.t -> string -> file
+    file_crc:Digest.t -> file
   val get_document : Types.folder -> string -> Types.document
 end
 

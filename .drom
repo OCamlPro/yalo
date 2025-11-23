@@ -5,7 +5,7 @@ version:0.9.0
 
 # hash of toml configuration files
 # used for generation of all files
-44da6e208adfa09386c7e03de40b3e91:.
+e2f59f88ef21ab61561286f4d751fa58:.
 # end context for .
 
 # begin context for .drom_ignore
@@ -61,12 +61,12 @@ cf4da9c43c0026cec0ba46b9cfe8407e:LICENSE.md
 
 # begin context for Makefile
 # file Makefile
-eb5dffdcdfe0cf7252a14f6332d1bf50:Makefile
+ae9611fad30a07ccb4a010556d51bdea:Makefile
 # end context for Makefile
 
 # begin context for Makefile.drom
 # file Makefile.drom
-8a3bf88634ac1841564990524f4265c2:Makefile.drom
+3de4cc15eec99068bed6f07f05bf3035:Makefile.drom
 # end context for Makefile.drom
 
 # begin context for README.md
@@ -116,7 +116,7 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 
 # begin context for dune-project
 # file dune-project
-4d131a769e021ae7f5cbf51729d1b24f:dune-project
+d06f9ed2de71766c58945534fa33af37:dune-project
 # end context for dune-project
 
 # begin context for opam/ppx_yalo.opam
@@ -129,24 +129,24 @@ c8281f46ba9a11d0b61bc8ef67eaa357:docs/style.css
 500285f1758b6886c1483d47b9ea2dec:opam/yalo.opam
 # end context for opam/yalo.opam
 
-# begin context for opam/yalo_config.opam
-# file opam/yalo_config.opam
-b6646d346bde26e2fc632214d8c73f4f:opam/yalo_config.opam
-# end context for opam/yalo_config.opam
-
 # begin context for opam/yalo_driver.opam
 # file opam/yalo_driver.opam
 6caf052e181c19393c53665c330d54dc:opam/yalo_driver.opam
 # end context for opam/yalo_driver.opam
 
+# begin context for opam/yalo_ez_config.opam
+# file opam/yalo_ez_config.opam
+cf5bf135e157e6bede632e971d831a97:opam/yalo_ez_config.opam
+# end context for opam/yalo_ez_config.opam
+
 # begin context for opam/yalo_lib.opam
 # file opam/yalo_lib.opam
-12f13f9037f0bcd4d1ef67aaf3cbdbb3:opam/yalo_lib.opam
+1089a96fab9ea09c59b62f1ba3f8f5fa:opam/yalo_lib.opam
 # end context for opam/yalo_lib.opam
 
 # begin context for opam/yalo_misc.opam
 # file opam/yalo_misc.opam
-4ebfeeb2a43f825a9b20848d28dbc615:opam/yalo_misc.opam
+1b71c20914d965d7c63f51ad1a032773:opam/yalo_misc.opam
 # end context for opam/yalo_misc.opam
 
 # begin context for opam/yalo_plugin_CAMELOT.opam
@@ -296,12 +296,12 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo/version.mlt
 
 # begin context for src/yalo_config/dune
 # file src/yalo_config/dune
-0beb945deb86e690431e0325947f95be:src/yalo_config/dune
+b6eac6d38dc2bf75a9ae35ed6c7efadd:src/yalo_config/dune
 # end context for src/yalo_config/dune
 
 # begin context for src/yalo_config/index.mld
 # file src/yalo_config/index.mld
-dcd560781174ef8a72dab14ce244ac04:src/yalo_config/index.mld
+93ad31a6b8d0de9c2ad73845284c2bb4:src/yalo_config/index.mld
 # end context for src/yalo_config/index.mld
 
 # begin context for src/yalo_config/main.ml
@@ -331,7 +331,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_driver/version.mlt
 
 # begin context for src/yalo_lib/dune
 # file src/yalo_lib/dune
-80def34663694c76ae0d8c544f397fd1:src/yalo_lib/dune
+e5a3be12d03cea65792e51309a0e60fc:src/yalo_lib/dune
 # end context for src/yalo_lib/dune
 
 # begin context for src/yalo_lib/index.mld
@@ -351,7 +351,7 @@ fb1504b512f9ec6892f760e14511b3ed:src/yalo_lib/version.mlt
 
 # begin context for src/yalo_misc/dune
 # file src/yalo_misc/dune
-d532deadbe159980640bc98d74f3d83b:src/yalo_misc/dune
+79b9cc6dcb5d74da5dc9ad2b16f2adc6:src/yalo_misc/dune
 # end context for src/yalo_misc/dune
 
 # begin context for src/yalo_misc/index.mld
@@ -516,7 +516,7 @@ e3b544fe12c7afd17f5f252466dab4fb:test/expect-tests/dune
 
 # begin context for test/expect-tests/dune.drom
 # file test/expect-tests/dune.drom
-c9ae1c53de9b3ba0a299d3ef9a603bce:test/expect-tests/dune.drom
+c3b42cf44e6eb8b02c228097c9011e8f:test/expect-tests/dune.drom
 # end context for test/expect-tests/dune.drom
 
 # begin context for test/expect-tests/test.ml
@@ -531,7 +531,7 @@ c9ae1c53de9b3ba0a299d3ef9a603bce:test/expect-tests/dune.drom
 
 # begin context for test/inline-tests/dune.drom
 # file test/inline-tests/dune.drom
-41033217c418009fc5d22def0445978d:test/inline-tests/dune.drom
+dd29001fa28a947bf9d46cd9baee0ed5:test/inline-tests/dune.drom
 # end context for test/inline-tests/dune.drom
 
 # begin context for test/inline-tests/test.ml
@@ -546,7 +546,7 @@ c9ae1c53de9b3ba0a299d3ef9a603bce:test/expect-tests/dune.drom
 
 # begin context for test/output-tests/dune.drom
 # file test/output-tests/dune.drom
-69b9376b1e18187a5ff07ef307ccfba2:test/output-tests/dune.drom
+7439c61c9d491dc72e178b5e6a001ab9:test/output-tests/dune.drom
 # end context for test/output-tests/dune.drom
 
 # begin context for test/output-tests/test1.expected

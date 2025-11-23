@@ -39,7 +39,7 @@
  (depends
    (ocaml (>= 4.08.0))
    yojson
-   (yalo_config (= :version))
+   (yalo_ez_config (= :version))
    re
    ppx_deriving_yojson
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
@@ -65,7 +65,7 @@
  (depends
    (ocaml (>= 4.08.0))
    (yalo_misc (= :version))
-   (yalo_config (= :version))
+   (yalo_ez_config (= :version))
    re
    (ez_file (and (>= 0.3.0) (< 1.0.0)))
    (ez_cmdliner (and (>= 0.2.0) (< 1.0.0)))
@@ -122,7 +122,7 @@
  )
 
 (package
- (name yalo_config)
+ (name yalo_ez_config)
  (synopsis "The yalo platform (Yet Another Linter for OCaml) is a plugin-based code scanner for OCaml projects and potentially other languages")
  (description "Yalo aims at providing a code scanner for OCaml projects. Because most organizations want to easily add their own linting rules, Yalo is plugin-based, it provides a simple to use interface to easily write such plugins. Projects can easily be configured to use Yalo, activate the warnings/errors that they want, and integrate the tool in Github Actions thanks to SARIF JSON output.\n")
  

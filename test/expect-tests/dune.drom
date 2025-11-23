@@ -10,5 +10,5 @@
   (pps ppx_expect))
  (inline_tests
   (modes best)) ; add js for testing with nodejs
- (libraries yalo_misc yalo_lib ppx_yalo yalo_driver yalo_config yalo_plugin_ocaml yalo_plugin_FIND yalo_plugin_YALO yalo_test_YALO yalo_plugin_ZANUDA yalo_test_ZANUDA yalo_plugin_CAMELOT yalo_test_CAMELOT yalo_plugin_OCPINDENT) ; add your project libraries here
+ (libraries yalo_misc yalo_lib ppx_yalo yalo_driver yalo_ez_config yalo_plugin_ocaml yalo_plugin_FIND yalo_plugin_YALO yalo_test_YALO yalo_plugin_ZANUDA yalo_test_ZANUDA yalo_plugin_CAMELOT yalo_test_CAMELOT yalo_plugin_OCPINDENT) ; add your project libraries here
  )

@@ -14,7 +14,7 @@
    Load and save should work with an optionnal filename.
 *)
 
-
+open EzCompat
 open Yalo_misc.Ez_config.V1
 open Types
 
@@ -67,6 +67,13 @@ let config_warnings =
     ~short_help:"List of specifications to activate warnings"
     EZCONFIG.string_list_option
     [ "YALO" ]
+
+let ignore_namespaces =
+  create_config_option main_section
+    ~path:[ "ignore_namespaces" ]
+    ~short_help:"List of namespaces and tags to ignore in specifications"
+    EZCONFIG.stringSet_option
+    StringSet.empty
 
 let config_errors =
   create_config_option main_section

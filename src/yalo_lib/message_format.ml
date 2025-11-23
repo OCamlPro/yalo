@@ -340,6 +340,7 @@ let display_messages ~on_error ?(summary=Some 10)
   end;
   begin
     match !nwarnings, !nerrors with
+    | 0, 0 -> ()
     | 0, n ->
         Printf.eprintf "Yalo: %d errors found\n" n
     | n, 0 ->

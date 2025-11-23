@@ -55,7 +55,7 @@ preprocess = "pps ppx_optcomp"
 [dependencies]
 directories = "=0.2"
 ez_cmdliner = "0.2.0"
-yalo_config = "version"
+yalo_ez_config = "version"
 ez_file = "0.3.0"
 base-unix = { libname = "dynlink" }
 re = ""

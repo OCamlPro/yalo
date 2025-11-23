@@ -14,6 +14,13 @@ open EzCompat
 open Ez_file.V1
 open Yalo_misc.Infix
 
+let initial_dir =
+  try Sys.getcwd () with _exn ->
+    Printf.eprintf
+      "Current directory does not exist anymore. Move back up.\n%!";
+    exit 2
+
+
 let load_plugin file =
   try
     Dynlink.loadfile file
@@ -75,33 +82,42 @@ let load_plugins ~plugins () =
         try
           Yalo_misc.Utils.find_in_path !Clflags.include_dirs file
         with Not_found ->
-        try
-          Yalo_misc.Utils.find_in_path !Clflags.include_dirs
-            (Filename.basename file)
-        with Not_found ->
-        try
-          let is_plugin = ref true in
-          for i = 0 to String.length arg - 1 do
-            match arg.[i] with
-            | '.' | '/' | '\\' -> is_plugin := false
-            | _ -> ()
-          done;
-          if !is_plugin then
-            let plugin_dir = lib_dir // arg in
-            let file = plugin_dir // (arg ^ ".cmxs") in
-            if Sys.file_exists file then begin
-              Clflags.include_dirs := plugin_dir :: !Clflags.include_dirs;
-              file
-            end else
-              raise Not_found
-          else
-            raise Not_found
-        with Not_found ->
-          Printf.eprintf "Error: could not find %S in:\n%!" arg;
-          List.iter (fun dir ->
-              Printf.printf "  - %s\n%!" dir;
-            ) !Clflags.include_dirs;
-          exit 2
+          let basename = Filename.basename file in
+          try
+            Yalo_misc.Utils.find_in_path !Clflags.include_dirs
+              basename
+          with Not_found ->
+            let installed_plugin =
+              Printf.sprintf "lib/%s/%s"
+                (Filename.chop_extension basename) basename
+            in
+            try
+              Yalo_misc.Utils.find_in_path !Clflags.include_dirs
+                installed_plugin
+            with Not_found ->
+            try
+              let is_plugin = ref true in
+              for i = 0 to String.length arg - 1 do
+                match arg.[i] with
+                | '.' | '/' | '\\' -> is_plugin := false
+                | _ -> ()
+              done;
+              if !is_plugin then
+                let plugin_dir = lib_dir // arg in
+                let file = plugin_dir // (arg ^ ".cmxs") in
+                if Sys.file_exists file then begin
+                  Clflags.include_dirs := plugin_dir :: !Clflags.include_dirs;
+                  file
+                end else
+                  raise Not_found
+              else
+                raise Not_found
+            with Not_found ->
+              Printf.eprintf "Error: could not find %S in:\n%!" arg;
+              List.iter (fun dir ->
+                  Printf.printf "  - %s\n%!" dir;
+                ) !Clflags.include_dirs;
+              exit 2
       in
       if Filename.check_suffix file ".ml" then
         let source = EzFile.read_file file in
@@ -170,14 +186,10 @@ let init
     ?(plugins=[])
     ?(can_load_plugins=true)
     ?(profiles=[])
+    ~make_mode
     () =
 
-  let fs_root =
-    try Sys.getcwd () with _exn ->
-      Printf.eprintf
-        "Current directory does not exist anymore. Move back up.\n%!";
-      exit 2
-  in
+  let fs_root = initial_dir in
 
   let fs_root, fs_subpath, load_dirs, config_file =
     match config_file with
@@ -191,10 +203,12 @@ let init
           let file, subpath = Yalo_misc.Utils.find_file Constant.config_basename
           in
           let dir = Filename.dirname file in
-          Printf.eprintf "yalo: Entering directory '%s'\n%!" dir;
-          at_exit (fun () ->
-              Printf.eprintf "yalo: Leaving directory '%s'\n%!" dir;
-            );
+          if make_mode then begin
+            Printf.eprintf "yalo: Entering directory '%s'\n%!" dir;
+            at_exit (fun () ->
+                Printf.eprintf "yalo: Leaving directory '%s'\n%!" dir;
+              );
+          end;
           Sys.chdir dir ;
           let load_dirs =
             "." ::
@@ -284,3 +298,6 @@ let init
   end;
 
   fs
+
+let exit () =
+  Sys.chdir initial_dir

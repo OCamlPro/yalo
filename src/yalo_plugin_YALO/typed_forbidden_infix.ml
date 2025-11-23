@@ -49,7 +49,7 @@ let register ns section
       ~short_help:"List of infix operators allowed in this project \
                    (such as [ \"++\", \"--\" ]) for the \
                    forbidden_infix warning"
-      (EzConfig.list_option EzConfig.string_option)
+      YALO_CONFIG.string_list_option
       []
   in
   let allowed_stdlib_infix =
@@ -58,7 +58,7 @@ let register ns section
       ~short_help:"List of infix operators from Stdlib allowed in this \
                    project (missing operators should be reported \
                    upstream)"
-      (EzConfig.list_option EzConfig.string_option)
+      YALO_CONFIG.string_list_option
       default_stdlib_infix
   in
   let allowed_infix_operators =

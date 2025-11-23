@@ -11,6 +11,6 @@
 (**************************************************************************)
 
 let (//) = Utils.filename_concat
-let (!!) = EzConfig.(!!)
-let (=:=) = EzConfig.(=:=)
+let (!!) = Ez_config.V1.EZCONFIG.(!!)
+let (=:=) = Ez_config.V1.EZCONFIG.(=:=)
 

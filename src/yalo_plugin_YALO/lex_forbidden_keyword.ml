@@ -39,7 +39,7 @@ let register ns section
     YALO.CONFIG.create_option section
       ~path:[ ns_name; "forbidden_keywords"]
       ~short_help:"List of (space separated) forbidden keywords or tokens"
-      (EzConfig.list_option EzConfig.string_option)
+      YALO_CONFIG.string_list_option
       [ "or" ]
   in
 

@@ -39,7 +39,7 @@ depends: [
   "ocaml" {>= "4.08.0"}
   "dune" {>= "2.8.0"}
   "yojson" {}
-  "yalo_config" {= version}
+  "yalo_ez_config" {= version}
   "re" {}
   "ppx_deriving_yojson" {}
   "ez_file" {>= "0.3.0" & < "1.0.0"}
