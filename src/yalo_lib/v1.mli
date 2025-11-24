@@ -89,9 +89,11 @@ module YALO_TYPES : sig
   type ('a,'b) active_linters =
     ( linter * ('a, 'b) linter_function ) list
 
-  type zone_mode =
-    | Zone_begin
-    | Zone_all
+  type annot_desc =
+    | Annot_begin_warning
+    | Annot_end_warning
+    | Annot_spec of string
+    | Annot_check of string * bool (* true => the warning may be after *)
 
 end
 
@@ -256,9 +258,9 @@ module YALO_LANG : sig
     unit
   val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
 
-  val warnings_zone : file:file -> loc:location ->
-    ?mode:zone_mode -> string -> unit
-  val warnings_check : file:file -> loc:location -> string -> bool -> unit
+  val add_annot :
+    file:YALO_TYPES.file ->
+    loc:YALO_TYPES.location -> YALO_TYPES.annot_desc -> unit
 
   val temp_set_option : string list -> string -> unit
 

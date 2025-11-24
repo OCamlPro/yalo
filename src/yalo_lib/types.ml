@@ -187,24 +187,23 @@ and linter = {
   linter_end : (unit -> unit);
 }
 
-(* what the provided loc means for the warnings zone *)
-and zone_mode =
-  | Zone_begin
-  | Zone_all
+and annot_desc =
+  | Annot_begin_warning
+  | Annot_end_warning
+  | Annot_spec of string
+  | Annot_check of string * bool (* true => the warning may be after *)
 
-and zone = {
-  zone_loc : location ;
-  zone_rev_zone : zone option ;
-  zone_target : target ;
-  zone_spec : string ;
-  zone_creator : file ;
-  mutable zone_rev_changes : (warning * warning_state) list ;
+and 'a annotation = {
+  annot_loc : location ;
+  annot_target : target ;
+  annot_desc : 'a ;
+  annot_file : file ;
 }
 
 and target = {
   target_name : string ; (* normalized version *)
   target_uid : int ;
-  mutable target_zones : zone list ;
+  mutable target_annots : annot_desc annotation list ;
   mutable target_checks : (string * location * bool (* after? *)) list ;
   mutable target_messages : message list ;
 }
