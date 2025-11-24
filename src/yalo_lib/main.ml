@@ -30,8 +30,31 @@ let load_plugin file =
       Printf.eprintf "Exception raised in load_plugin %S\n%!" file;
       raise exn
 
-
 let bin_dir = Sys.executable_name |> Filename.dirname
+
+let opam_switch_prefix =
+  match Sys.getenv "OPAM_SWITCH_PREFIX" with
+  | exception _ -> []
+  | prefix -> [prefix]
+
+let bin_path =
+  match Sys.getenv "PATH" with
+  | exception Not_found -> [] (* weird *)
+  | path -> EzString.split path ':'
+
+(* We need special care for for ppx_yalo, since it is built inside the
+   _build subtree. *)
+let bin_dir =
+  if Filename.basename @@ Filename.dirname bin_dir = ".ppx" then begin
+    match Yalo_misc.Utils.find_in_path bin_path "yalo" with
+    | yalo_exe -> Filename.dirname yalo_exe
+    | exception Not_found ->
+        match Yalo_misc.Utils.find_in_path bin_path "yalo.exe" with
+        | yalo_exe -> Filename.dirname yalo_exe
+        | exception Not_found -> bin_dir
+
+  end else
+    bin_dir
 
 let in_yalo_sources =
   Sys.file_exists (bin_dir // "src" // "yalo_driver" // "main.ml")
@@ -48,12 +71,6 @@ let yalo_profiles_dir = yalo_share_dir // "profiles"
 
 let load_plugins ~plugins () =
   Clflags.error_style := Some Misc.Error_style.Contextual;
-
-  let opam_switch_prefix =
-    match Sys.getenv "OPAM_SWITCH_PREFIX" with
-    | exception _ -> []
-    | prefix -> [prefix]
-  in
 
   Clflags.include_dirs :=
     !GState.profiles_load_dirs
@@ -87,6 +104,24 @@ let load_plugins ~plugins () =
             Yalo_misc.Utils.find_in_path !Clflags.include_dirs
               basename
           with Not_found ->
+          try
+            let is_plugin = ref true in
+            for i = 0 to String.length arg - 1 do
+              match arg.[i] with
+              | '.' | '/' | '\\' -> is_plugin := false
+              | _ -> ()
+            done;
+            if !is_plugin then
+              let plugin_dir = lib_dir // arg in
+              let file = plugin_dir // (arg ^ ".cmxs") in
+              if Sys.file_exists file then begin
+                Clflags.include_dirs := plugin_dir :: !Clflags.include_dirs;
+                file
+              end else
+                raise Not_found
+            else
+              raise Not_found
+          with Not_found ->
             let installed_plugin =
               Printf.sprintf "lib/%s/%s"
                 (Filename.chop_extension basename) basename
@@ -94,24 +129,6 @@ let load_plugins ~plugins () =
             try
               Yalo_misc.Utils.find_in_path !Clflags.include_dirs
                 installed_plugin
-            with Not_found ->
-            try
-              let is_plugin = ref true in
-              for i = 0 to String.length arg - 1 do
-                match arg.[i] with
-                | '.' | '/' | '\\' -> is_plugin := false
-                | _ -> ()
-              done;
-              if !is_plugin then
-                let plugin_dir = lib_dir // arg in
-                let file = plugin_dir // (arg ^ ".cmxs") in
-                if Sys.file_exists file then begin
-                  Clflags.include_dirs := plugin_dir :: !Clflags.include_dirs;
-                  file
-                end else
-                  raise Not_found
-              else
-                raise Not_found
             with Not_found ->
               Printf.eprintf "Error: could not find %S in:\n%!" arg;
               List.iter (fun dir ->

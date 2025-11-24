@@ -48,83 +48,87 @@ let () =
     ~warnings:[w1 ; w2; w3]
     (fun ~file ~linter content ->
 
-       (* Printf.eprintf "WITH FILE %S\n%!" @@ YALO_FILE.name file; *)
-       let config, _syntaxes, _dlink =
-         IndentConfig.local_default
-           ~path:(Filename.dirname @@ YALO_FILE.name file) ()
-       in
+       match Filename.extension @@ YALO_FILE.name file with
+       | ".mll" -> ()
+       | ".mly" -> ()
+       | _ ->
+           (* Printf.eprintf "WITH FILE %S\n%!" @@ YALO_FILE.name file; *)
+           let config, _syntaxes, _dlink =
+             IndentConfig.local_default
+               ~path:(Filename.dirname @@ YALO_FILE.name file) ()
+           in
 
-       let lnum = ref 0 in
-       let indents = ref [] in
-       let output = {
-         IndentPrinter.
-         debug = false;
-         config ;
-         in_lines = (fun _ -> true);
-         indent_empty = true;
-         adaptive = true;
-         kind =
-           IndentPrinter.Numeric (fun n () ->
-               indents := n :: !indents ;
-               incr lnum ;
+           let lnum = ref 0 in
+           let indents = ref [] in
+           let output = {
+             IndentPrinter.
+             debug = false;
+             config ;
+             in_lines = (fun _ -> true);
+             indent_empty = true;
+             adaptive = true;
+             kind =
+               IndentPrinter.Numeric (fun n () ->
+                   indents := n :: !indents ;
+                   incr lnum ;
               (*
                 Printf.eprintf
                 "indent %d: n = %d\n%!" !lnum n *)
-             )
-       }
-       in
-
-       let string = content.content_string in
-       let stream = Nstream.of_string string in
-       IndentPrinter.proceed output stream IndentBlock.empty ();
-
-       let indents = List.rev !indents in
-
-       let len = String.length string in
-
-       (* Note: ocp-indent on empty lines may say that the line should be
-          indented, so we need to disregard indentation on empty lines. *)
-       let rec check_indent i n =
-         if n = 0 then
-           ( i = len ||
-             match string.[i] with
-             | ' ' | '\t' -> false
-             | _ -> true)
-         else
-           (
-             i = len ||
-             match string.[i] with
-             | ' ' -> check_indent (i+1) (n-1)
-             | '\n' -> true
-             | _ -> false)
-       in
-
-       let n_warnings = ref 0 in
-       let rec iter ~expected indents ~lnum i =
-
-         if not (check_indent i expected) then begin
-           incr n_warnings ;
-           let loc = YALO.mkloc ~file ~lnum ~bol:i () in
-           let msg = Printf.sprintf
-               "Wrong indentation on this line (should be %d)" expected
+                 )
+           }
            in
-           if !n_warnings = 1 then
-             YALO.warn ~loc ~file ~linter w1 ~msg
-           else
-           if !n_warnings <= 5 then
-             YALO.warn ~loc ~file ~linter w2 ~msg
-           else
-             YALO.warn ~loc ~file ~linter w3 ~msg
-         end;
 
-         match indents with
-         | [] -> ()
-         | expected :: indents ->
-             let i = String.index_from content.content_string i '\n' in
-             iter ~expected indents ~lnum:(lnum+1) (i+1)
-       in
-       match indents with
-       | [] -> ()
-       | expected :: indents ->
-           iter ~expected indents ~lnum:1 0
+           let string = content.content_string in
+           let stream = Nstream.of_string string in
+           IndentPrinter.proceed output stream IndentBlock.empty ();
+
+           let indents = List.rev !indents in
+
+           let len = String.length string in
+
+           (* Note: ocp-indent on empty lines may say that the line should be
+              indented, so we need to disregard indentation on empty lines. *)
+           let rec check_indent i n =
+             if n = 0 then
+               ( i = len ||
+                 match string.[i] with
+                 | ' ' | '\t' -> false
+                 | _ -> true)
+             else
+               (
+                 i = len ||
+                 match string.[i] with
+                 | ' ' -> check_indent (i+1) (n-1)
+                 | '\n' -> true
+                 | _ -> false)
+           in
+
+           let n_warnings = ref 0 in
+           let rec iter ~expected indents ~lnum i =
+
+             if not (check_indent i expected) then begin
+               incr n_warnings ;
+               let loc = YALO.mkloc ~file ~lnum ~bol:i () in
+               let msg = Printf.sprintf
+                   "Wrong indentation on this line (should be %d)" expected
+               in
+               if !n_warnings = 1 then
+                 YALO.warn ~loc ~file ~linter w1 ~msg
+               else
+               if !n_warnings <= 5 then
+                 YALO.warn ~loc ~file ~linter w2 ~msg
+               else
+                 YALO.warn ~loc ~file ~linter w3 ~msg
+             end;
+
+             match indents with
+             | [] -> ()
+             | expected :: indents ->
+                 let i = String.index_from content.content_string i '\n' in
+                 iter ~expected indents ~lnum:(lnum+1) (i+1)
+           in
+           match indents with
+           | [] -> ()
+           | expected :: indents ->
+               iter ~expected indents ~lnum:1 0
     )
