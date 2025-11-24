@@ -1,6 +1,6 @@
 
 # name of package
-name = "yalo_config"
+name = "yalo_ez_config"
 # skeleton = ...
 
 # version if different from project version
@@ -32,7 +32,7 @@ gen-version = "version.ml"
 # optional = true
 
 # module name used to pack modules (if pack-modules is true)
-pack = "ezConfig"
+# pack = "Yalo_config"
 
 # preprocessing options
 #  preprocess = "per-module (((action (run ./toto.sh %{input-file})) mod))" 

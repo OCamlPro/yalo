@@ -39,7 +39,7 @@ depends: [
   "ocaml" {>= "4.08.0"}
   "dune" {>= "2.8.0"}
   "yalo_misc" {= version}
-  "yalo_config" {= version}
+  "yalo_ez_config" {= version}
   "re" {}
   "ez_file" {>= "0.3.0" & < "1.0.0"}
   "ez_cmdliner" {>= "0.2.0" & < "1.0.0"}

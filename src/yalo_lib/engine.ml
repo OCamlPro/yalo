@@ -502,9 +502,9 @@ let lint_with_active_linters active_linters_ref ~file x =
       iter_linters_close ~file linters ;
       ()
 
-let new_file ~file_doc ~file_kind ~file_crc file_name =
+let new_file ~file_doc ~file_kind ~file_crc =
   {
-    file_name ;
+    file_name = file_doc.doc_name ;
     file_crc ;
     file_kind ;
     file_doc ;
@@ -529,7 +529,7 @@ let add_file ~file_doc ~file_kind =
   match Hashtbl.find GState.all_files file_name with
   | _file -> assert false
   | exception Not_found ->
-      let file = new_file ~file_doc ~file_kind ~file_crc file_name in
+      let file = new_file ~file_doc ~file_kind ~file_crc in
       Hashtbl.add GState.all_files file_name file;
       file_doc.doc_file <- Some file ;
       ()
@@ -686,33 +686,36 @@ let compare_zone_pos m1 m2 =
 
 let apply_zone z revert_warning_changes =
   let revert_warning_changes = ref revert_warning_changes in
-  Parse_spec.parse_spec z.zone_spec
-    (fun new_state w ->
-       let old_state = w.w_state in
-       if not (StringMap.mem w.w_idstr !revert_warning_changes) then begin
-         revert_warning_changes :=
-           StringMap.add w.w_idstr (w, old_state) !revert_warning_changes ;
-       end;
-       match new_state, old_state with
-       | Warning_disabled, Warning_enabled ->
-           w.w_state <- Warning_sleeping ;
-           z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
-       | Warning_disabled, (Warning_disabled | Warning_sleeping) -> ()
-       | Warning_enabled, Warning_enabled -> ()
-       | Warning_enabled, Warning_sleeping ->
-           w.w_state <- Warning_enabled ;
-           z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
-       | Warning_enabled, Warning_disabled ->
-           (* TODO: we should create warnings for these ones ! *)
-           Printf.eprintf
-             "Warning: cannot wake up locally warnings that have been \
-              disabled globally (should be sleeping with '?')\n%!"
-       | Warning_sleeping, _ ->
-           Printf.eprintf
-             "Warning: sleeping mode '?' has no meaning in local \
-              annotations\n%!"
-    );
-  !revert_warning_changes
+  let set_warning new_state w =
+    let old_state = w.w_state in
+    if not (StringMap.mem w.w_idstr !revert_warning_changes) then begin
+      revert_warning_changes :=
+        StringMap.add w.w_idstr (w, old_state) !revert_warning_changes ;
+    end;
+    match new_state, old_state with
+    | Warning_disabled, Warning_enabled ->
+        w.w_state <- Warning_sleeping ;
+        z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
+    | Warning_disabled, (Warning_disabled | Warning_sleeping) -> ()
+    | Warning_enabled, Warning_enabled -> ()
+    | Warning_enabled, Warning_sleeping ->
+        w.w_state <- Warning_enabled ;
+        z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
+    | Warning_enabled, Warning_disabled ->
+        (* TODO: we should create warnings for these ones ! *)
+        Printf.eprintf
+          "Warning: cannot wake up locally warnings that have been \
+           disabled globally (should be sleeping with '?')\n%!"
+    | Warning_sleeping, _ ->
+        Printf.eprintf
+          "Warning: sleeping mode '?' has no meaning in local \
+           annotations\n%!"
+  in
+  try
+    Parse_spec.parse_spec ~spec:z.zone_spec set_warning ;
+    !revert_warning_changes
+  with Parse_spec.SpecError ->
+    !revert_warning_changes
 
 let filter_target_messages target =
 

@@ -19,7 +19,7 @@
 
 (executable
  (name test2)
- (libraries yalo_misc yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver yalo_config) ; add your own library here
+ (libraries yalo_misc yalo_lib ppx_yalo yalo_plugin_ocaml yalo_plugin_YALO yalo_plugin_FIND yalo_driver yalo_ez_config) ; add your own library here
  )
 
 (alias

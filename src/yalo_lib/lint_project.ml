@@ -107,14 +107,14 @@ let scan_projects
                 | INEXISTENT ->
                     Printf.eprintf "File argument %S does not exist\n%!"
                       fullname;
-                    exit 2
+                    raise Exit
                 | DOCUMENT ->
                     match path with
                     | _ :: _ ->
                         Printf.eprintf
                           "Configuration error: path %S is not a folder\n%!"
                           basename;
-                        exit 2
+                        raise Exit
                     | [] ->
                         let _doc = Engine.get_document folder  basename in
                         ()
@@ -390,10 +390,14 @@ let main
     ~summary
     () =
 
-  scan_projects
-    ~fs
-    ~paths
-    ();
+  begin
+    try
+      scan_projects
+        ~fs
+        ~paths
+        ();
+    with Exit -> exit 2
+  end;
 
   let files_done = lint_projects
       ~fs

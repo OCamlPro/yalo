@@ -15,7 +15,9 @@
    specification, with [bool] depending on whether the specification
    sets or unsets the warning *)
 val parse_spec :
-  string -> (Types.warning_state -> Types.warning -> unit) -> unit
+  spec:string -> (Types.warning_state -> Types.warning -> unit) -> unit
 
 val parse_spec_list :
   string list -> (Types.warning_state -> Types.warning -> unit) -> unit
+
+exception SpecError

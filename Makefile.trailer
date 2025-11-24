@@ -15,3 +15,6 @@ yalo_sarif:
 sarif: build
 	dune install
 	$(MAKE) yalo.sarif
+
+dune-install: build
+	opam exec -- dune install

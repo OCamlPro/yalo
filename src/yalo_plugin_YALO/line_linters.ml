@@ -35,7 +35,7 @@ let register ns section w_ids =
     YALO.CONFIG.create_option section
       ~path:[ ns_name; "max_line_length"]
       ~short_help:"Maximal length of line before warning YALO+1"
-      EzConfig.int_option
+      YALO_CONFIG.int_option
       80
   in
 

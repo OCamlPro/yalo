@@ -14,6 +14,9 @@
    Load and save should work with an optionnal filename.
 *)
 
+open EzCompat
+open Yalo_ez_config
+
 module V1 = struct
 
   module EZCONFIG = struct
@@ -58,7 +61,18 @@ module V1 = struct
       create_section_option section path ~short_help long_help
         ?level option_type default_value
 
-    let string_list_option = list_option string_option
+    let string_list_option =
+      list_option string_option
+
+    let stringSet_option : StringSet.t option_class =
+      define_option_class "StringSet"
+        (fun v ->
+           value_to_list value_to_string v |>
+           StringSet.of_list)
+        (fun set ->
+           StringSet.to_list set
+           |> list_to_value string_to_value
+        )
 
     module OP = EzConfig.OP
 

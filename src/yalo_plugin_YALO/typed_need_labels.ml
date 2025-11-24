@@ -130,7 +130,7 @@ let register ns
       ~path:[ ns_name; "min_args_to_need_labels"]
       ~short_help:"Minimal number of arguments for a function to need \
                    to discriminate between arguments of same types"
-      EzConfig.int_option
+      YALO_CONFIG.int_option
       3
   in
 
