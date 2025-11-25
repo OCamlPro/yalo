@@ -80,8 +80,8 @@
   {
     "id": "YALO+7 use_obj",
     "namespace": "YALO",
-    "group": "untyped",
-    "tags": [ "untyped" ],
+    "group": "typed:untyped",
+    "tags": [ "typed", "untyped" ],
     "level": "warn",
     "impl": "yalo_plugin_YALO",
     "docs": "### Message\nThe use of the Obj module is dangerous\n### Description\n",
@@ -184,8 +184,8 @@
   {
     "id": "YALO+13 no_mutable_fields",
     "namespace": "YALO",
-    "group": "immutable:typed",
-    "tags": [ "immutable", "typed" ],
+    "group": "immutable:untyped:typed",
+    "tags": [ "immutable", "untyped", "typed" ],
     "level": "allow",
     "impl": "yalo_plugin_YALO",
     "docs": "### Message\nMutable fields in records are forbidden in this project\n### Description\n",

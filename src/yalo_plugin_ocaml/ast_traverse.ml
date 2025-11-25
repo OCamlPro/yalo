@@ -161,7 +161,7 @@ end = struct
     ctx
 
   class ast_folder =
-    object (_self)
+    object (self)
       inherit [t] Ppxlib.Ast_traverse.fold  as super
       method! longident_loc x ctx =
         apply_lints_with_loc ctx
@@ -269,8 +269,18 @@ end = struct
           ~lints:ctx.class_structure class_structure x
 
       method! class_field x ctx =
-        apply_lints super#class_field ctx
-          ~lints:ctx.class_field class_field x
+        let ctx = apply_lints super#class_field ctx
+            ~lints:ctx.class_field class_field x
+        in
+        (* Unfortunately, "super" is not correctly handled, so we put
+           a workaround, that will work until it is fixed. *)
+        match x.pcf_desc with
+        | Pcf_inherit (_,_,Some super) ->
+            self#pattern { ppat_desc = Ppat_var super;
+                           ppat_loc = super.loc;
+                           ppat_loc_stack = [ super.loc];
+                           ppat_attributes = [] } ctx
+        | _ -> ctx
 
       method! class_declaration x ctx =
         apply_lints super#class_declaration ctx

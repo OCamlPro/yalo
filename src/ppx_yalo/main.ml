@@ -30,6 +30,8 @@ open Yalo.V1
 open Yalo_plugin_ocaml.V1
 open Yalo.Types
 
+let _ : bool =
+  OCAML_LANG.is_running_as_ppx ~set:true ()
 
 let display_info =
   match Sys.getenv "PPX_YALO" with

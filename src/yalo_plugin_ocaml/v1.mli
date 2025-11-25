@@ -71,6 +71,7 @@ module OCAML_LANG : sig
   val new_tast_intf_traverse_linter :
     OCAML_TAST.OCAML_TRAVERSE.t new_gen_unit_linter
 
+  val is_running_as_ppx : ?set:bool -> unit -> bool
   val is_menhir_generated_file : unit -> bool
 end
 

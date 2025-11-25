@@ -119,6 +119,7 @@ module YALO = struct
     let put t file x = DOC_STORE.put t file.file_doc x
     let check t file = DOC_STORE.check t file.file_doc
     let get t file = DOC_STORE.get t file.file_doc
+    let clear t file = DOC_STORE.clear t file.file_doc
 
   end
 
@@ -198,6 +199,7 @@ end
 
 module YALO_NS = struct
   let name ns = ns.ns_name
+  let plugin ns = ns.ns_plugin
 end
 
 module YALO_FILE = struct

@@ -156,6 +156,7 @@ module YALO : sig
     val put : 'a t -> document -> 'a -> unit
     val check : 'a t -> document -> 'a option
     val get : 'a t -> document -> 'a
+    val clear : 'a t -> document -> unit
   end
   module FILE_STORE : sig
     type 'a t = 'a DOC_STORE.t
@@ -163,6 +164,7 @@ module YALO : sig
     val put : 'a t -> file -> 'a -> unit
     val check : 'a t -> file -> 'a option
     val get : 'a t -> file -> 'a
+    val clear : 'a t -> file -> unit
   end
 
   val string_of_loc : location -> string
@@ -177,6 +179,7 @@ module YALO_FS : sig
 end
 
 module YALO_NS : sig
+  val plugin : namespace -> plugin
   val name : namespace -> string
 end
 
