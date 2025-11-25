@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>SOURCE_LINTERS (yalo_plugin_ocaml.Yalo_plugin_ocaml.Main.SOURCE_LINTERS)</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../odoc.support/odoc.css"/><meta name="generator" content="odoc 3.1.0"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../../../../odoc.support/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body class="odoc"><nav class="odoc-nav"><a href="../index.html">Up</a> – <a href="../../../../index.html">Index</a> &#x00BB; <a href="../../../index.html">yalo_plugin_ocaml</a> &#x00BB; <a href="../../index.html">Yalo_plugin_ocaml</a> &#x00BB; <a href="../index.html">Main</a> &#x00BB; SOURCE_LINTERS</nav><header class="odoc-preamble"><h1>Module <code><span>Main.SOURCE_LINTERS</span></code></h1></header><div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-lint_src_file"><a href="#val-lint_src_file" class="anchor"></a><code><span><span class="keyword">val</span> lint_src_file : <span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_file_linter"><a href="#val-new_src_file_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_file_linter : 
+  <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
+  <span>string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.src_file_input</span> <span class="arrow">&#45;&gt;</span></span>
+    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_content_linter"><a href="#val-new_src_content_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_content_linter : 
+  <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
+  <span>string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.src_content_input</span> <span class="arrow">&#45;&gt;</span></span>
+    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-new_src_line_linter"><a href="#val-new_src_line_linter" class="anchor"></a><code><span><span class="keyword">val</span> new_src_line_linter : 
+  <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.namespace</span> <span class="arrow">&#45;&gt;</span></span>
+  <span>string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">warnings</span>:<span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.warning</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_begin</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_open</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_close</span>:
+    <span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+      unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?on_end</span>:<span>(<span>unit <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><span class="label">file</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.file</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="label">linter</span>:<span class="xref-unresolved">Yalo__V1.YALO_TYPES.linter</span> <span class="arrow">&#45;&gt;</span></span>
+    <span><span class="xref-unresolved">Yalo__V1.YALO_TYPES.src_line_input</span> <span class="arrow">&#45;&gt;</span></span>
+    unit)</span> <span class="arrow">&#45;&gt;</span></span>
+  unit</span></code></div></div></div></body></html>
