@@ -85,9 +85,11 @@ module YALO_TYPES = struct
     content_string : string ;
   }
 
-  type zone_mode = Types.zone_mode =
-    | Zone_begin
-    | Zone_all
+  type annot_desc = Types.annot_desc =
+    | Annot_begin_warning
+    | Annot_end_warning
+    | Annot_spec of string
+    | Annot_check of string * bool (* true => the warning may be after *)
 
 end
 
@@ -117,6 +119,7 @@ module YALO = struct
     let put t file x = DOC_STORE.put t file.file_doc x
     let check t file = DOC_STORE.check t file.file_doc
     let get t file = DOC_STORE.get t file.file_doc
+    let clear t file = DOC_STORE.clear t file.file_doc
 
   end
 
@@ -148,8 +151,7 @@ module YALO_LANG = struct
   let add_file_classifier = Engine.add_file_classifier
   let add_folder_updater = Engine.add_folder_updater
 
-  let warnings_zone = Engine.warnings_zone
-  let warnings_check = Engine.warnings_check
+  let add_annot = Engine.add_annot
   let temp_set_option = Engine.temporary_set_option
 
   module Make_source_linters = Source_linters.Make
@@ -197,6 +199,7 @@ end
 
 module YALO_NS = struct
   let name ns = ns.ns_name
+  let plugin ns = ns.ns_plugin
 end
 
 module YALO_FILE = struct

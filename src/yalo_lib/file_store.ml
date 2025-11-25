@@ -23,6 +23,12 @@ let create store_plugin =
     store_plugin ;
   }
 
+let clear t doc =
+  let uid = doc.doc_uid in
+  let size = Array.length t.store in
+  if size > uid then
+    t.store.(uid) <- None
+
 let put t doc x =
   let uid = doc.doc_uid in
   let size = Array.length t.store in

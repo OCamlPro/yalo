@@ -30,17 +30,15 @@ let () =
       w_id_spaces_at_end = 2 ;
       w_id_tab_used =3 ;
       w_id_non_printable_char = 4 ;
-      w_id_no_final_newline =5 ;
+      w_id_no_final_newline = 5 ;
       w_id_windows_newline = 6 ;
     } ;
-  let w_use_obj =
-    Untyped_use_obj.register ns
-      ~tags:[ tag_untyped ] 7 in
+  Both_use_obj.register ns
+    ~tags:[ tag_untyped ; tag_typed ] 7 ;
   Untyped_use_external.register ns
     ~tags:[ tag_untyped ] 8 ;
-  Typed_use_obj.register ns w_use_obj ;
-  Typed_unqualified_id.register ns
-    ~tags:[ tag_typed ] 9 ;
+  Both_unqualified_id.register ns
+    ~tags:[ tag_typed ] section 9 ;
   Typed_all_upper_struct.register ns
     ~tags:[ tag_typed ] 10;
   Lex_in_one_pass.register ns
@@ -51,8 +49,8 @@ let () =
   };
   Typed_forbidden_infix.register ns section
     ~tags: [ tag_typed ] 12;
-  Typed_no_mutable_fields.register ns
-    ~tags: [ tag_typed ; tag_immutable ] 13;
+  Both_no_mutable_fields.register ns
+    ~tags: [ tag_typed ; tag_untyped ; tag_immutable ] 13;
   Untyped_in_one_pass.register ns
     ~tags:[ tag_untyped ] {
     w_string_concat = Some 14 ;

@@ -18,7 +18,7 @@ module OCAML_TAST = struct
   include Untypeast
 
   [%%if ocaml_version < (4, 12, 0)]
-  let untype_expression ?(mapper=default_mapper) expression =
+  let untype_expression ?(mapper=Untypeast.default_mapper) expression =
     mapper.expr mapper expression
   [%%endif]
 

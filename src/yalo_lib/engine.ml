@@ -330,47 +330,25 @@ let get_target name =
         target_uid = GState.new_target_uid () ;
 
         target_checks = [] ;
-        target_zones = [] ;
+        target_annots = [] ;
         target_messages = [] ;
       } in
       Hashtbl.add GState.all_targets name target ;
       target
 
-let warnings_check ~file:_ ~loc spec after =
-  let target_name = loc.loc_start.pos_fname in
-  let target = get_target target_name in
-  target.target_checks <- (spec, loc, after) :: target.target_checks
-
-let warnings_zone ~file ~loc ?(mode=Zone_begin) action =
+let add_annot ~file ~loc annot_desc =
   let pos = loc.loc_start in
   let target_name = pos.pos_fname in
   let target = get_target target_name in
-  let zone = {
-    zone_creator = file ;
-    zone_loc = loc ;
-    zone_target = target ;
-    zone_spec = action ;
-    zone_rev_zone = None ;
-    zone_rev_changes = [];
+  let annot = {
+    annot_file = file ;
+    annot_loc = loc ;
+    annot_target = target ;
+    annot_desc = annot_desc ;
   }
   in
-  target.target_zones <- zone :: target.target_zones ;
-  match mode with
-  | Zone_begin -> ()
-  | Zone_all ->
-      let pos = loc.loc_end in
-      if target_name = pos.pos_fname then
-        let zone = {
-          zone_creator = file ;
-          zone_loc = { loc with loc_start = pos } ;
-          zone_target = target ;
-          zone_rev_zone = Some zone ;
-          zone_spec = action ;
-          zone_rev_changes = [];
-        }
-        in
-        target.target_zones <- zone :: target.target_zones ;
-        ()
+  target.target_annots <- annot :: target.target_annots ;
+  ()
 
 let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
 
@@ -671,51 +649,50 @@ let add_folder_updater f =
       old_f ~folder ;
       f ~folder)
 
+(*
 let compare_check_start (_,loc1,_) (_,loc2,_) =
   compare loc1.loc_start.pos_cnum
     loc2.loc_start.pos_cnum
+*)
 
 let compare_message_start m1 m2 =
   compare
     m1.msg_loc.loc_start.pos_cnum
     m2.msg_loc.loc_start.pos_cnum
 
-let compare_zone_pos m1 m2 =
-  compare m1.zone_loc.loc_start.pos_cnum
-    m2.zone_loc.loc_start.pos_cnum
+let compare_annot_pos m1 m2 =
+  compare
+    m1.annot_loc.loc_start.pos_cnum
+    m2.annot_loc.loc_start.pos_cnum
 
-let apply_zone z revert_warning_changes =
-  let revert_warning_changes = ref revert_warning_changes in
+let apply_annot z spec =
+  let revert_warning_changes = ref [] in
   let set_warning new_state w =
     let old_state = w.w_state in
-    if not (StringMap.mem w.w_idstr !revert_warning_changes) then begin
-      revert_warning_changes :=
-        StringMap.add w.w_idstr (w, old_state) !revert_warning_changes ;
-    end;
+    revert_warning_changes := ( w, old_state) :: !revert_warning_changes ;
     match new_state, old_state with
     | Warning_disabled, Warning_enabled ->
-        w.w_state <- Warning_sleeping ;
-        z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
+        w.w_state <- Warning_sleeping
     | Warning_disabled, (Warning_disabled | Warning_sleeping) -> ()
     | Warning_enabled, Warning_enabled -> ()
     | Warning_enabled, Warning_sleeping ->
-        w.w_state <- Warning_enabled ;
-        z.zone_rev_changes <- (w, old_state) :: z.zone_rev_changes
-    | Warning_enabled, Warning_disabled ->
-        (* TODO: we should create warnings for these ones ! *)
-        Printf.eprintf
-          "Warning: cannot wake up locally warnings that have been \
-           disabled globally (should be sleeping with '?')\n%!"
+        w.w_state <- Warning_enabled
+    | Warning_enabled, Warning_disabled -> ()
     | Warning_sleeping, _ ->
-        Printf.eprintf
+        eprintf ~loc:z.annot_loc
           "Warning: sleeping mode '?' has no meaning in local \
            annotations\n%!"
   in
   try
-    Parse_spec.parse_spec ~spec:z.zone_spec set_warning ;
+    Parse_spec.parse_spec ~spec set_warning ;
     !revert_warning_changes
   with Parse_spec.SpecError ->
     !revert_warning_changes
+
+let string_of_warning_state = function
+  | Warning_disabled -> "disabled"
+  | Warning_sleeping -> "sleeping"
+  | Warning_enabled -> "enabled"
 
 let filter_target_messages target =
 
@@ -723,64 +700,127 @@ let filter_target_messages target =
   Array.sort compare_message_start messages;
   let messages = Array.to_list messages in
 
-  let zones = Array.of_list target.target_zones in
-  Array.sort compare_zone_pos zones ;
-  let zones = Array.to_list zones in
+  let annots = Array.of_list target.target_annots in
+  Array.sort compare_annot_pos annots ;
+  let annots = Array.to_list annots in
 
-  let checks = Array.of_list target.target_checks in
-  Array.sort compare_check_start checks ;
-  let checks = Array.to_list checks in
+  let checks = ref ([] : (string * bool) annotation list) in
+  (*  Array.of_list target.target_checks in
+      Array.sort compare_check_start checks ;
+      let checks = Array.to_list checks in
+  *)
 
-  let rec iter ~messages zones kept_messages revert_warning_changes =
+  let verbose = false (*Filename.basename target.target_name
+                        = "test_YALO_annots.ml" *) in
+  if verbose then
+    Printf.eprintf "TARGET %S\n%!" target.target_name ;
+  let rec iter ~messages zones kept_messages
+      ( revert_warning_changes : _ list ref list ) =
     match messages with
     | [] ->
-        StringMap.iter (fun _ (w,state) -> w.w_state <- state)
+        if verbose then
+          Printf.eprintf "iter ~messages:[]\n%!";
+        List.iter (fun annot ->
+            match annot.annot_desc with
+            | Annot_check (spec, after) ->
+                checks := { annot with
+                            annot_desc = (spec, after) } :: !checks
+            | _ -> ()
+          ) zones;
+        List.iter (fun ref ->
+            List.iter (fun (w,state) -> w.w_state <- state) !ref)
           revert_warning_changes ;
         List.rev kept_messages
     | m :: rem_messages ->
+        if verbose then
+          Printf.eprintf "iter ~messages:(line %d)::_\n%!"
+            m.msg_loc.loc_start.pos_lnum;
         match zones with
         | [] ->
             let kept_messages =
               match m.msg_warning.w_state with
               | Warning_enabled ->
+                  if verbose then
+                    Printf.eprintf "  no more annot, keeping message\n%!";
                   m :: kept_messages
               | Warning_disabled
               | Warning_sleeping ->
+                  if verbose then
+                    Printf.eprintf "  no more annot, deleting message\n%!";
                   kept_messages
             in
             iter ~messages:rem_messages zones kept_messages
               revert_warning_changes
         | z :: rem_zones ->
+            let lnum = z.annot_loc.loc_start.pos_lnum in
+            let cnum = z.annot_loc.loc_start.pos_cnum in
             if m.msg_loc.loc_start.pos_cnum <
-               z.zone_loc.loc_start.pos_cnum then
+               z.annot_loc.loc_start.pos_cnum then
               let kept_messages =
                 match m.msg_warning.w_state with
                 | Warning_enabled ->
+                    if verbose then
+                      Printf.eprintf "        keeping earlier message\n%!";
                     m :: kept_messages
                 | Warning_disabled
                 | Warning_sleeping ->
+                    if verbose then
+                      Printf.eprintf "        deleting earlier message\n%!";
+
                     kept_messages
               in
               iter
                 ~messages:rem_messages zones
                 kept_messages revert_warning_changes
             else
-              match z.zone_rev_zone with
-              | Some z ->
-                  List.iter (fun (w,state) -> w.w_state <- state)
-                    z.zone_rev_changes ;
-                  iter
-                    ~messages rem_zones kept_messages
+              match z.annot_desc with
+              | Annot_check (spec,after) ->
+                  if verbose then
+                    Printf.eprintf "    check %S at %d/%d\n%!" spec lnum cnum ;
+                  checks := { z with annot_desc = (spec, after) }:: !checks;
+                  iter ~messages rem_zones kept_messages
                     revert_warning_changes
-              | None ->
+              | Annot_begin_warning ->
+                  if verbose then
+                    Printf.eprintf "    begin at %d/%d\n%!" lnum cnum;
+                  iter ~messages rem_zones kept_messages
+                    ((ref []) :: revert_warning_changes)
+              | Annot_end_warning ->
+                  if verbose then
+                    Printf.eprintf "    end at %d/%d\n%!" lnum cnum;
                   let revert_warning_changes =
-                    apply_zone z revert_warning_changes
+                    match revert_warning_changes with
+                      [] -> assert false
+                    | [ _ ] ->
+                        eprintf ~loc:z.annot_loc
+                          "Warning: no annotation scope to end here\n%!";
+                        revert_warning_changes
+                    | changes :: revert_warning_changes ->
+                        List.iter (fun (w, state) ->
+                            if verbose then
+                              Printf.eprintf " Reverting warning %s to \
+                                              %s\n%!"
+                                w.w_idstr (string_of_warning_state state);
+                            w.w_state <- state) !changes ;
+                        revert_warning_changes
                   in
+                  iter ~messages rem_zones kept_messages
+                    revert_warning_changes
+              | Annot_spec spec ->
+                  if verbose then
+                    Printf.eprintf "    spec %S at %d/%d\n%!" spec lnum cnum;
+                  let changes =
+                    if verbose then
+                      Printf.eprintf "            applying spec\n%!";
+                    apply_annot z spec
+                  in
+                  let ref = List.hd revert_warning_changes in
+                  ref := changes @ !ref;
                   iter
                     ~messages rem_zones
                     kept_messages revert_warning_changes
   in
-  let messages = iter ~messages zones [] StringMap.empty in
+  let messages = iter ~messages annots [] [ ref [] ] in
 
   let parse_check ~loc spec f =
     match
@@ -795,13 +835,14 @@ let filter_target_messages target =
           "check yalo annotation raised %s\n%!"
           (Printexc.to_string exn)
   in
-  match checks with
+  match List.rev !checks with
   | [] -> messages
-  | _ ->
+  | checks ->
       let rec iter checks ~messages rev_messages =
         match checks, messages with
         | [], _ -> List.rev rev_messages @ messages
-        | (spec, loc, _after) :: checks, [] ->
+        | { annot_desc = (spec, _after);
+            annot_loc = loc ; _ } :: checks, [] ->
             if spec <> "" then
               parse_check ~loc spec (fun ~loc _ns _w_num ->
                   eprintf ~loc
@@ -809,7 +850,8 @@ let filter_target_messages target =
                     spec
                 );
             iter checks ~messages []
-        | ("", loc, _after) :: checks, m :: _ ->
+        | { annot_desc = ("", _after);
+            annot_loc = loc ; _ } :: checks, m :: _ ->
             if loc.loc_start.pos_cnum >= m.msg_loc.loc_start.pos_cnum
             then begin
               eprintf ~loc "Check yalo annotation no-warning FAILED\n%!";
@@ -826,7 +868,8 @@ let filter_target_messages target =
                    loc.loc_start.pos_lnum ;
                    end *);
             iter checks ~messages rev_messages
-        | (spec, loc, after) :: checks, m :: messages ->
+        | { annot_desc = (spec, after);
+            annot_loc = loc ; _ } :: checks, m :: messages ->
             parse_check ~loc spec (fun ~loc ns w_num ->
                 let w = m.msg_warning in
                 if w.w_num = w_num &&
@@ -871,7 +914,7 @@ let get_messages () =
         messages := target_messages @ !messages ;
 
         (* clean everything *)
-        target.target_zones <- [] ;
+        target.target_annots <- [] ;
         target.target_checks <- [] ;
         target.target_messages <- target_messages ;
 

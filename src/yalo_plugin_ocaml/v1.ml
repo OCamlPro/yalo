@@ -32,6 +32,15 @@ end
 
 module OCAML_LANG = struct
 
+  let is_running_as_ppx = ref false
+  let is_running_as_ppx ?set () =
+    begin
+      match set with
+      | None -> ()
+      | Some set -> is_running_as_ppx := set
+    end;
+    !is_running_as_ppx
+
   let ocaml = Main.ocaml
 
   let ml_file = YALO_LANG.new_file_kind

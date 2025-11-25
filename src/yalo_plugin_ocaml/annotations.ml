@@ -12,70 +12,23 @@
 
 open Yalo.V1
 
-module TAST = struct
-
-  open Tast_types
-  open OCAML_TAST
-
-  let check_attribute ~file attr =
-    match attr with
-      Parsetree.{
-        attr_name = { txt = "yalo.warning"
-                          | "yalo.check"
-                          | "yalo.check_before" ; _ } ;
-        attr_loc = loc ;
-        attr_payload =
-          PStr
-            [ { pstr_desc =
-                  Pstr_eval
-                    ({ pexp_desc = Pexp_constant cst ;
-                       _ },
-                     []);
-                _
-              }
-            ]
-        ;
-        _
-      } ->
-        begin
-          match OCAML_TAST.extract_Pconst_string cst with
-          | None -> ()
-          | Some yalo_spec ->
-              let attr_name = attr.attr_name.txt in
-              match attr_name with
-              | "yalo.warning" ->
-                  YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin yalo_spec
-              | "yalo.check" ->
-                  ()
-              | "yalo.check_before" ->
-                  ()
-              | _ -> assert false
-        end
-    | _ -> ()
-
-  let check_structure ~file ast =
-    List.iter (fun pstr ->
-        match pstr.str_desc with
-        | Tstr_attribute attr ->
-            check_attribute ~file attr
-        | _ -> ()
-      ) ast.str_items ;
-    ()
-
-  let check_signature ~file ast =
-    List.iter (fun pstr ->
-        match pstr.sig_desc with
-        | Tsig_attribute attr ->
-            check_attribute ~file attr
-        | _ -> ()
-      ) ast.sig_items ;
-
-end
+let next_pos loc =
+  { loc with
+    YALO_TYPES.loc_start = {
+      loc.YALO_TYPES.loc_start with
+      pos_cnum = loc.loc_start.pos_cnum + 1 }}
 
 module AST = struct
 
   open Ast_types
   open Ast_types.OCAML_AST
+
+  let rec parse_option_lid lid =
+    match lid with
+    | Lident id -> [ id ]
+    | Ldot (lid, s) ->
+        parse_option_lid lid @ [ s ]
+    | Lapply _ -> assert false
 
   let rec parse_option exp =
     match exp.pexp_desc with
@@ -87,13 +40,6 @@ module AST = struct
     | Pexp_ident lid ->
         parse_option_lid lid.txt
     | _ -> assert false
-
-  and parse_option_lid lid =
-    match lid with
-    | OCAML_AST.Lident id -> [ id ]
-    | OCAML_AST.Ldot (lid, s) ->
-        parse_option_lid lid @ [ s ]
-    | Lapply _ -> assert false
 
   let parse_value exp =
     match exp.OCAML_AST.pexp_desc with
@@ -108,7 +54,9 @@ module AST = struct
     | OCAML_AST.{
         attr_name = { txt = "yalo.warning"
                           | "yalo.check"
-                          | "yalo.check_before" ; _ } ;
+                          | "yalo.check_before"
+                          | "yalo.begin_warning"
+                    ; _ } ;
         attr_loc = loc ;
         attr_payload =
           PStr
@@ -129,7 +77,11 @@ module AST = struct
           let attr_name = attr.attr_name.txt in
           match attr_name with
           | "yalo.warning" ->
-              YALO_LANG.warnings_zone ~file ~loc ~mode:Zone_begin yalo_spec
+              YALO_LANG.add_annot ~file ~loc (Annot_spec yalo_spec)
+          | "yalo.begin_warning" ->
+              YALO_LANG.add_annot ~file ~loc Annot_begin_warning;
+              let loc = next_pos loc in
+              YALO_LANG.add_annot ~file ~loc (Annot_spec yalo_spec)
           | "yalo.check" ->
               ()
           | "yalo.check_before" ->
@@ -165,6 +117,20 @@ module AST = struct
               "Configuration error: exception %s in yalo.set\n%!"
               (Printexc.to_string exn)
         end
+    | OCAML_AST.{
+        attr_name = { txt = "yalo.end_warning"
+                    ; _ } ;
+        attr_loc = loc ;
+        attr_payload = _ ;
+        _
+      } ->
+        begin
+          let attr_name = attr.attr_name.txt in
+          match attr_name with
+          | "yalo.end_warning" ->
+              YALO_LANG.add_annot ~file ~loc Annot_end_warning;
+          | _ -> assert false
+        end
     | attr ->
         let name = attr.attr_name.txt in
         if String.length name >= 5 &&
@@ -193,6 +159,153 @@ module AST = struct
             check_attribute ~file attr
         | _ -> ()
       ) ast
+end
+
+
+module TAST = struct
+
+  open Tast_types
+  open OCAML_TAST
+  open Parsetree
+
+  let rec parse_option exp =
+    match exp.pexp_desc with
+    | Pexp_constant cst ->
+        begin
+          match OCAML_TAST.extract_Pconst_string cst with
+          | None -> assert false
+          | Some v ->
+              String.split_on_char '.' v
+        end
+    | Pexp_field (exp, lid) ->
+        parse_option exp @ Longident.flatten lid.txt
+    | Pexp_ident lid ->
+        Longident.flatten lid.txt
+    | _ -> assert false
+
+  [%%if ocaml_version < (5,3,0)]
+  let extract_Pexp_constant cst = cst
+  [%%else]
+  let extract_Pexp_constant cst = cst.pconst_desc
+  [%%endif]
+
+  let parse_value exp =
+    match exp.pexp_desc with
+    | Pexp_constant cst ->
+        begin match extract_Pexp_constant cst with
+          | Pconst_integer (v, None) -> v
+          | Pconst_float (v, None) -> v
+          | Pconst_char v -> String.make 1 v
+          | _ ->
+              match OCAML_TAST.extract_Pconst_string cst with
+              | None -> assert false
+              | Some v -> v
+        end
+    | _ -> assert false
+
+  let check_attribute ~file attr =
+    match attr with
+    | {
+      attr_name = { txt = "yalo.warning"
+                        | "yalo.check"
+                        | "yalo.check_before"
+                        | "yalo.begin_warning"
+                  ; _ } ;
+      attr_loc = loc ;
+      attr_payload =
+        PStr
+          [ { pstr_desc =
+                Pstr_eval
+                  ({ pexp_desc =
+                       Pexp_constant cst ;
+                     _ },
+                   []);
+              _
+            }
+          ]
+      ;
+      _
+    } ->
+        begin
+          match OCAML_TAST.extract_Pconst_string cst with
+          | None -> ()
+          | Some yalo_spec ->
+              let attr_name = attr.attr_name.txt in
+              match attr_name with
+              | "yalo.warning" ->
+                  YALO_LANG.add_annot ~file ~loc (Annot_spec yalo_spec)
+              | "yalo.begin_warning" ->
+                  YALO_LANG.add_annot ~file ~loc Annot_begin_warning;
+                  let loc = next_pos loc in
+                  YALO_LANG.add_annot ~file ~loc (Annot_spec yalo_spec)
+              | "yalo.check" ->
+                  ()
+              | "yalo.check_before" ->
+                  ()
+              | _ -> assert false
+        end
+    | {
+      attr_name = { txt = "yalo.option" ; _ } ;
+      attr_loc = _loc ;
+      attr_payload =
+        PStr
+          [ { pstr_desc =
+                Pstr_eval
+                  ({ pexp_desc =
+                       Pexp_apply
+                         (option,
+                          [(Nolabel, value)]) ;
+                     _ },
+                   []);
+              _
+            }
+          ]
+      ;
+      _
+    } ->
+        begin
+          try
+            let path = parse_option option in
+            let value = parse_value value in
+            YALO_LANG.temp_set_option path value
+          with exn ->
+            Printf.eprintf
+              "Configuration error: exception %s in yalo.set\n%!"
+              (Printexc.to_string exn)
+        end
+    | {
+      attr_name = { txt = "yalo.end_warning"
+                  ; _ } ;
+      attr_loc = loc ;
+      attr_payload = _ ;
+      _
+    } ->
+        begin
+          let attr_name = attr.attr_name.txt in
+          match attr_name with
+          | "yalo.end_warning" ->
+              YALO_LANG.add_annot ~file ~loc Annot_end_warning;
+          | _ -> assert false
+        end
+    | _ -> ()
+
+  let check_structure ~file ast =
+    List.iter (fun pstr ->
+        match pstr.str_desc with
+        | Tstr_attribute attr ->
+            check_attribute ~file attr
+        | _ -> ()
+      ) ast.str_items ;
+    ()
+
+  let check_signature ~file ast =
+    List.iter (fun pstr ->
+        match pstr.sig_desc with
+        | Tsig_attribute attr ->
+            check_attribute ~file attr
+        | _ -> ()
+      ) ast.sig_items ;
+
 end
 
 module LEX = struct
@@ -237,7 +350,7 @@ module LEX = struct
 
   let rec with_path ~loc path f tokens =
     match tokens with
-    | (Parser.STRING _ as tok, _) :: (DOT, loc) :: tokens ->
+    | (Parser.STRING _ as tok, _) :: (DOT, _) :: tokens ->
         let ident, _delim = extract_STRING tok in
         let subpath = EzString.split ident '.' in
         with_path ~loc (List.rev subpath @ path) f tokens
@@ -260,32 +373,44 @@ module LEX = struct
         tokens
 
   let check_yalo_annot ~file ~loc ident tokens =
+    let annot_loc = loc in
     match ident with
     | "warning" ->
-        with_string ~loc (fun ~loc yalo_spec tokens ->
-            YALO_LANG.warnings_zone ~file ~loc
-              ~mode:Zone_begin yalo_spec ;
+        with_string ~loc (fun ~loc:_ spec tokens ->
+            YALO_LANG.add_annot ~file ~loc:annot_loc (Annot_spec spec);
             tokens
           ) tokens
+    | "begin_warning" ->
+        with_string ~loc (fun ~loc:_ spec tokens ->
+            YALO_LANG.add_annot ~file ~loc:annot_loc Annot_begin_warning;
+            let annot_loc = next_pos annot_loc in
+            YALO_LANG.add_annot ~file ~loc:annot_loc (Annot_spec spec);
+            tokens
+          ) tokens
+    | "end_warning" ->
+        YALO_LANG.add_annot ~file ~loc:annot_loc Annot_end_warning;
+        tokens
     | "check" ->
-        with_string ~loc (fun ~loc spec tokens ->
-            YALO_LANG.warnings_check ~file ~loc spec true;
+        with_string ~loc (fun ~loc:_ spec tokens ->
+            YALO_LANG.add_annot ~file ~loc:annot_loc
+              (Annot_check (spec, true));
             tokens
           ) tokens
     | "check_before" ->
-        with_string ~loc (fun ~loc spec tokens ->
-            YALO_LANG.warnings_check ~file ~loc spec false;
+        with_string ~loc (fun ~loc:_ spec tokens ->
+            YALO_LANG.add_annot ~file ~loc:annot_loc
+              (Annot_check (spec, false));
             tokens
           ) tokens
     | "option" ->
         with_path ~loc []
           (fun ~loc path tokens ->
-             with_value ~loc (fun ~loc value tokens ->
+             with_value ~loc (fun ~loc:_ value tokens ->
                  match
                    YALO_LANG.temp_set_option path value
                  with
                  | exception exn ->
-                     YALO.eprintf ~loc
+                     YALO.eprintf ~loc:annot_loc
                        "Configuration error: exception %s in \
                         yalo.set\n%!"
                        (Printexc.to_string exn);
@@ -311,7 +436,7 @@ module LEX = struct
       | [] -> ()
       | (
         (Parser.LBRACKETATATAT (* | LBRACKETAT | LBRACKETATAT *) )
-      , _) :: (LIDENT "yalo", loc) ::
+      , loc) :: (LIDENT "yalo", _) ::
         (DOT, _) :: (LIDENT ident, _) :: tokens ->
           check_yalo_annot ~file ~loc ident tokens |> iter
       | _ :: tokens -> iter tokens

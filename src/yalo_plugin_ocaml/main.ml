@@ -46,7 +46,8 @@ let active_sig_linters =
 let plugin = YALO.new_plugin "yalo_ocaml_plugin" ~version:"0.1.0"
 let ocaml = YALO_LANG.new_language plugin "ocaml"
 
-include YALO_LANG.Make_source_linters(struct let lang = ocaml end)
+module SOURCE_LINTERS =
+  YALO_LANG.Make_source_linters(struct let lang = ocaml end)
 
 let new_src_lex_linter =
   YALO_LANG.new_gen_linter ocaml active_src_lex_linters
@@ -287,7 +288,7 @@ let check_impl_source ~file =
   end;
   (* use basic linters after ast linters, because we want ast
      linters to be able to set options with annotations *)
-  lint_src_file ~file ;
+  SOURCE_LINTERS.lint_src_file ~file ;
   ()
 
 let check_intf_source ~file =
@@ -312,7 +313,7 @@ let check_intf_source ~file =
   end;
   (* use basic linters after ast linters, because we want ast
      linters to be able to set options with annotations *)
-  lint_src_file ~file ;
+  SOURCE_LINTERS.lint_src_file ~file ;
   ()
 
 let check_cmi ~file =
@@ -493,4 +494,4 @@ let folder_updater ~folder =
   | _ -> ()
 
 
-
+include SOURCE_LINTERS

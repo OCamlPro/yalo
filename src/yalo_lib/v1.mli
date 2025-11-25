@@ -89,9 +89,11 @@ module YALO_TYPES : sig
   type ('a,'b) active_linters =
     ( linter * ('a, 'b) linter_function ) list
 
-  type zone_mode =
-    | Zone_begin
-    | Zone_all
+  type annot_desc =
+    | Annot_begin_warning
+    | Annot_end_warning
+    | Annot_spec of string
+    | Annot_check of string * bool (* true => the warning may be after *)
 
 end
 
@@ -154,6 +156,7 @@ module YALO : sig
     val put : 'a t -> document -> 'a -> unit
     val check : 'a t -> document -> 'a option
     val get : 'a t -> document -> 'a
+    val clear : 'a t -> document -> unit
   end
   module FILE_STORE : sig
     type 'a t = 'a DOC_STORE.t
@@ -161,6 +164,7 @@ module YALO : sig
     val put : 'a t -> file -> 'a -> unit
     val check : 'a t -> file -> 'a option
     val get : 'a t -> file -> 'a
+    val clear : 'a t -> file -> unit
   end
 
   val string_of_loc : location -> string
@@ -175,6 +179,7 @@ module YALO_FS : sig
 end
 
 module YALO_NS : sig
+  val plugin : namespace -> plugin
   val name : namespace -> string
 end
 
@@ -256,9 +261,9 @@ module YALO_LANG : sig
     unit
   val add_folder_updater : (folder:YALO_TYPES.folder -> unit) -> unit
 
-  val warnings_zone : file:file -> loc:location ->
-    ?mode:zone_mode -> string -> unit
-  val warnings_check : file:file -> loc:location -> string -> bool -> unit
+  val add_annot :
+    file:YALO_TYPES.file ->
+    loc:YALO_TYPES.location -> YALO_TYPES.annot_desc -> unit
 
   val temp_set_option : string list -> string -> unit
 

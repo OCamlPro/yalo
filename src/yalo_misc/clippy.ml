@@ -45,7 +45,7 @@ type rule = {
 } [@@deriving yojson]
 
 type rules = rule list [@@deriving yojson]
-[@@@yalo.warning "YALO+9"]
+[@@@yalo.warning "YALO-9"]
 
 let json_of_rule rule =
   rule_to_yojson rule |> Yojson.Safe.to_string
