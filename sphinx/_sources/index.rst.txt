@@ -13,6 +13,9 @@ Welcome to yalo
    Home <https://ocamlpro.github.io/yalo>
    about
    install
+   commands
+   config
+   options
    API doc <https://ocamlpro.github.io/yalo/doc>
    license
 

@@ -5,8 +5,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About &mdash; yalo master
- (fb1c309
-) (2025/11/25 10:01) documentation</title>
+ (93dd967
+) (2025/12/08 10:30) documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d8449d71" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
       <link rel="stylesheet" type="text/css" href="_static/css/fixes.css" />
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=8dae8fb0"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8070000a"></script>
+        <script src="_static/documentation_options.js?v=3b868769"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -39,7 +39,7 @@
           </a>
               <div class="version">
                 master
- (fb1c309
+ (93dd967
 )
               </div>
 <div role="search">
@@ -58,6 +58,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">How to install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Sub-commands and Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration file format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Configuration file options</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://ocamlpro.github.io/yalo/doc">API doc</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Copyright and License</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ocamlpro/yalo">Devel and Issues on Github</a></li>
@@ -89,8 +92,40 @@
              
   <section id="about">
 <h1>About<a class="headerlink" href="#about" title="Link to this heading"></a></h1>
-<p>This is the description
-of the yalo OCaml project</p>
+<p>Yalo is a linting platform, written in OCaml. The philosophy of Yalo
+is to be as extensible and customizable as possible by users. To
+achieve this goal. Yalo makes an heavy use of plugins, so that users
+can define their own plugins to define new warnings, and even to
+define new languages to lint.</p>
+<p>Main features of Yalo:</p>
+<ul class="simple">
+<li><p>All warnings and linters are defined in plugins</p></li>
+<li><p>Versioned interface for long term plugin support</p></li>
+<li><p>Project based configuration file (.yaloconf)</p></li>
+<li><p>Support for SARIF format for Github PR integration</p></li>
+<li><p>Warnings are enabled per project, but can be disabled locally. Easy
+way to select warnings by plugin, tag or number</p></li>
+<li><p>Linters are only called when the specific warnings they detect are
+enabled</p></li>
+</ul>
+<p>Existing plugins:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">yalo_plugin_ocaml</span></code>: base support to lint OCaml programs. Allow
+users to define file linters, line linters, contents linters,
+parsetree linters (untyped, ppxlib) and typedtree linters (typed),
+applied on .ml, .mli, .cmi, .cmti and .cmt files.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">yalo_plugin_YALO</span></code>: line, typed and untyped linters for OCaml,
+developed for Yalo itsef. Based on <code class="code docutils literal notranslate"><span class="pre">yalo_plugin_ocaml</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">yalo_plugin_OCPINDENT</span></code>: linter for OCaml that checks indentation
+with ocp-indent. Based on <code class="code docutils literal notranslate"><span class="pre">yalo_plugin_ocaml</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">yalo_plugin_ZANUDA</span></code>: linters implementing most warnings of Zanuda</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">yalo_plugin_CAMELOT</span></code>: linters implementing most warnings of Camelot</p></li>
+</ul>
+<p>Extensions:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">ppx_yalo</span></code>: this ppx can be used to call Yalo at compile time. Typed
+linters are not available, unless an untyped version is provided.</p></li>
+</ul>
 <section id="authors">
 <h2>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h2>
 <ul class="simple">

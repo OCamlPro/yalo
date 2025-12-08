@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration file options &mdash; yalo master
+ (93dd967
+) (2025/12/08 10:30) documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d8449d71" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+      <link rel="stylesheet" type="text/css" href="_static/css/fixes.css" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=3b868769"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Copyright and License" href="license.html" />
+    <link rel="prev" title="Configuration file format" href="config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+          </a>
+              <div class="version">
+                master
+ (93dd967
+)
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://ocamlpro.github.io/yalo">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Sub-commands and Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration file format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration file options</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#section-main">Section “main”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#section-profiles">Section “profiles”</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://ocamlpro.github.io/yalo/doc">API doc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright and License</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ocamlpro/yalo">Devel and Issues on Github</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">yalo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration file options</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/options.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration-file-options">
+<h1>Configuration file options<a class="headerlink" href="#configuration-file-options" title="Link to this heading"></a></h1>
+<section id="section-main">
+<h2>Section “main”<a class="headerlink" href="#section-main" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">plugins</span></code> (String List): List of plugins to load (in this specific order)</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">search_path</span></code> (String List): List of directories to search for plugin/profile files</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">warnings</span></code> (String List): List of specifications to activate warnings</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">ignore_namespaces</span></code> (StringSet): List of namespaces and tags to ignore in specifications</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">errors</span></code> (String List): List of specifications to activate errors</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">project</span></code> (String): The name of this project, starting from the root</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">default_target</span></code> (String Option): The name of the project to lint by default</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">fileattrs</span></code> ((String * fileattr) List): Associate attributes with files and folders</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profiles</span></code> (String List): List of profiles to use for this project (NAME means yalo-NAME.conf should be loaded)</p></li>
+</ul>
+</section>
+<section id="section-profiles">
+<h2>Section “profiles”<a class="headerlink" href="#section-profiles" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_plugins</span></code> (String List): List of plugins to load (in this specific order) for this profile</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_search_path</span></code> (String List): List of directories to search for plugin files for this profile</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_profiles</span></code> (String List): List of other profiles to use for this profile</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_fileattrs</span></code> ((String * fileattr) List): Associate attributes with files and folders</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_warnings</span></code> (String List): List of specifications to activate warnings. These specifications
+are used before the ones provided by the configuration, so that
+the project configuration has the final word.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">profile_errors</span></code> (String List): List of specifications to activate errors</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config.html" class="btn btn-neutral float-left" title="Configuration file format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="license.html" class="btn btn-neutral float-right" title="Copyright and License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright OCamlPro SAS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

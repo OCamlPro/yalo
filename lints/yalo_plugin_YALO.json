@@ -1,0 +1,431 @@
+[
+  {
+    "id": "YALO+1 line_too_long",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine too long (not more than 80 characters)\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+2 spaces_at_end",
+    "namespace": "YALO",
+    "group": "autofix:line",
+    "tags": [ "autofix", "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine ends with spaces\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+3 tab_used",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains tabulations\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+4 non_printable_char",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains non-printable chars\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+5 no_final_newline",
+    "namespace": "YALO",
+    "group": "autofix:line",
+    "tags": [ "autofix", "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nFile does not end with a newline\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+6 windows_newline",
+    "namespace": "YALO",
+    "group": "line",
+    "tags": [ "line" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nLine contains a \\r\\n instead of only \\n\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+7 use_obj",
+    "namespace": "YALO",
+    "group": "typed:untyped",
+    "tags": [ "typed", "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThe use of the Obj module is dangerous\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+8 use_external",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThe use of external values is dangerous\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+9 unqualified_id",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nValues from external modules should be fully qualified\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+10 all_upper_struct",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nInner modules should be full uppercase\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+11 no_semisemi",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nDouble semi (;;) should be avoided\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+12 forbidden_infix",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nUse of infix operator not in the allowed set\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+13 no_mutable_fields",
+    "namespace": "YALO",
+    "group": "immutable:untyped:typed",
+    "tags": [ "immutable", "untyped", "typed" ],
+    "level": "allow",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nMutable fields in records are forbidden in this project\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+14 string_concat",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n(a ^ b ^ c) should be replaced by Printf.sprintf \"%s%s%s\" a b c\n### Description\n### What it does\nChecks for the concatenation of more than 2 strings using ^\n### Why restrict this ?\nThere is a performance issue to using the (^) operator multiple times in the same expression, as it will allocate a new string at every call. Instead, you can use `Printf.sprintf \"%s%s%s\"` that will only allocate for the result once.\n### Example\n```\nlet s = a ^ \".\" ^ b\n```\n should be replaced by \n```\nlet s = Printf.sprintf \"%s.%s\" a b\n```\n\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+15 fun_fun",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nAll arguments of an immediate fun should be defined at once\n### Description\nAll arguments of an immediate fun should be defined at once",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+16 begin_fun",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"begin fun\" is misleading because \"begin\" starts a sequence \\\nof instructions\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+17 paren_semi",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"( expr ; expr )\" is misleading because \"(\" should not hide a side-effects\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+18 incr_decr",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"x := !x +/- 1\" should be replaced by \"incr/decr x\"\n### Description\n\"x := !x +/- 1\" should be replaced by \"incr/decr x\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+19 failwith_sprintf",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"failwith (sprintf [...])\" should be replaced by \"Printf.ksprintf failwith [...]\"\n### Description\n\"failwith (sprintf [...])\" should be replaced by \"Printf.ksprintf failwith [...]\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+20 comp_boolean",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\ncomparison with a boolean should always be simplified\n### Description\ncomparison with a boolean should always be simplified",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+21 useless_paren",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nThis expression does not need to be between parenthesis\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+22 list_length_comp_zero",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l =/<> 0\" should be replaced by \"l =/<> []\"\n### Description\n\"String.length l =/<> 0\" should be replaced by \"l =/<> []\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+23 list_length_comp_any",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l <=> _\" should be replaced by \"List.compare_length_with \\\nl =/<=> _\"\n### Description\n\"String.length l <=> _\" should be replaced by \"List.compare_length_with \\\nl =/<=> _\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+24 list_length_comp_list_length",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"String.length l1 <=> List.length l2\" should be replaced by \\\n\"List.compare_lengths l1 l2 <=> 0\"\n### Description\n\"String.length l1 <=> List.length l2\" should be replaced by \\\n\"List.compare_lengths l1 l2 <=> 0\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+25 then_bool_else_bool",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"if then bool else bool\" should be simplified\n### Description\n\"if then bool else bool\" should be simplified",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+26 then_or_else_bool",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nbool in then/else should be simplified with && or ||\n### Description\nbool in then/else should be simplified with && or ||",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+27 else_unit",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"else unit\" is useless here\n### Description\n\"else unit\" is useless here",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+28 try_catch_all",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"try with _\" is dangerous, raised exceptions should be used or printed\n### Description\n\"try with _\" is dangerous, raised exceptions should be used or printed",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+29 list_append_for_one",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n\"[e]@list\" should be replaced by \"e :: list\"\n### Description\n\"[e]@list\" should be replaced by \"e :: list\"",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+30 useless_sprintf",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n'Printf.sprintf \"%s\"' is identify for string\n### Description\n'Printf.sprintf \"%s\"' is identify for string",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+31 suspicious_for_zero_to_len",
+    "namespace": "YALO",
+    "group": "untyped",
+    "tags": [ "untyped" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\n'for 0 to len do' is suspicious, should be 'len-1'\n### Description\n'for 0 to len do' is suspicious, should be 'len-1'",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+32 forbidden_keyword",
+    "namespace": "YALO",
+    "group": "lex",
+    "tags": [ "lex" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nKeyword is forbidden by project configuration\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  },
+  {
+    "id": "YALO+33 need_labels",
+    "namespace": "YALO",
+    "group": "typed",
+    "tags": [ "typed" ],
+    "level": "warn",
+    "impl": "yalo_plugin_YALO",
+    "docs": "### Message\nIf two arguments have the same type, they should be labeled\n### Description\n",
+    "applicability": {
+      "is_multi_part_suggestion": false,
+      "applicability": "Unresolved"
+    }
+  }
+]
