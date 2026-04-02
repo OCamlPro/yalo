@@ -20,8 +20,9 @@
   <span><span class="label">linter</span>:<a href="../YALO_TYPES/index.html#type-linter">YALO_TYPES.linter</a> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?msg</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?autofix</span>:<span><span>(<a href="../YALO_TYPES/index.html#type-location">YALO_TYPES.location</a> * string)</span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?fingerprint</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><a href="../YALO_TYPES/index.html#type-warning">YALO_TYPES.warning</a> <span class="arrow">&#45;&gt;</span></span>
-  unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-mkloc"><a href="#val-mkloc" class="anchor"></a><code><span><span class="keyword">val</span> mkloc : 
+  unit</span></code></div><div class="spec-doc"><p>Emit a warning at the given location.</p><ul class="at-tags"><li class="parameter"><span class="at-tag">parameter</span> <span class="value">fingerprint</span> <p>A unique identifier for this warning occurrence. May be used by dashboards, for instance, to trace issues through successive runs. If unspecified, default to a Marshal-based key that is often sufficient but not guaranteed to be stable across successive builds or versions of YALO.</p></li></ul></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-mkloc"><a href="#val-mkloc" class="anchor"></a><code><span><span class="keyword">val</span> mkloc : 
   <span><span class="label">bol</span>:int <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?start_cnum</span>:int <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?end_cnum</span>:int <span class="arrow">&#45;&gt;</span></span>

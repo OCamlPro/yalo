@@ -122,7 +122,7 @@ Where options are:
 
 * :code:`-e SPEC` or :code:`--errors SPEC`   Set errors according to SPEC-ification
 
-* :code:`-f FORMAT` or :code:`--message-format FORMAT`   Set message format to FORMAT: context (default), human, short, summary, sarif
+* :code:`-f FORMAT` or :code:`--message-format FORMAT`   Set message format to FORMAT: context (default), human, short, summary, sarif, codeclimate, gitlab
 
 * :code:`--no-load-plugins`   Do not load plugins
 
