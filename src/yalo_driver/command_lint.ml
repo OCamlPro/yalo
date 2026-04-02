@@ -40,6 +40,8 @@ let arg_specs = [
       | "short" -> Args.arg_message_format := Format_Short
       | "summary" -> Args.arg_message_format := Format_Summary
       | "sarif" -> Args.arg_message_format := Format_Sarif
+      | "codeclimate" -> Args.arg_message_format := Format_CodeClimate
+      | "gitlab" -> Args.arg_message_format := Format_GitLab
       (* TODO Clippy: human, short, json, json-diagnostic-short,
          json-diagnostic-rendered-ansi, json-render-diagnostics *)
       | s ->
@@ -49,7 +51,7 @@ let arg_specs = [
     ),
   EZCMD.info ~docv:"FORMAT"
     "Set message format to FORMAT: context (default), human, short, \
-     summary, sarif";
+     summary, sarif, codeclimate, gitlab";
 
   [ "p" ; "package" ],
   EZCMD.String (fun s -> Args.arg_projects := !Args.arg_projects @ [ s ]),

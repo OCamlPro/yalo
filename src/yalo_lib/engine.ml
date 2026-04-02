@@ -355,7 +355,7 @@ let add_annot ~file ~loc annot_desc =
   target.target_annots <- annot :: target.target_annots ;
   ()
 
-let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
+let warn ~loc ~file ~linter ?msg ?(autofix=[]) ?fingerprint w =
 
   if not ( StringMap.mem w.w_idstr linter.linter_warnings ) then begin
     Printf.eprintf
@@ -381,10 +381,13 @@ let warn ~loc ~file ~linter ?msg ?(autofix=[]) w =
         | Some msg -> msg
       in
       let msg_idstr =
-        Printf.sprintf "%06d%06d%s"
-          loc.loc_start.pos_lnum
-          loc.loc_start.pos_cnum
-          (Marshal.to_string (loc,w.w_idstr,msg) [])
+        match fingerprint with
+        | Some fp -> fp
+        | None ->
+            Printf.sprintf "%06d%06d%s"
+              loc.loc_start.pos_lnum
+              loc.loc_start.pos_cnum
+              (Marshal.to_string (loc,w.w_idstr,msg) [])
       in
       let target_name = loc.loc_start.pos_fname in
       let target = get_target target_name in

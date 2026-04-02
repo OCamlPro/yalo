@@ -236,8 +236,10 @@ type message_format =
   | Format_Human
   | Format_Context
   | Format_Sarif
+  | Format_GitLab
   | Format_Short
   | Format_Summary
+  | Format_CodeClimate
 
 
 type warning_desc = {

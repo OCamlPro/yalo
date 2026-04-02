@@ -305,6 +305,85 @@ let display_sarif ?output messages =
   end;
   ()
 
+(** Run [f chan] where [chan] is the output channel matching
+    [output] -- [stdout] if no [output] is provided, or
+    [open_out filename] if [Some filename] is provided.
+
+    If [Some filename] is provided, this function closes the
+    [out_channel] upon exit.
+    *)
+let with_output ?(output:string option) (f: out_channel -> 'a): 'a =
+  let oc = match output with
+    | None -> stdout
+    | Some filename ->
+        open_out filename
+  in
+  Fun.protect
+    ~finally:(fun () -> if Option.is_some output then close_out oc)
+    (fun () -> f oc)
+
+(** Preprocessing shared by `display_codeclimate` and `display_gitlab` *)
+let codeclimate_issues (messages: message list): json list =
+  let col pos =
+    pos.pos_cnum - pos.pos_bol + 1
+  in
+  List.(
+    messages |> map (fun m ->
+      OBJECT [
+        ("type", STRING "issue");
+        ("check_name", STRING m.msg_warning.w_idstr);
+        ("description", STRING m.msg_string);
+        ("fingerprint", STRING m.msg_idstr);
+        ("content", NULL);
+        ("categories", LIST [STRING "Bug Risk"]);
+        ("location", OBJECT [
+          ("path", STRING m.msg_loc.loc_start.pos_fname);
+          ("positions", OBJECT [
+            ("begin", OBJECT [
+              ("line", INT m.msg_loc.loc_start.pos_lnum);
+              ("column", INT (col m.msg_loc.loc_start));
+            ]);
+            ("end", OBJECT [
+              ("line", INT m.msg_loc.loc_end.pos_lnum);
+              ("column", INT (col m.msg_loc.loc_end));
+            ]);
+          ])
+        ]);
+        ("severity", STRING
+           (if m.msg_warning.w_level_error then "major" else "minor"));
+      ]
+    ))
+
+(** Display in CodeClimate format
+
+    See https://github.com/codeclimate/platform/blob/master/spec/analyzers/SPEC.md
+*)
+let display_codeclimate ?output (messages: message list): unit =
+  with_output ?output (fun oc ->
+    let issues = codeclimate_issues messages
+    in
+    let stringified = List.(
+      issues |> map Yalo_misc.Ez_json.to_string
+    ) in
+    (* CodeClimate format requires a \0 after every issue. *)
+    let str = String.concat "\n\u{0}\n" stringified in
+    Printf.fprintf oc "%s\u{0}\n" str
+  )
+
+(** Display in GitLab format (based on CodeClimate, but with a different wrapper).
+
+    See https://docs.gitlab.com/ci/testing/code_quality/#code-quality-report-format
+*)
+let display_gitlab ?output (messages: message list) =
+  with_output ?output (fun oc ->
+    let issues = codeclimate_issues messages
+    in
+    (* GitLab format requires a JSON array. *)
+    let array = LIST issues in
+    let str = Yalo_misc.Ez_json.to_string array in
+    Printf.fprintf oc "%s\n" str
+  )
+
 let display_messages ~on_error ?(summary=Some 10)
     ?(format=Format_Human) ?output messages =
   begin
@@ -312,6 +391,8 @@ let display_messages ~on_error ?(summary=Some 10)
     | Format_Human
     | Format_Context -> display_human ~format messages
     | Format_Sarif -> display_sarif ?output messages
+    | Format_CodeClimate -> display_codeclimate ?output messages
+    | Format_GitLab -> display_gitlab ?output messages
     | Format_Short -> display_human ~format messages
     | Format_Summary -> ()
   end;
@@ -335,7 +416,7 @@ let display_messages ~on_error ?(summary=Some 10)
         | Format_Short ->
             if !nwarnings + !nerrors > n then
               display_summary messages
-        | Format_Sarif -> ()
+        | Format_Sarif | Format_CodeClimate | Format_GitLab -> ()
         | Format_Summary -> assert false
   end;
   begin
